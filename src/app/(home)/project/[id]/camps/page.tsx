@@ -1,10 +1,10 @@
+import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Page({ params }: { params: { id: string } }) {
-
-  const projectId = params.id
+  const projectId = params.id;
 
   const projects = [
     {
@@ -58,21 +58,6 @@ export default function Page({ params }: { params: { id: string } }) {
   ];
 
   return (
-    // <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    //   <h2 className="py-8 text-center items-center">
-    //     Camps for project {projectId}
-    //   </h2>
-    //   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    //     {projects.map((project) => (
-    //       <ProjectCard key={project.title} {...project} />
-    //     ))}
-    //   </div>
-    //   <div className="text-center item-center py-12">
-    //     <Button className="bg-primary  text-primary-foreground">Add Camp</Button>
-    //   </div>
-
-    // </main>
-
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="py-8 text-center items-center">
         Camps for project {projectId}
@@ -83,13 +68,20 @@ export default function Page({ params }: { params: { id: string } }) {
         ))}
       </div>
       <div className="text-center item-center py-12">
-        <Link href={'/project'} className="mr-6">       
-         <Button variant="ghost" className="bg-primary  text-primary-foreground">Change Project</Button>
+        <Link href={"/project"} className="mr-6">
+          <Button
+            variant="ghost"
+            className="bg-primary  text-primary-foreground"
+          >
+            Change Project
+          </Button>
         </Link>
-        <Button className="bg-primary  text-primary-foreground">Add Camp</Button>
+        <AwesomeDrawer
+          openTrigger={<Button>Add Camp</Button>}
+          title="Add Camp"
+          bodyText="form here"
+        />
       </div>
     </main>
   );
-
-
 }

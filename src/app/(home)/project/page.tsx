@@ -1,8 +1,8 @@
+import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 
 export default function Page() {
-
   const projects = [
     {
       id: 100,
@@ -57,7 +57,7 @@ export default function Page() {
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="py-8 text-center items-center">
-        Select a Project to view it's Camps
+        Select a Project to view it&lsquo;s Camps
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {projects.map((project) => (
@@ -65,10 +65,12 @@ export default function Page() {
         ))}
       </div>
       <div className="text-center item-center py-12">
-        <Button className="bg-primary  text-primary-foreground">Add Project</Button>
+        <AwesomeDrawer
+          openTrigger={<Button>Add Project</Button>}
+          title="Add Project"
+          bodyText="form here"
+        />
       </div>
     </main>
   );
-
-
 }
