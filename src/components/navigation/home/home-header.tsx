@@ -1,4 +1,5 @@
 "use client";
+import { AddForm } from "@/components/add-form";
 import AwesomeDrawer from "@/components/drawer";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,10 @@ export default function HomeHeader() {
         }
         title="Add Project"
         bodyText="form here"
-      />
+        isForm={true}
+      >
+        <AddForm />
+      </AwesomeDrawer>
     </header>
   );
 }

@@ -20,6 +20,7 @@ type DrawerProps = {
   description?: string;
   children?: React.ReactNode;
   bodyText?: string;
+  isForm?: boolean;
 };
 
 export default function AwesomeDrawer({
@@ -31,6 +32,7 @@ export default function AwesomeDrawer({
   description = "A responsive modal component for shadcn/ui.",
   bodyText = "This component is built using shadcn/ui's dialog and drawer component, which is built on top of Vaul.",
   children = <div>{bodyText}</div>,
+  isForm = false,
 }: DrawerProps) {
   return (
     <Credenza>
@@ -41,9 +43,11 @@ export default function AwesomeDrawer({
           <CredenzaDescription>{description}</CredenzaDescription>
         </CredenzaHeader>
         <CredenzaBody>{children}</CredenzaBody>
-        <CredenzaFooter>
-          <CredenzaClose asChild>{closeTrigger}</CredenzaClose>
-        </CredenzaFooter>
+        {!isForm && (
+          <CredenzaFooter>
+            <CredenzaClose asChild>{closeTrigger}</CredenzaClose>
+          </CredenzaFooter>
+        )}
       </CredenzaContent>
     </Credenza>
   );

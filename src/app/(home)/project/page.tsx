@@ -1,3 +1,4 @@
+import { AddForm } from "@/components/add-form";
 import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
@@ -69,7 +70,10 @@ export default function Page() {
           openTrigger={<Button>Add Project</Button>}
           title="Add Project"
           bodyText="form here"
-        />
+          isForm={true}
+        >
+          <AddForm />
+        </AwesomeDrawer>
       </div>
     </main>
   );
