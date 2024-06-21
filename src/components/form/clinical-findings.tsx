@@ -6,7 +6,7 @@ export function ClinicalFindings() {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-bold">CLINICAL FINDINGS</h2>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="height">Height (cm):</Label>
           <Input id="height" type="text" />
@@ -24,7 +24,7 @@ export function ClinicalFindings() {
           <Input id="blood-pressure" type="text" />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="rbg">RBG/FBS:</Label>
           <Input id="rbg" type="text" />

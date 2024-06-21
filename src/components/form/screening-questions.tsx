@@ -7,7 +7,7 @@ export function ScreeningQuestions() {
       <h2 className="text-lg font-bold">SCREENING QUESTIONS</h2>
       <div className="space-y-2">
         <Label>Do you have any chronic illnesses?</Label>
-        <div className="flex items-center space-x-4">
+        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           <RadioGroup>
             <RadioGroupItem id="chronic-illness" value="yes" />
             <Label>Yes (name it)</Label>
@@ -23,7 +23,7 @@ export function ScreeningQuestions() {
         </div>
 
         <Label>Are you on any medications?</Label>
-        <div className="flex items-center space-x-4">
+        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           <RadioGroup>
             <RadioGroupItem id="medications" value="yes" />
             <Label>Yes (name them)</Label>
@@ -39,7 +39,7 @@ export function ScreeningQuestions() {
         </div>
 
         <Label>Do you smoke/drink alcohol?</Label>
-        <div className="flex items-center space-x-4">
+        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           <RadioGroup>
             <RadioGroupItem id="smoke-drink" value="yes" />
             <Label>Yes</Label>
@@ -55,7 +55,7 @@ export function ScreeningQuestions() {
         </div>
 
         <Label>Does your family have any history of chronic diseases?</Label>
-        <div className="flex items-center space-x-4">
+        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           <RadioGroup>
             <RadioGroupItem id="family-history" value="yes" />
             <Label>Yes (name them)</Label>
@@ -71,7 +71,7 @@ export function ScreeningQuestions() {
         </div>
 
         <Label>Vaccination history</Label>
-        <div className="flex items-center space-x-4">
+        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
           <RadioGroup>
             <RadioGroupItem id="vaccination-history" value="yes" />
             <Label>Yes</Label>

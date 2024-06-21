@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 export function PatientInfo() {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="patient-name">Patient name:</Label>
           <Input id="patient-name" type="text" />
@@ -24,7 +24,7 @@ export function PatientInfo() {
           <Input id="gender" type="text" />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="dob">Date of birth:</Label>
           <Popover>
@@ -45,17 +45,15 @@ export function PatientInfo() {
           <Input id="location" type="text" />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="insurance">Insurance/Bima:</Label>
-          <Input id="insurance" type="text" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="address">
-            Address (where the patient is coming from):
-          </Label>
-          <Input id="address" type="text" />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="insurance">Insurance/Bima:</Label>
+        <Input id="insurance" type="text" />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="address">
+          Address (where the patient is coming from):
+        </Label>
+        <Input id="address" type="text" />
       </div>
     </div>
   );
