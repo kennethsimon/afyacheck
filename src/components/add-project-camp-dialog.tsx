@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 
 type AddProjectOrCampDialogProps = {
-  type: "project" | "camp";
+  type: "Project" | "Camp";
 };
 
 export function AddProjectOrCampDialog({ type }: AddProjectOrCampDialogProps) {
