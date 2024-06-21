@@ -1,9 +1,18 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { AddForm } from "@/components/add-form";
 import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
+import { AuthOptions } from "next-auth"; 
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { getProjects } from "../../../../services/projects";
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+  const { items } = await getProjects();
+  console.log(items)
   const projects = [
     {
       id: 100,
@@ -54,6 +63,11 @@ export default function Page() {
       updatedTime: "Updated 3 months ago",
     },
   ];
+
+  if (!session) {
+    redirect("/login");
+  } 
+
 
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
