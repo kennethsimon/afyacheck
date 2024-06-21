@@ -32,6 +32,7 @@ interface BaseProps {
 interface RootCredenzaProps extends BaseProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
 }
 
 interface CredenzaProps extends BaseProps {
@@ -41,11 +42,15 @@ interface CredenzaProps extends BaseProps {
 
 const desktop = "(min-width: 768px)";
 
-const Credenza = ({ children, ...props }: RootCredenzaProps) => {
+const Credenza = ({ onClose, children, ...props }: RootCredenzaProps) => {
   const isDesktop = useMediaQuery(desktop);
   const Credenza = isDesktop ? Dialog : Drawer;
 
-  return <Credenza {...props}>{children}</Credenza>;
+  return (
+    <Credenza onClose={onClose} {...props}>
+      {children}
+    </Credenza>
+  );
 };
 
 const CredenzaTrigger = ({ className, children, ...props }: CredenzaProps) => {

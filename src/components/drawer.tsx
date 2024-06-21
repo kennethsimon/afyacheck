@@ -40,7 +40,7 @@ export default function AwesomeDrawer({
   onClose = () => {},
 }: DrawerProps) {
   return (
-    <Credenza open={isOpen}>
+    <Credenza open={isOpen} onClose={onClose}>
       <CredenzaTrigger asChild>{openTrigger}</CredenzaTrigger>
       <CredenzaContent>
         <CredenzaHeader>
