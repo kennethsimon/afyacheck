@@ -12,7 +12,6 @@ import { getProjects } from "../../../../services/projects";
 export default async function Page() {
   const session = await getServerSession(authOptions);
   const { items } = await getProjects();
-  console.log(items)
   const projects = [
     {
       id: 100,
@@ -75,8 +74,8 @@ export default async function Page() {
         Select a Project to view it&lsquo;s Camps
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {projects.map((project) => (
-          <ProjectCard key={project.title} {...project} />
+        {items?.data?.projects?.map((project: any) => (
+          <ProjectCard key={project.name} {...project} />
         ))}
       </div>
       <div className="text-center item-center py-12">

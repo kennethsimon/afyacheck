@@ -27,8 +27,7 @@ const FormSchema = z.object({
   }),
 });
 
-export function AddForm() {
-
+export function AddCampForm({projectId}: any) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -39,7 +38,7 @@ export function AddForm() {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
-    const res = await projectApi.post("/projects", {name: data?.title, description: data?.description});
+    const res = await projectApi.post("/camps", {name: data?.title, description: data?.description, project: projectId});
     console.log(res)
     // toast("Item created successfully.", {
     //   description: "You can now open the item.",

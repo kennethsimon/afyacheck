@@ -2,10 +2,22 @@ import { AddForm } from "@/components/add-form";
 import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { getCamps } from "../../../../../../services/camps";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { redirect } from "next/navigation";
+import { AddCampForm } from "@/components/add-camp";
 
-export default function Page({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;
+  const session = await getServerSession(authOptions);
+  const { items } = await getCamps({projectId});
+  console.log(items)
+
+  if (!session) {
+    redirect("/login");
+  } 
 
   const projects = [
     {
@@ -64,8 +76,8 @@ export default function Page({ params }: { params: { id: string } }) {
         Camps for project {projectId}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {projects.map((project) => (
-          <ProjectCard key={project.title} {...project} />
+        {items?.camps.map((camp: any) => (
+          <ProjectCard key={camp.name} {...camp} />
         ))}
       </div>
       <div className="text-center item-center py-12">
@@ -83,7 +95,7 @@ export default function Page({ params }: { params: { id: string } }) {
           bodyText="form here"
           isForm={true}
         >
-          <AddForm />
+          <AddCampForm projectId={projectId}/>
         </AwesomeDrawer>
       </div>
     </main>
