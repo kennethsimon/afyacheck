@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-const FormSchema = z.object({
+export const AddFormSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
@@ -26,26 +26,30 @@ const FormSchema = z.object({
   }),
 });
 
-export function AddForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+type AddFormProps = {
+  onSubmit: (data: z.infer<typeof AddFormSchema>) => void;
+};
+
+export function AddForm({ onSubmit }: AddFormProps) {
+  const form = useForm<z.infer<typeof AddFormSchema>>({
+    resolver: zodResolver(AddFormSchema),
     defaultValues: {
       username: "",
       imageUrl: "",
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast("Item created successfully.", {
-      description: "You can now open the item.",
-      action: {
-        label: "Open",
-        onClick: () => {
-          console.log("Opening item...");
-        },
-      },
-    });
-  }
+  // function onSubmit(data: z.infer<typeof AddFormSchema>) {
+  //   toast("Item created successfully.", {
+  //     description: "You can now open the item.",
+  //     action: {
+  //       label: "Open",
+  //       onClick: () => {
+  //         console.log("Opening item...");
+  //       },
+  //     },
+  //   });
+  // }
 
   return (
     <Form {...form}>

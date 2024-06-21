@@ -1,8 +1,8 @@
 import { AddForm } from "@/components/add-form";
-import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;
@@ -77,14 +77,8 @@ export default function Page({ params }: { params: { id: string } }) {
             Change Project
           </Button>
         </Link>
-        <AwesomeDrawer
-          openTrigger={<Button>Add Camp</Button>}
-          title="Add Camp"
-          bodyText="form here"
-          isForm={true}
-        >
-          <AddForm />
-        </AwesomeDrawer>
+
+        <AddProjectOrCampDialog type={"Camp"} />
       </div>
     </main>
   );

@@ -1,7 +1,7 @@
 import { AddForm } from "@/components/add-form";
-import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
+import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default function Page() {
   const projects = [
@@ -66,14 +66,7 @@ export default function Page() {
         ))}
       </div>
       <div className="text-center item-center py-12">
-        <AwesomeDrawer
-          openTrigger={<Button>Add Project</Button>}
-          title="Add Project"
-          bodyText="form here"
-          isForm={true}
-        >
-          <AddForm />
-        </AwesomeDrawer>
+        <AddProjectOrCampDialog type={"Project"} />
       </div>
     </main>
   );
