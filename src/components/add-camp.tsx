@@ -16,50 +16,56 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/lib/hooks/use-media-query";
+import projectApi from "../../services/config";
 
-export const AddFormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+const FormSchema = z.object({
+  title: z.string().min(2, {
+    message: "title must be at least 2 characters.",
   }),
   description: z.string().min(2, {
     message: "Please enter a valid description.",
   }),
 });
 
-type AddFormProps = {
-  onSubmit: (data: z.infer<typeof AddFormSchema>) => void;
-  onClose: () => void;
-};
-
-export function AddForm({ onSubmit, onClose }: AddFormProps) {
-  const form = useForm<z.infer<typeof AddFormSchema>>({
-    resolver: zodResolver(AddFormSchema),
+export function AddCampForm({projectId}: any) {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
+      title: "",
       description: "",
     },
   });
-  const desktop = "(min-width: 768px)";
-  const isDesktop = useMediaQuery(desktop);
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(data);
+    const res = await projectApi.post("/camps", {name: data?.title, description: data?.description, project: projectId});
+    console.log(res)
+    // toast("Item created successfully.", {
+    //   description: "You can now open the item.",
+    //   action: {
+    //     label: "Open",
+    //     onClick: () => {
+    //       console.log("Opening item...");
+    //     },
+    //   },
+    // });
+  }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("w-2/3", !isDesktop && "w-full pb-8", "space-y-6")}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <FormField
           control={form.control}
-          name="username"
+          name="title"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input placeholder="shadcn" {...field} />
               </FormControl>
-              <FormDescription>Insert project title.</FormDescription>
+              <FormDescription>
+                Insert project title.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -73,19 +79,14 @@ export function AddForm({ onSubmit, onClose }: AddFormProps) {
               <FormControl>
                 <Input placeholder="description" {...field} />
               </FormControl>
-              <FormDescription>Insert projects description</FormDescription>
+              <FormDescription>
+                Insert projects description
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex justify-between">
-          <Button className="flex justify-start" type="submit">
-            Submit
-          </Button>
-          <Button className="flex justify-end" type="button" onClick={onClose}>
-            Close
-          </Button>
-        </div>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );

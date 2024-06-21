@@ -1,11 +1,62 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
+import { useToast } from "@/components/ui/use-toast"
 
 function Loginscreen() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { toast } = useToast();
+
+
+  const onFinish = async (e: any) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+
+      const res = await signIn("credentials", {
+        redirect: false,
+        username: username,
+        password: password,
+        callbackUrl: "/project",
+      });
+
+      if (!res?.error) {
+        toast({
+          title: "Success",
+          description: "Logged in successfully.",
+        })
+        router.push("/project");
+      } else {
+        setLoading(false);
+        setError("invalid email or password");
+        toast({
+          title: "Error",
+          description: "Invalid username or password",
+        })
+      }
+    } catch (error: any) {
+      setLoading(false);
+      setError(error);
+      toast({
+        title: "Error",
+        description: "Invalid username or password",
+      })
+    }
+  };
+
+  const onFinishFailed = (errorInfo: any) => {};
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="flex items-center justify-center py-12">
@@ -16,14 +67,17 @@ function Loginscreen() {
               Enter your email below to login to your account
             </p>
           </div>
-          <div className="grid gap-4">
+         <form onSubmit={(e) => onFinish(e)}>
+         <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
+                id="username"
+                type="text"
                 placeholder="m@example.com"
                 required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -36,7 +90,7 @@ function Loginscreen() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
               Login
@@ -45,6 +99,7 @@ function Loginscreen() {
               Login with Google
             </Button> */}
           </div>
+         </form>
           {/* <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="#" className="underline">
