@@ -1,3 +1,4 @@
+"use client";
 import {
   Credenza,
   CredenzaBody,
@@ -21,6 +22,8 @@ type DrawerProps = {
   children?: React.ReactNode;
   bodyText?: string;
   isForm?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
 };
 
 export default function AwesomeDrawer({
@@ -33,9 +36,11 @@ export default function AwesomeDrawer({
   bodyText = "This component is built using shadcn/ui's dialog and drawer component, which is built on top of Vaul.",
   children = <div>{bodyText}</div>,
   isForm = false,
+  isOpen = true,
+  onClose = () => {},
 }: DrawerProps) {
   return (
-    <Credenza>
+    <Credenza open={isOpen}>
       <CredenzaTrigger asChild>{openTrigger}</CredenzaTrigger>
       <CredenzaContent>
         <CredenzaHeader>

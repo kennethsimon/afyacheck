@@ -25,3 +25,8 @@ export function getPatientId(url: string): string {
   const parts = idPart.split("/");
   return parts[1];
 }
+
+// upercase first letter of string
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

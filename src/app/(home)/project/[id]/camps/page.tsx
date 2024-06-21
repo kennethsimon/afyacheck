@@ -1,5 +1,4 @@
 import { AddForm } from "@/components/add-form";
-import AwesomeDrawer from "@/components/drawer";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
@@ -8,6 +7,7 @@ import { getCamps } from "../../../../../../services/camps";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import { AddCampForm } from "@/components/add-camp";
+import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;
@@ -89,14 +89,8 @@ export default async function Page({ params }: { params: { id: string } }) {
             Change Project
           </Button>
         </Link>
-        <AwesomeDrawer
-          openTrigger={<Button>Add Camp</Button>}
-          title="Add Camp"
-          bodyText="form here"
-          isForm={true}
-        >
-          <AddCampForm projectId={projectId}/>
-        </AwesomeDrawer>
+
+        <AddProjectOrCampDialog type={"Camp"} />
       </div>
     </main>
   );

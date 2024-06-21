@@ -18,46 +18,46 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import projectApi from "../../services/config";
 
-const FormSchema = z.object({
-  title: z.string().min(2, {
-    message: "title must be at least 2 characters.",
+export const AddFormSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
   }),
   description: z.string().min(2, {
     message: "Please enter a valid description.",
   }),
 });
 
-export function AddForm() {
+type AddFormProps = {
+  onSubmit: (data: z.infer<typeof AddFormSchema>) => void;
+};
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+export function AddForm({ onSubmit }: AddFormProps) {
+  const form = useForm<z.infer<typeof AddFormSchema>>({
+    resolver: zodResolver(AddFormSchema),
     defaultValues: {
-      title: "",
+      username: "",
       description: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-    const res = await projectApi.post("/projects", {name: data?.title, description: data?.description});
-    console.log(res)
-    // toast("Item created successfully.", {
-    //   description: "You can now open the item.",
-    //   action: {
-    //     label: "Open",
-    //     onClick: () => {
-    //       console.log("Opening item...");
-    //     },
-    //   },
-    // });
-  }
+  // function onSubmit(data: z.infer<typeof AddFormSchema>) {
+  //   toast("Item created successfully.", {
+  //     description: "You can now open the item.",
+  //     action: {
+  //       label: "Open",
+  //       onClick: () => {
+  //         console.log("Opening item...");
+  //       },
+  //     },
+  //   });
+  // }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <FormField
           control={form.control}
-          name="title"
+          name="username"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>

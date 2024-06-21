@@ -1,14 +1,15 @@
 "use client";
 import { AddForm } from "@/components/add-form";
-import AwesomeDrawer from "@/components/drawer";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getTextAfterLastSlash } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default function HomeHeader() {
   const pathname = usePathname();
-  const finalPage = getTextAfterLastSlash(pathname);
+  const finalPage =
+    getTextAfterLastSlash(pathname) === "camps" ? "Camp" : "Project";
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b">
@@ -17,20 +18,9 @@ export default function HomeHeader() {
           <AvatarImage src="/placeholder-user.jpg" />
           <AvatarFallback>AC</AvatarFallback>
         </Avatar>
-        <h1 className="text-xl font-semibold">
-          {finalPage === "camps" ? "Camps" : "Projects"}
-        </h1>
+        <h1 className="text-xl font-semibold">{finalPage}</h1>
       </div>
-      <AwesomeDrawer
-        openTrigger={
-          <Button>Add {finalPage === "camps" ? "Camp" : "Project"}</Button>
-        }
-        title="Add Project"
-        bodyText="form here"
-        isForm={true}
-      >
-        <AddForm />
-      </AwesomeDrawer>
+      <AddProjectOrCampDialog type={finalPage} />
     </header>
   );
 }
