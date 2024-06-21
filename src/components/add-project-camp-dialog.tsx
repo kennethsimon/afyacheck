@@ -7,7 +7,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 
 type AddProjectOrCampDialogProps = {
-  type: "project" | "camp";
+  type: "Project" | "Camp";
 };
 
 export function AddProjectOrCampDialog({ type }: AddProjectOrCampDialogProps) {

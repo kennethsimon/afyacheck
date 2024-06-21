@@ -1,5 +1,3 @@
-// components/PatientInfo.tsx
-import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 
 export function PatientInfo() {
   return (
-    <Card className="space-y-4">
+    <div className="space-y-4">
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="patient-name">Patient name:</Label>
@@ -59,6 +57,6 @@ export function PatientInfo() {
           <Input id="address" type="text" />
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

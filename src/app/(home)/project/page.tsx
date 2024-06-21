@@ -2,7 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { AddForm } from "@/components/add-form";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
-import { AuthOptions } from "next-auth"; 
+import { AuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
@@ -63,10 +63,9 @@ export default async function Page() {
     },
   ];
 
-  if (!session) {
-    redirect("/login");
-  } 
-
+  // if (!session) {
+  //   redirect("/login");
+  // }
 
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -79,7 +78,7 @@ export default async function Page() {
         ))}
       </div>
       <div className="text-center item-center py-12">
-        <AddProjectOrCampDialog type={"Project"} />
+        <AddProjectOrCampDialog type="Project" />
       </div>
     </main>
   );
