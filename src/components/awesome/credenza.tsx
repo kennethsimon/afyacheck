@@ -38,6 +38,7 @@ interface RootCredenzaProps extends BaseProps {
 interface CredenzaProps extends BaseProps {
   className?: string;
   asChild?: true;
+  onClose?: () => void;
 }
 
 const desktop = "(min-width: 768px)";
@@ -64,9 +65,19 @@ const CredenzaTrigger = ({ className, children, ...props }: CredenzaProps) => {
   );
 };
 
-const CredenzaClose = ({ className, children, ...props }: CredenzaProps) => {
+const CredenzaClose = ({
+  onClose,
+  className,
+  children,
+  ...props
+}: CredenzaProps) => {
   const isDesktop = useMediaQuery(desktop);
   const CredenzaClose = isDesktop ? DialogClose : DrawerClose;
+  // if className data-[state=close] then trigger onClose
+
+  if (className === "data-[state=close]" && onClose) {
+    onClose();
+  }
 
   return (
     <CredenzaClose className={className} {...props}>

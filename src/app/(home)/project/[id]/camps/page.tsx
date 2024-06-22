@@ -12,12 +12,12 @@ import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 export default async function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;
   const session = await getServerSession(authOptions);
-  const { items } = await getCamps({projectId});
-  console.log(items)
+  const { items } = await getCamps({ projectId });
+  console.log(items);
 
-  if (!session) {
-    redirect("/login");
-  } 
+  // if (!session) {
+  //   redirect("/login");
+  // }
 
   const projects = [
     {

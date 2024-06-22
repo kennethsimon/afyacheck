@@ -2,7 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { AddForm } from "@/components/add-form";
 import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
-import { AuthOptions } from "next-auth"; 
+import { AuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
@@ -79,7 +79,9 @@ export default async function Page() {
         ))}
       </div>
       <div className="text-center item-center py-12">
+
         <AddProjectOrCampDialog type={"Project"} projectId="" />
+
       </div>
     </main>
   );
