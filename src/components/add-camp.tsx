@@ -27,7 +27,7 @@ const FormSchema = z.object({
   }),
 });
 
-export function AddCampForm({projectId}: any) {
+export function AddCampForm({ projectId }: any) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -38,8 +38,12 @@ export function AddCampForm({projectId}: any) {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
-    const res = await projectApi.post("/camps", {name: data?.title, description: data?.description, project: projectId});
-    console.log(res)
+    const res = await projectApi.post("/camps", {
+      name: data?.title,
+      description: data?.description,
+      project: projectId,
+    });
+    console.log(res);
     // toast("Item created successfully.", {
     //   description: "You can now open the item.",
     //   action: {
@@ -63,9 +67,7 @@ export function AddCampForm({projectId}: any) {
               <FormControl>
                 <Input placeholder="shadcn" {...field} />
               </FormControl>
-              <FormDescription>
-                Insert project title.
-              </FormDescription>
+              <FormDescription>Insert project title.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -79,9 +81,7 @@ export function AddCampForm({projectId}: any) {
               <FormControl>
                 <Input placeholder="description" {...field} />
               </FormControl>
-              <FormDescription>
-                Insert projects description
-              </FormDescription>
+              <FormDescription>Insert projects description</FormDescription>
               <FormMessage />
             </FormItem>
           )}

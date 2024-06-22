@@ -11,12 +11,11 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-
     <>
       <HomeHeader />
       <div className="grid bg-muted/40  p-8 min-h-screen w-full ">
         {children}
       </div>
     </>
-  )
+  );
 }

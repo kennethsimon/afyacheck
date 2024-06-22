@@ -1,12 +1,11 @@
-
-"use client"
+"use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ClockIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getTextAfterLastSlash } from "@/lib/utils";
-import moment from 'moment';
+import moment from "moment";
 
 interface ProjectCardProps {
   _id: string;
@@ -25,11 +24,15 @@ export default function ProjectCard({
   avatarFallback,
   updatedAt,
 }: ProjectCardProps) {
-    const pathname = usePathname();
-    const finalPage = getTextAfterLastSlash(pathname)
+  const pathname = usePathname();
+  const finalPage = getTextAfterLastSlash(pathname);
 
   return (
-    <Link href={finalPage === "camps" ? `/dashboard/${_id}` : `/project/${_id}/camps`} >
+    <Link
+      href={
+        finalPage === "camps" ? `/dashboard/${_id}` : `/project/${_id}/camps`
+      }
+    >
       <Card className="bg-background shadow-lg rounded-lg overflow-hidden">
         <CardContent className="flex flex-col gap-4 pt-2">
           <div className="flex gap-4 items-center my-2">
@@ -44,7 +47,7 @@ export default function ProjectCard({
           </p>
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground group-hover:text-accent-foreground">
             <ClockIcon className="w-4 h-4" />
-            <span>{moment(updatedAt).format('DD/MM/YYY')}</span>
+            <span>{moment(updatedAt).format("DD/MM/YYY")}</span>
           </div>
         </CardContent>
       </Card>

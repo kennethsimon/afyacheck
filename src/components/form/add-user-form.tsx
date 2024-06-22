@@ -18,7 +18,15 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode, Key, useState } from "react";
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+  AwaitedReactNode,
+  Key,
+  useState,
+} from "react";
 import projectApi from "../../../services/config";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
@@ -36,7 +44,7 @@ const AddUserFormSchema = z.object({
 
 type AddUserFormProps = {
   campId: string;
-  permissions: any
+  permissions: any;
 };
 
 export function AddUserForm({ campId, permissions }: AddUserFormProps) {
@@ -48,18 +56,24 @@ export function AddUserForm({ campId, permissions }: AddUserFormProps) {
       name: "",
       password: "",
       roles: "",
-      permissions: ""
+      permissions: "",
     },
   });
-
 
   const onSubmit = async (data: z.infer<typeof AddUserFormSchema>) => {
     setLoading(true);
     // Handle form submission here...
     // remember the type has be passed in the props as either "project" or "camp"
-    console.log(data)
-    const res = await projectApi.post("/auth/user", {name: data.name, password: data.password, username: data.name, camp: campId, permissions: [data.permissions], roles: [data.roles]});
-    if(res.status === 200){
+    console.log(data);
+    const res = await projectApi.post("/auth/user", {
+      name: data.name,
+      password: data.password,
+      username: data.name,
+      camp: campId,
+      permissions: [data.permissions],
+      roles: [data.roles],
+    });
+    if (res.status === 200) {
       setLoading(false);
       toast("User created successfully.", {
         description: ``,
@@ -113,14 +127,32 @@ export function AddUserForm({ campId, permissions }: AddUserFormProps) {
                   onValueChange={field.onChange}
                   className="flex flex-row space-x-2"
                 >
-                 {permissions?.data?.roles?.map((permission: { _id: string; name: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; }) => {
-                  return (
-                    <FormItem key={permission?._id} className="flex items-baseline space-x-4">
-                    <RadioGroupItem value={permission?._id} />
-                    <FormLabel>{permission.name}</FormLabel>
-                  </FormItem>
-                  )
-                 })}
+                  {permissions?.data?.roles?.map(
+                    (permission: {
+                      _id: string;
+                      name:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | ReactElement<any, string | JSXElementConstructor<any>>
+                        | Iterable<ReactNode>
+                        | ReactPortal
+                        | Promise<AwaitedReactNode>
+                        | null
+                        | undefined;
+                    }) => {
+                      return (
+                        <FormItem
+                          key={permission?._id}
+                          className="flex items-baseline space-x-4"
+                        >
+                          <RadioGroupItem value={permission?._id} />
+                          <FormLabel>{permission.name}</FormLabel>
+                        </FormItem>
+                      );
+                    },
+                  )}
                 </RadioGroup>
               </FormControl>
               <FormMessage />
@@ -128,39 +160,39 @@ export function AddUserForm({ campId, permissions }: AddUserFormProps) {
           )}
         />
         <div className="max-w-full md:max-w-xl mx-auto p-4">
-      <FormField
-        control={form.control}
-        name="permissions"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Permissions</FormLabel>
-            <FormControl>
-              <RadioGroup
-                value={field.value}
-                onValueChange={field.onChange}
-                className="flex flex-wrap space-x-2"
-              >
-                {permissions?.data?.permissions?.map((permission: any) => (
-                  <FormItem
-                    key={permission?._id}
-                    className="flex items-baseline space-x-4"
+          <FormField
+            control={form.control}
+            name="permissions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Permissions</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    className="flex flex-wrap space-x-2"
                   >
-                    <RadioGroupItem value={permission?._id} />
-                    <FormLabel>{permission.name}</FormLabel>
-                  </FormItem>
-                ))}
-              </RadioGroup>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
+                    {permissions?.data?.permissions?.map((permission: any) => (
+                      <FormItem
+                        key={permission?._id}
+                        className="flex items-baseline space-x-4"
+                      >
+                        <RadioGroupItem value={permission?._id} />
+                        <FormLabel>{permission.name}</FormLabel>
+                      </FormItem>
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <div className="flex justify-between">
           <Button type="submit">
-          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
             Submit
-            </Button>
+          </Button>
         </div>
       </form>
     </Form>

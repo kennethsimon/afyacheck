@@ -32,7 +32,7 @@ export const AddFormSchema = z.object({
 type AddFormProps = {
   onSubmit: (data: z.infer<typeof AddFormSchema>) => void;
   onClose: () => void;
-  loading: boolean
+  loading: boolean;
 };
 
 export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
@@ -45,7 +45,6 @@ export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
   });
   const desktop = "(min-width: 768px)";
   const isDesktop = useMediaQuery(desktop);
-
 
   return (
     <Form {...form}>
@@ -83,7 +82,7 @@ export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
         />
         <div className="flex justify-between">
           <Button className="flex justify-start" type="submit">
-          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
             Submit
           </Button>
           <Button className="flex justify-end" type="button" onClick={onClose}>

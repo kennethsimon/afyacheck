@@ -1,7 +1,5 @@
-import Loginscreen from "@/components/login"
+import Loginscreen from "@/components/login";
 
 export default function Loginpage() {
-  return (
-   <Loginscreen/>
-  )
+  return <Loginscreen />;
 }

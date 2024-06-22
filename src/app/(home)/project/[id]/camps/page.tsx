@@ -38,7 +38,11 @@ export default async function Page({ params }: { params: { id: string } }) {
           </Button>
         </Link>
 
-        <AddProjectOrCampDialog type={"Camp"} projectId={projectId} id={session?.user._id} />
+        <AddProjectOrCampDialog
+          type={"Camp"}
+          projectId={projectId}
+          id={session?.user._id}
+        />
       </div>
     </main>
   );

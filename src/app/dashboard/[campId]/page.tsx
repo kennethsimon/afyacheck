@@ -1,8 +1,9 @@
-import Homepage from "@/components/home"
+import Homepage from "@/components/home";
 
-export default function DashboardPage({ params }: { params: { campId: string } }) {
-
-  return (
-   <Homepage/>
-  )
+export default function DashboardPage({
+  params,
+}: {
+  params: { campId: string };
+}) {
+  return <Homepage />;
 }

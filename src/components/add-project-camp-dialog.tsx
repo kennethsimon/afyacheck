@@ -13,44 +13,51 @@ type AddProjectOrCampDialogProps = {
   id: string;
 };
 
-export function AddProjectOrCampDialog({ type, projectId, id }: AddProjectOrCampDialogProps) {
+export function AddProjectOrCampDialog({
+  type,
+  projectId,
+  id,
+}: AddProjectOrCampDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof AddFormSchema>) => {
     // Handle form submission here...
     // remember the type has be passed in the props as either "project" or "camp"
     setLoading(true);
-   if(type === 'Camp'){
-    console.log( {...data, project: projectId})
-    const res = await projectApi.post('/camps', {...data, project: projectId})
-    if(res){
-      toast("Camp created successfully.", {
-        description: "",
-        action: {
-          label: "Open",
-          onClick: () => {
-            console.log("Opening item...");
-          },
-        },
+    if (type === "Camp") {
+      console.log({ ...data, project: projectId });
+      const res = await projectApi.post("/camps", {
+        ...data,
+        project: projectId,
       });
-      setLoading(false);
-    }
-   }else{
-    const res = await projectApi.post('/projects', {...data})
-    if(res){
-      toast("Project created successfully.", {
-        description: "",
-        action: {
-          label: "Open",
-          onClick: () => {
-            console.log("Opening item...");
+      if (res) {
+        toast("Camp created successfully.", {
+          description: "",
+          action: {
+            label: "Open",
+            onClick: () => {
+              console.log("Opening item...");
+            },
           },
-        },
-      });
-      setLoading(false);
+        });
+        setLoading(false);
+      }
+    } else {
+      const res = await projectApi.post("/projects", { ...data });
+      if (res) {
+        toast("Project created successfully.", {
+          description: "",
+          action: {
+            label: "Open",
+            onClick: () => {
+              console.log("Opening item...");
+            },
+          },
+        });
+        setLoading(false);
+      }
     }
-   }
 
     // Close the drawer
     setIsOpen(false);

@@ -58,7 +58,7 @@ export const PatientFormSchema = z.object({
   prescription: z.string().min(1, "Prescription if any is required"),
   referral: z.enum(["yes", "no-need-counselled", "no-need-healthy"]),
 });
-export function AddPatientForm({campId, session}: any) {
+export function AddPatientForm({ campId, session }: any) {
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof PatientFormSchema>>({
     resolver: zodResolver(PatientFormSchema),
@@ -99,7 +99,7 @@ export function AddPatientForm({campId, session}: any) {
 
   const onSubmit = async (data: z.infer<typeof PatientFormSchema>) => {
     // Handle form submission here...
-    setLoading(true)
+    setLoading(true);
     const datacleaned = {
       name: data.patientName,
       gender: data.gender,
@@ -136,15 +136,15 @@ export function AddPatientForm({campId, session}: any) {
       },
       camp: campId,
       createdBy: session?.user?._id,
-    }
-    const res: any = await projectApi.post('/patients', {...datacleaned});
-    if(res.status === 200){
+    };
+    const res: any = await projectApi.post("/patients", { ...datacleaned });
+    if (res.status === 200) {
       setLoading(false);
       toast("Patient created successfully.", {
         description: `You submmited ${data}`,
       });
-    }else{
-      setLoading(false)
+    } else {
+      setLoading(false);
       toast("An error occured please check your data before submitting", {
         description: `You submmited ${data}`,
       });
@@ -161,7 +161,7 @@ export function AddPatientForm({campId, session}: any) {
         <DoctorComments form={form} />
         <div className="flex justify-between">
           <Button className="flex justify-start" type="submit">
-          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
             Submit
           </Button>
         </div>

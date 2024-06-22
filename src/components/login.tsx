@@ -1,24 +1,23 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
+import Image from "next/image";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { ReloadIcon } from "@radix-ui/react-icons"
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 function Loginscreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const onFinish = async (e: any) => {
     e.preventDefault();
@@ -30,9 +29,9 @@ function Loginscreen() {
         username: username,
         password: password,
         callbackUrl: "/project",
-      })
+      });
 
-      console.log(res)
+      console.log(res);
 
       if (!res?.error) {
         toast("Login successfully.", {
@@ -40,7 +39,7 @@ function Loginscreen() {
         });
         router.push("/project");
       } else {
-        console.log('error')
+        console.log("error");
         setLoading(false);
         setError("invalid email or password");
         toast("Login error.", {
@@ -67,40 +66,48 @@ function Loginscreen() {
               Enter your email below to login to your account
             </p>
           </div>
-         <form onSubmit={(e) => onFinish(e)}>
-         <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="m@example.com"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
+          <form onSubmit={(e) => onFinish(e)}>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="m@example.com"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
               </div>
-              <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full">
-            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-              Login
-            </Button>
-            {/* <Button variant="outline" className="w-full">
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    href="/forgot-password"
+                    className="ml-auto inline-block text-sm underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  id="password"
+                  type="password"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                {loading && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Login
+              </Button>
+              {/* <Button variant="outline" className="w-full">
               Login with Google
             </Button> */}
-          </div>
-         </form>
+            </div>
+          </form>
           {/* <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="#" className="underline">
@@ -120,8 +127,7 @@ function Loginscreen() {
         />
       </div>
     </div>
-  )
+  );
 }
-
 
 export default Loginscreen;

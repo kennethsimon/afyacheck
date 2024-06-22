@@ -64,28 +64,32 @@ function PatientRow({ patient }: { patient: any }) {
           {patient.phoneNumber}
         </div>
       </TableCell>
-      <TableCell className="hidden sm:table-cell">{patient.dateOfBirth}</TableCell>
+      <TableCell className="hidden sm:table-cell">
+        {patient.dateOfBirth}
+      </TableCell>
       {/* <TableCell className="hidden sm:table-cell">
         <Badge className="text-xs" variant="outline">
           {patient.status.label}
         </Badge>
       </TableCell> */}
       <TableCell className="hidden md:table-cell">{patient.address}</TableCell>
-      <TableCell className="hidden md:table-cell">
-        {patient.location}
-      </TableCell>
+      <TableCell className="hidden md:table-cell">{patient.location}</TableCell>
       <TableCell className="hidden md:table-cell">
         <Link href={`/dashboard/${campId}/patients/${patient._id}`}>
           <Button variant="outline" size="icon" className="">
             <IconUser className="h-4 w-4" />
             <span className="sr-only">View Patient Details</span>
           </Button>
-        </Link></TableCell>
+        </Link>
+      </TableCell>
     </TableRow>
   );
 }
 
-export default function PatientsTable({ patients, patientsdata }: PatientsTableProps) {
+export default function PatientsTable({
+  patients,
+  patientsdata,
+}: PatientsTableProps) {
   console.log(patientsdata);
   return (
     <main className="py-12 px-16 flex-1 items-start gap-4  md:gap-8 ">

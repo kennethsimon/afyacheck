@@ -2,9 +2,7 @@ import Homepage from "@/components/home";
 import PatientsTable from "@/components/patients-page";
 import { getPatients } from "../../../../../services/projects";
 
-export default async function PatientsPage({
-  params,
-}: any) {
+export default async function PatientsPage({ params }: any) {
   const patients = [
     {
       id: "3",
@@ -78,7 +76,7 @@ export default async function PatientsPage({
       amount: "$100.00",
     },
   ];
-  const { items } = await getPatients({campId: params?.campId});
+  const { items } = await getPatients({ campId: params?.campId });
   return (
     <div>
       <PatientsTable patientsdata={items} patients={patients} />;

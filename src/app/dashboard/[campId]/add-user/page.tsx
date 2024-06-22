@@ -2,7 +2,11 @@ import Image from "next/image";
 import { AddUserForm } from "@/components/form/add-user-form";
 import { getPermissions } from "../../../../../services/projects";
 
-export default async function AddUser({ params }: { params: { campId: string } }) {
+export default async function AddUser({
+  params,
+}: {
+  params: { campId: string };
+}) {
   const { items } = await getPermissions();
   return (
     <div className=" mx-auto p-8 ">

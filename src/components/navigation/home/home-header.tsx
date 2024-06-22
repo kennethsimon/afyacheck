@@ -20,7 +20,7 @@ export default function HomeHeader() {
         </Avatar>
         <h1 className="text-xl font-semibold">{finalPage}</h1>
       </div>
-      <AddProjectOrCampDialog type={finalPage} projectId="" id='' />
+      <AddProjectOrCampDialog type={finalPage} projectId="" id="" />
     </header>
   );
 }

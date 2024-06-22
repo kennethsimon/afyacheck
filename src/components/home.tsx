@@ -1,25 +1,16 @@
-import Link from "next/link"
-import {
-  Activity,
-  ArrowUpRight,
-  User2Icon,
-  Users,
-} from "lucide-react"
+import Link from "next/link";
+import { Activity, ArrowUpRight, User2Icon, Users } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -27,40 +18,33 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 export default function Homepage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
-      
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           <Card x-chunk="dashboard-01-chunk-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-              People Attended
+                People Attended
               </CardTitle>
               <User2Icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">200</div>
-              <p className="text-xs text-muted-foreground">
-                
-              </p>
+              <p className="text-xs text-muted-foreground"></p>
             </CardContent>
           </Card>
           <Card x-chunk="dashboard-01-chunk-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-              Males
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Males</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+100</div>
-              <p className="text-xs text-muted-foreground">
-               
-              </p>
+              <p className="text-xs text-muted-foreground"></p>
             </CardContent>
           </Card>
           <Card x-chunk="dashboard-01-chunk-2">
@@ -70,14 +54,15 @@ export default function Homepage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+2,234</div>
-              <p className="text-xs text-muted-foreground">
-                
-              </p>
+              <p className="text-xs text-muted-foreground"></p>
             </CardContent>
           </Card>
           <Card x-chunk="dashboard-01-chunk-3">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium"> Repeating Attendees</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {" "}
+                Repeating Attendees
+              </CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -89,15 +74,11 @@ export default function Homepage() {
           </Card>
         </div>
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-          <Card
-            className="xl:col-span-2" x-chunk="dashboard-01-chunk-4"
-          >
+          <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
             <CardHeader className="flex flex-row items-center">
               <div className="grid gap-2">
                 <CardTitle>Users</CardTitle>
-                <CardDescription>
-                 Camp users registered.
-                </CardDescription>
+                <CardDescription>Camp users registered.</CardDescription>
               </div>
               <Button asChild size="sm" className="ml-auto gap-1">
                 <Link href="#">
@@ -313,5 +294,5 @@ export default function Homepage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
