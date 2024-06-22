@@ -142,9 +142,9 @@ export function DoctorComments({ form }: any) {
             <FormLabel>Referral:</FormLabel>
             <FormControl>
               <RadioGroup
-                value={field.value} // Bind the RadioGroup's value to the form field's value
-                onValueChange={field.onChange} // Update the form field's value when a RadioGroupItem is selected
-                className="flex flex-row space-x-2" // Adjust layout for horizontal alignment and spacing
+                value={field.value}
+                onValueChange={field.onChange}
+                className="flex flex-row space-x-2"
               >
                 <FormItem className="flex items-baseline space-x-4">
                   <RadioGroupItem value="yes" />

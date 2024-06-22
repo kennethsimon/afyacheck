@@ -32,6 +32,11 @@ export default function DashboardSidebar() {
         label: "Add Patient",
       },
       {
+        href: `/dashboard/${campId}/add-user`,
+        icon: PlusIcon,
+        label: "Add User",
+      },
+      {
         href: `/dashboard/${campId}/analytics`,
         icon: BarChartIcon,
         label: "Analytics",
