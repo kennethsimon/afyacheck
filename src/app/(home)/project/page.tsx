@@ -79,7 +79,7 @@ export default async function Page() {
         ))}
       </div>
       <div className="text-center item-center py-12">
-        <AddProjectOrCampDialog type={"Project"} />
+        <AddProjectOrCampDialog type={"Project"} projectId="" />
       </div>
     </main>
   );

@@ -90,7 +90,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           </Button>
         </Link>
 
-        <AddProjectOrCampDialog type={"Camp"} />
+        <AddProjectOrCampDialog type={"Camp"} projectId={projectId} />
       </div>
     </main>
   );
