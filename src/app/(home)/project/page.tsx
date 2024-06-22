@@ -1,11 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { AddForm } from "@/components/add-form";
 import ProjectCard from "@/components/project-card";
-import { Button } from "@/components/ui/button";
-import { AuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import { getProjects } from "../../../../services/projects";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 

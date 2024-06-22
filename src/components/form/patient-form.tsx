@@ -141,12 +141,12 @@ export function AddPatientForm({ campId, session }: any) {
     if (res.status === 200) {
       setLoading(false);
       toast("Patient created successfully.", {
-        description: `You submmited ${data}`,
+        description: `You submmited ${JSON.stringify(datacleaned)}`,
       });
     } else {
       setLoading(false);
       toast("An error occured please check your data before submitting", {
-        description: `You submmited ${data}`,
+        description: `You submmited ${JSON.stringify(datacleaned)}`,
       });
     }
     window.location.reload();
