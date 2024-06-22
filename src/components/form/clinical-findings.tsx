@@ -2,51 +2,148 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "../ui/form";
 
-export function ClinicalFindings() {
+export function ClinicalFindings({ form }: any) {
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold">CLINICAL FINDINGS</h2>
-      <div className="grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-        <div className="space-y-2">
-          <Label htmlFor="height">Height (cm):</Label>
-          <Input id="height" type="text" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="weight">Weight (kg):</Label>
-          <Input id="weight" type="text" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="bmi">BMI:</Label>
-          <Input id="bmi" type="text" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="blood-pressure">Blood pressure:</Label>
-          <Input id="blood-pressure" type="text" />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-3">
-        <div className="space-y-2">
-          <Label htmlFor="rbg">RBG/FBS:</Label>
-          <Input id="rbg" type="text" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="blood-group">Blood group:</Label>
-          <Input id="blood-group" type="text" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="cholesterol">Cholesterol:</Label>
-          <Input id="cholesterol" type="text" />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="physical-appearance">Physical appearance</Label>
-        <Textarea id="physical-appearance" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="cancer-report">Cancer screened and report</Label>
-        <Textarea id="cancer-report" />
-      </div>
+    <div className="space-y-4 py-8">
+      <h2 className="text-center text-lg font-bold">CLINICAL FINDINGS</h2>
+
+      <FormField
+        control={form.control}
+        name="height"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="height">Height (cm):</FormLabel>
+            <FormControl>
+              <Input id="height" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="weight"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="weight">Weight (kg):</FormLabel>
+            <FormControl>
+              <Input id="weight" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="bmi"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="bmi">BMI:</FormLabel>
+            <FormControl>
+              <Input id="bmi" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="bloodPressure"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="blood-pressure">Blood pressure:</FormLabel>
+            <FormControl>
+              <Input id="blood-pressure" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="rbg"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="rbg">RBG/FBS:</FormLabel>
+            <FormControl>
+              <Input id="rbg" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="bloodGroup"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="blood-group">Blood group:</FormLabel>
+            <FormControl>
+              <Input id="blood-group" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="cholesterol"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="cholesterol">Cholesterol:</FormLabel>
+            <FormControl>
+              <Input id="cholesterol" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="physicalAppearance"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="physical-appearance">
+              Physical appearance
+            </FormLabel>
+            <FormControl>
+              <Textarea id="physical-appearance" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="cancerReport"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="cancer-report">
+              Cancer screened and report
+            </FormLabel>
+            <FormControl>
+              <Textarea id="cancer-report" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

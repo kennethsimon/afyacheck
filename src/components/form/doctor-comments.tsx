@@ -3,65 +3,167 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "../ui/form";
 
-export function DoctorComments() {
+export function DoctorComments({ form }: any) {
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold">DOCTOR&lsquo;S COMMENTS</h2>
+    <div className="space-y-4 py-8">
+      <h2 className="text-center text-lg font-bold">DOCTOR&lsquo;S COMMENTS</h2>
 
-      <div className="space-y-2">
-        <Label htmlFor="ecg-report">ECG/ECHO and report</Label>
-        <Textarea id="ecg-report" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="mse">MSE:</Label>
-        <Input id="mse" type="text" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="physio">PHYSIO:</Label>
-        <Input id="physio" type="text" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="ot">OT:</Label>
-        <Input id="ot" type="text" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="dental-report">Dental screening and report</Label>
-        <Textarea id="dental-report" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="ophthalmology-report">
-          Ophthalmology screening and report
-        </Label>
-        <Textarea id="ophthalmology-report" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="doctors-comment">
-          Doctors comment and/or diagnosis if any:
-        </Label>
-        <Textarea id="doctors-comment" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="prescription">Prescription if any:</Label>
-        <Textarea id="prescription" />
-      </div>
-      <div className="space-y-2">
-        <Label>Referral:</Label>
-        <div className="flex items-center space-x-4">
-          <RadioGroup>
-            <RadioGroupItem value="yes" />
-            <Label>Yes (where?)</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem value="no-need-counselled" />
-            <Label>No need counselled</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem value="no-need-healthy" />
-            <Label>No need healthy</Label>
-          </RadioGroup>
-        </div>
-      </div>
+      <FormField
+        control={form.control}
+        name="ecgReport"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="ecg-report">ECG/ECHO and report</FormLabel>
+            <FormControl>
+              <Textarea id="ecg-report" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="mse"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="mse">MSE:</FormLabel>
+            <FormControl>
+              <Input id="mse" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="physio"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="physio">PHYSIO:</FormLabel>
+            <FormControl>
+              <Input id="physio" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="ot"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="ot">OT:</FormLabel>
+            <FormControl>
+              <Input id="ot" type="text" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="dentalReport"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="dental-report">
+              Dental screening and report
+            </FormLabel>
+            <FormControl>
+              <Textarea id="dental-report" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="ophthalmologyReport"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="ophthalmology-report">
+              Ophthalmology screening and report
+            </FormLabel>
+            <FormControl>
+              <Textarea id="ophthalmology-report" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="doctorsComment"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="doctors-comment">
+              Doctors comment and/or diagnosis if any:
+            </FormLabel>
+            <FormControl>
+              <Textarea id="doctors-comment" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="prescription"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="prescription">Prescription if any:</FormLabel>
+            <FormControl>
+              <Textarea id="prescription" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="referral"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel>Referral:</FormLabel>
+            <FormControl>
+              <RadioGroup
+                value={field.value} // Bind the RadioGroup's value to the form field's value
+                onValueChange={field.onChange} // Update the form field's value when a RadioGroupItem is selected
+                className="flex flex-row space-x-2" // Adjust layout for horizontal alignment and spacing
+              >
+                <FormItem className="flex items-baseline space-x-4">
+                  <RadioGroupItem value="yes" />
+                  <FormLabel>Yes (where?)</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-baseline space-x-4">
+                  <RadioGroupItem value="no-need-counselled" />
+                  <FormLabel>No need counselled</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-baseline space-x-4">
+                  <RadioGroupItem value="no-need-healthy" />
+                  <FormLabel>No need healthy</FormLabel>
+                </FormItem>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

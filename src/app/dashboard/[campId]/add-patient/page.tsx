@@ -8,7 +8,7 @@ export default function AddPatientPage({
 }) {
   return (
     <div className=" mx-auto p-8 ">
-      <div className="text-center">
+      <div className="text-start">
         <Image
           src="/favicon.ico"
           alt="AfyaCheck Logo"
@@ -16,7 +16,9 @@ export default function AddPatientPage({
           width={50}
           height={50}
         />
-        <h1 className="text-2xl font-bold">PATIENT SCREENING FORM</h1>
+        <h1 className="text-2xl font-bold text-center">
+          PATIENT SCREENING FORM
+        </h1>
         <AddPatientForm />
       </div>
     </div>

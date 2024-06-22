@@ -1,95 +1,177 @@
 "use client";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "../ui/form";
 
-export function ScreeningQuestions() {
+export function ScreeningQuestions({ form }: any) {
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold">SCREENING QUESTIONS</h2>
+    <div className="space-y-4 py-8">
+      <h2 className="text-center text-lg font-bold">SCREENING QUESTIONS</h2>
       <div className="space-y-2">
-        <Label>Do you have any chronic illnesses?</Label>
-        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-          <RadioGroup>
-            <RadioGroupItem id="chronic-illness" value="yes" />
-            <Label>Yes (name it)</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="chronic-illness" value="no" />
-            <Label>No</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="chronic-illness" value="dont-know" />
-            <Label>I don&lsquo;t know</Label>
-          </RadioGroup>
-        </div>
-
-        <Label>Are you on any medications?</Label>
-        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-          <RadioGroup>
-            <RadioGroupItem id="medications" value="yes" />
-            <Label>Yes (name them)</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="medications" value="no" />
-            <Label>No</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="medications" value="stopped" />
-            <Label>I stopped</Label>
-          </RadioGroup>
-        </div>
-
-        <Label>Do you smoke/drink alcohol?</Label>
-        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-          <RadioGroup>
-            <RadioGroupItem id="smoke-drink" value="yes" />
-            <Label>Yes</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="smoke-drink" value="no" />
-            <Label>No</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="smoke-drink" value="stopped" />
-            <Label>I stopped</Label>
-          </RadioGroup>
-        </div>
-
-        <Label>Does your family have any history of chronic diseases?</Label>
-        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-          <RadioGroup>
-            <RadioGroupItem id="family-history" value="yes" />
-            <Label>Yes (name them)</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="family-history" value="no" />
-            <Label>No</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="family-history" value="dont-know" />
-            <Label>I don&lsquo;t know</Label>
-          </RadioGroup>
-        </div>
-
-        <Label>Vaccination history</Label>
-        <div className="flex gap-8 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-          <RadioGroup>
-            <RadioGroupItem id="vaccination-history" value="yes" />
-            <Label>Yes</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="vaccination-history" value="no" />
-            <Label>No</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="vaccination-history" value="ready" />
-            <Label>Ready to vaccinate</Label>
-          </RadioGroup>
-          <RadioGroup>
-            <RadioGroupItem id="vaccination-history" value="refuse" />
-            <Label>I don&lsquo;t want to vaccinate (reason)</Label>
-          </RadioGroup>
-        </div>
+        <FormField
+          control={form.control}
+          name="chronicIllness"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel>Do you have any chronic illnesses?</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-row space-x-2"
+                >
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="yes" />
+                    <Label htmlFor="yes">Yes (name it)</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="no" />
+                    <Label htmlFor="no">No</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="dont-know" />
+                    <Label htmlFor="dont-know">I don&lsquo;t know</Label>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="medications"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel>Are you on any medications?</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-row space-x-2"
+                >
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="yes" />
+                    <Label htmlFor="yes">Yes (name them)</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="no" />
+                    <Label htmlFor="no">No</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="stopped" />
+                    <Label htmlFor="stopped">I stopped</Label>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="smokeDrink"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel>Do you smoke/drink alcohol?</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-row space-x-2"
+                >
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="yes" />
+                    <Label htmlFor="yes">Yes</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="no" />
+                    <Label htmlFor="no">No</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="stopped" />
+                    <Label htmlFor="stopped">I stopped</Label>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="familyHistory"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel>
+                Does your family have any history of chronic diseases?
+              </FormLabel>
+              <FormControl>
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-row space-x-2"
+                >
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="yes" />
+                    <Label htmlFor="yes">Yes (name them)</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="no" />
+                    <Label htmlFor="no">No</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="dont-know" />
+                    <Label htmlFor="dont-know">I don&lsquo;t know</Label>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="vaccinationHistory"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel>Vaccination history</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="flex flex-row space-x-2"
+                >
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="yes" />
+                    <Label htmlFor="yes">Yes</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="no" />
+                    <Label htmlFor="no">No</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="ready" />
+                    <Label htmlFor="ready">Ready to vaccinate</Label>
+                  </FormItem>
+                  <FormItem className="flex items-baseline space-x-4">
+                    <RadioGroupItem value="refuse" />
+                    <Label htmlFor="refuse">
+                      I don&lsquo;t want to vaccinate (reason)
+                    </Label>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );
