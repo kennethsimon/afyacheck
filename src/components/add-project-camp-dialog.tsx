@@ -5,27 +5,47 @@ import AwesomeDrawer from "@/components/drawer";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { toast } from "sonner";
+import projectApi from "../../services/config";
 
 type AddProjectOrCampDialogProps = {
   type: "Project" | "Camp";
+  projectId: string;
 };
 
-export function AddProjectOrCampDialog({ type }: AddProjectOrCampDialogProps) {
+export function AddProjectOrCampDialog({ type, projectId }: AddProjectOrCampDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const onSubmit = (data: z.infer<typeof AddFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof AddFormSchema>) => {
     // Handle form submission here...
     // remember the type has be passed in the props as either "project" or "camp"
-    console.log(data);
-    toast("Item created successfully.", {
-      description: "You can now open the item.",
-      action: {
-        label: "Open",
-        onClick: () => {
-          console.log("Opening item...");
+    console.log({...data, project: projectId});
+   if(type === 'Camp'){
+    const res = await projectApi.post('/camps', {...data, project: projectId})
+    if(res){
+      toast("Camp created successfully.", {
+        description: "",
+        action: {
+          label: "Open",
+          onClick: () => {
+            console.log("Opening item...");
+          },
         },
-      },
-    });
+      });
+    }
+   }else{
+    const res = await projectApi.post('/projects', {...data})
+    if(res){
+      toast("Project created successfully.", {
+        description: "",
+        action: {
+          label: "Open",
+          onClick: () => {
+            console.log("Opening item...");
+          },
+        },
+      });
+    }
+   }
 
     // Close the drawer
     setIsOpen(false);

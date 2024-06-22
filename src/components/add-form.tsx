@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 
 export const AddFormSchema = z.object({
-  username: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   description: z.string().min(2, {
@@ -37,12 +37,13 @@ export function AddForm({ onSubmit, onClose }: AddFormProps) {
   const form = useForm<z.infer<typeof AddFormSchema>>({
     resolver: zodResolver(AddFormSchema),
     defaultValues: {
-      username: "",
+      name: "",
       description: "",
     },
   });
   const desktop = "(min-width: 768px)";
   const isDesktop = useMediaQuery(desktop);
+
 
   return (
     <Form {...form}>
@@ -52,12 +53,12 @@ export function AddForm({ onSubmit, onClose }: AddFormProps) {
       >
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Project name</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="project name" {...field} />
               </FormControl>
               <FormDescription>Insert project title.</FormDescription>
               <FormMessage />

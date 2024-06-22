@@ -63,9 +63,10 @@ export default async function Page() {
     },
   ];
 
-  // if (!session) {
-  //   redirect("/login");
-  // }
+  if (!session) {
+    redirect("/login");
+  } 
+
 
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -78,7 +79,9 @@ export default async function Page() {
         ))}
       </div>
       <div className="text-center item-center py-12">
-        <AddProjectOrCampDialog type="Project" />
+
+        <AddProjectOrCampDialog type={"Project"} projectId="" />
+
       </div>
     </main>
   );
