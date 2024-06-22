@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export const AddFormSchema = z.object({
   name: z.string().min(2, {
@@ -31,9 +32,10 @@ export const AddFormSchema = z.object({
 type AddFormProps = {
   onSubmit: (data: z.infer<typeof AddFormSchema>) => void;
   onClose: () => void;
+  loading: boolean
 };
 
-export function AddForm({ onSubmit, onClose }: AddFormProps) {
+export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
   const form = useForm<z.infer<typeof AddFormSchema>>({
     resolver: zodResolver(AddFormSchema),
     defaultValues: {
@@ -81,6 +83,7 @@ export function AddForm({ onSubmit, onClose }: AddFormProps) {
         />
         <div className="flex justify-between">
           <Button className="flex justify-start" type="submit">
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
             Submit
           </Button>
           <Button className="flex justify-end" type="button" onClick={onClose}>

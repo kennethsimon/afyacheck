@@ -18,46 +18,55 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode, Key, useState } from "react";
+import projectApi from "../../../services/config";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const AddUserFormSchema = z.object({
   campId: z.string(),
-  username: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
-  role: z.enum(["admin", "user", "viewer"]),
+  roles: z.string(),
+  permissions: z.string(),
 });
 
 type AddUserFormProps = {
   campId: string;
+  permissions: any
 };
 
-export function AddUserForm({ campId }: AddUserFormProps) {
+export function AddUserForm({ campId, permissions }: AddUserFormProps) {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof AddUserFormSchema>>({
     resolver: zodResolver(AddUserFormSchema),
     defaultValues: {
       campId,
-      username: "",
+      name: "",
       password: "",
-      role: "user",
+      roles: "",
+      permissions: ""
     },
   });
 
-  const onSubmit = (data: z.infer<typeof AddUserFormSchema>) => {
+
+  const onSubmit = async (data: z.infer<typeof AddUserFormSchema>) => {
+    setLoading(true);
     // Handle form submission here...
     // remember the type has be passed in the props as either "project" or "camp"
-    console.log(data);
-    toast("Item created successfully.", {
-      description: `You submmited ${data}`,
-      action: {
-        label: "Open",
-        onClick: () => {
-          console.log("Opening item...");
-        },
-      },
-    });
+    console.log(data)
+    const res = await projectApi.post("/auth/user", {name: data.name, password: data.password, username: data.name, camp: campId, permissions: [data.permissions], roles: [data.roles]});
+    if(res.status === 200){
+      setLoading(false);
+      toast("User created successfully.", {
+        description: ``,
+      });
+    }
+    setLoading(false);
+    window.location.reload();
   };
 
   return (
@@ -68,10 +77,10 @@ export function AddUserForm({ campId }: AddUserFormProps) {
       >
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -94,7 +103,7 @@ export function AddUserForm({ campId }: AddUserFormProps) {
         />
         <FormField
           control={form.control}
-          name="role"
+          name="roles"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Role</FormLabel>
@@ -104,26 +113,54 @@ export function AddUserForm({ campId }: AddUserFormProps) {
                   onValueChange={field.onChange}
                   className="flex flex-row space-x-2"
                 >
-                  <FormItem className="flex items-baseline space-x-4">
-                    <RadioGroupItem value="admin" />
-                    <FormLabel>Admin</FormLabel>
+                 {permissions?.data?.roles?.map((permission: { _id: string; name: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; }) => {
+                  return (
+                    <FormItem key={permission?._id} className="flex items-baseline space-x-4">
+                    <RadioGroupItem value={permission?._id} />
+                    <FormLabel>{permission.name}</FormLabel>
                   </FormItem>
-                  <FormItem className="flex items-baseline space-x-4">
-                    <RadioGroupItem value="user" />
-                    <FormLabel>User</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-baseline space-x-4">
-                    <RadioGroupItem value="viewer" />
-                    <FormLabel>Viewer</FormLabel>
-                  </FormItem>
+                  )
+                 })}
                 </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        <div className="max-w-full md:max-w-xl mx-auto p-4">
+      <FormField
+        control={form.control}
+        name="permissions"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Permissions</FormLabel>
+            <FormControl>
+              <RadioGroup
+                value={field.value}
+                onValueChange={field.onChange}
+                className="flex flex-wrap space-x-2"
+              >
+                {permissions?.data?.permissions?.map((permission: any) => (
+                  <FormItem
+                    key={permission?._id}
+                    className="flex items-baseline space-x-4"
+                  >
+                    <RadioGroupItem value={permission?._id} />
+                    <FormLabel>{permission.name}</FormLabel>
+                  </FormItem>
+                ))}
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
         <div className="flex justify-between">
-          <Button type="submit">Submit</Button>
+          <Button type="submit">
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            Submit
+            </Button>
         </div>
       </form>
     </Form>

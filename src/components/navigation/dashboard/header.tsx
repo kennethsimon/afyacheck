@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import { CircleUser, Package2Icon, SearchIcon } from "lucide-react";
 import Link from "next/link";
@@ -5,6 +6,7 @@ import Link from "next/link";
 
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { signOut } from "next-auth/react";
 
 export default function DashboardHeader() {
     return (
@@ -40,7 +42,7 @@ export default function DashboardHeader() {
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuItem>Support</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login', redirect:true })}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 

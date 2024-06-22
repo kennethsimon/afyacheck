@@ -1,8 +1,11 @@
 import Homepage from "@/components/home";
 import PatientsTable from "@/components/patients-page";
+import { getPatients } from "../../../../../services/projects";
 
-export default function PatientsPage() {
-  const patientsData = [
+export default async function PatientsPage({
+  params,
+}: any) {
+  const patients = [
     {
       id: "3",
       name: "Bob Williams",
@@ -36,7 +39,6 @@ export default function PatientsPage() {
         label: "Cancelled",
         variant: "danger",
       },
-      date: "2023-07-03",
       amount: "$100.00",
     },
     {
@@ -76,9 +78,10 @@ export default function PatientsPage() {
       amount: "$100.00",
     },
   ];
+  const { items } = await getPatients({campId: params?.campId});
   return (
     <div>
-      <PatientsTable patients={patientsData} />;
+      <PatientsTable patientsdata={items} patients={patients} />;
     </div>
   );
 }

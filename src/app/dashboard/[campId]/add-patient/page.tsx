@@ -1,11 +1,14 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { AddPatientForm } from "@/components/form/patient-form";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 
-export default function AddPatientPage({
+export default async function AddPatientPage({
   params,
 }: {
   params: { campId: string };
 }) {
+  const session: any = await getServerSession(authOptions);
   return (
     <div className=" mx-auto p-8 ">
       <div className="text-start">
@@ -19,7 +22,7 @@ export default function AddPatientPage({
         <h1 className="text-2xl font-bold text-center">
           PATIENT SCREENING FORM
         </h1>
-        <AddPatientForm />
+        <AddPatientForm campId={params.campId} session={session} />
       </div>
     </div>
   );

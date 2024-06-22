@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner";
+import { ReloadIcon } from "@radix-ui/react-icons"
 
 function Loginscreen() {
   const router = useRouter();
@@ -17,7 +18,6 @@ function Loginscreen() {
   const [error, setError] = useState("");
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { toast } = useToast();
 
 
   const onFinish = async (e: any) => {
@@ -30,29 +30,29 @@ function Loginscreen() {
         username: username,
         password: password,
         callbackUrl: "/project",
-      });
+      })
+
+      console.log(res)
 
       if (!res?.error) {
-        toast({
-          title: "Success",
-          description: "Logged in successfully.",
-        })
+        toast("Login successfully.", {
+          description: "",
+        });
         router.push("/project");
       } else {
+        console.log('error')
         setLoading(false);
         setError("invalid email or password");
-        toast({
-          title: "Error",
-          description: "Invalid username or password",
-        })
+        toast("Login error.", {
+          description: "Wrong username or password",
+        });
       }
     } catch (error: any) {
       setLoading(false);
       setError(error);
-      toast({
-        title: "Error",
-        description: "Invalid username or password",
-      })
+      toast("Login error.", {
+        description: "Wrong username or password",
+      });
     }
   };
 
@@ -93,6 +93,7 @@ function Loginscreen() {
               <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
               Login
             </Button>
             {/* <Button variant="outline" className="w-full">

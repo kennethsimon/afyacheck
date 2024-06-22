@@ -34,7 +34,7 @@ export function MobileMenu() {
         </Button>
       </SheetTrigger>
       <SheetContent className="inset-y-0 flex h-auto w-full flex-col p-0">
-        <Sidebar className="flex">
+        <Sidebar className="flex" playlists={[]}>
           <div className="flex flex-col items-center justify-center space-y-4 px-4 py-6">
             <div className="flex items-center justify-center">
               <Link href="/" className="flex items-center justify-center">

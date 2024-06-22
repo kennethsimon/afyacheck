@@ -10,58 +10,8 @@ import { getProjects } from "../../../../services/projects";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
+  const session: any = await getServerSession(authOptions);
   const { items } = await getProjects();
-  const projects = [
-    {
-      id: 100,
-      title: "Project A",
-      description: "A brief description of Project A.",
-      avatarSrc: "/placeholder-user.jpg",
-      avatarFallback: "PA",
-      updatedTime: "Updated 3 days ago",
-    },
-    {
-      id: 0,
-      title: "Project B",
-      description: "A brief description of Project B.",
-      avatarSrc: "/placeholder-user.jpg",
-      avatarFallback: "PB",
-      updatedTime: "Updated 1 week ago",
-    },
-    {
-      id: 1,
-      title: "Project C",
-      description: "A brief description of Project C.",
-      avatarSrc: "/placeholder-user.jpg",
-      avatarFallback: "PC",
-      updatedTime: "Updated 2 weeks ago",
-    },
-    {
-      id: 2,
-      title: "Project D",
-      description: "A brief description of Project D.",
-      avatarSrc: "/placeholder-user.jpg",
-      avatarFallback: "PD",
-      updatedTime: "Updated 1 month ago",
-    },
-    {
-      id: 3,
-      title: "Project E",
-      description: "A brief description of Project E.",
-      avatarSrc: "/placeholder-user.jpg",
-      avatarFallback: "PE",
-      updatedTime: "Updated 2 months ago",
-    },
-    {
-      id: 4,
-      title: "Project F",
-      description: "A brief description of Project F.",
-      avatarSrc: "/placeholder-user.jpg",
-      avatarFallback: "PF",
-      updatedTime: "Updated 3 months ago",
-    },
-  ];
 
   if (!session) {
     redirect("/login");
@@ -80,7 +30,7 @@ export default async function Page() {
       </div>
       <div className="text-center item-center py-12">
 
-        <AddProjectOrCampDialog type={"Project"} projectId="" />
+        <AddProjectOrCampDialog type={"Project"} projectId="" id={session?.user?._id} />
 
       </div>
     </main>

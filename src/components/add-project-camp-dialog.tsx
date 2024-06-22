@@ -10,16 +10,19 @@ import projectApi from "../../services/config";
 type AddProjectOrCampDialogProps = {
   type: "Project" | "Camp";
   projectId: string;
+  id: string;
 };
 
-export function AddProjectOrCampDialog({ type, projectId }: AddProjectOrCampDialogProps) {
+export function AddProjectOrCampDialog({ type, projectId, id }: AddProjectOrCampDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = async (data: z.infer<typeof AddFormSchema>) => {
     // Handle form submission here...
     // remember the type has be passed in the props as either "project" or "camp"
-    console.log({...data, project: projectId});
+    setLoading(true);
    if(type === 'Camp'){
+    console.log( {...data, project: projectId})
     const res = await projectApi.post('/camps', {...data, project: projectId})
     if(res){
       toast("Camp created successfully.", {
@@ -31,6 +34,7 @@ export function AddProjectOrCampDialog({ type, projectId }: AddProjectOrCampDial
           },
         },
       });
+      setLoading(false);
     }
    }else{
     const res = await projectApi.post('/projects', {...data})
@@ -44,11 +48,14 @@ export function AddProjectOrCampDialog({ type, projectId }: AddProjectOrCampDial
           },
         },
       });
+      setLoading(false);
     }
    }
 
     // Close the drawer
     setIsOpen(false);
+    setLoading(false);
+    window.location.reload();
   };
 
   const onClose = () => {
@@ -67,7 +74,7 @@ export function AddProjectOrCampDialog({ type, projectId }: AddProjectOrCampDial
       onClose={() => setIsOpen(false)}
       closeTrigger={<Button onClick={() => setIsOpen(false)}>Close</Button>}
     >
-      <AddForm onSubmit={onSubmit} onClose={onClose} />
+      <AddForm loading={loading} onSubmit={onSubmit} onClose={onClose} />
     </AwesomeDrawer>
   );
 }

@@ -22,7 +22,7 @@ export function ClinicalFindings({ form }: any) {
           <FormItem className="space-y-2">
             <FormLabel htmlFor="height">Height (cm):</FormLabel>
             <FormControl>
-              <Input id="height" type="text" {...field} />
+              <Input onChange={(e) => field.onChange(Number(e.target.value))} id="height" type="number" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -36,7 +36,7 @@ export function ClinicalFindings({ form }: any) {
           <FormItem className="space-y-2">
             <FormLabel htmlFor="weight">Weight (kg):</FormLabel>
             <FormControl>
-              <Input id="weight" type="text" {...field} />
+              <Input onChange={(e) => field.onChange(Number(e.target.value))} id="weight" type="number"  />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -50,7 +50,7 @@ export function ClinicalFindings({ form }: any) {
           <FormItem className="space-y-2">
             <FormLabel htmlFor="bmi">BMI:</FormLabel>
             <FormControl>
-              <Input id="bmi" type="text" {...field} />
+              <Input id="bmi" type="number" onChange={(e) => field.onChange(Number(e.target.value))}  />
             </FormControl>
             <FormMessage />
           </FormItem>

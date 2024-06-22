@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { AddUserForm } from "@/components/form/add-user-form";
+import { getPermissions } from "../../../../../services/projects";
 
-export default function AddUser({ params }: { params: { campId: string } }) {
+export default async function AddUser({ params }: { params: { campId: string } }) {
+  const { items } = await getPermissions();
   return (
     <div className=" mx-auto p-8 ">
       <div className="text-start">
@@ -14,7 +16,7 @@ export default function AddUser({ params }: { params: { campId: string } }) {
         />
         <h1 className="text-2xl font-bold text-center">Add User FORM</h1>
       </div>
-      <AddUserForm campId={params.campId} />
+      <AddUserForm permissions={items} campId={params.campId} />
     </div>
   );
 }

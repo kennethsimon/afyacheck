@@ -48,10 +48,11 @@ type Patient = {
 };
 
 type PatientsTableProps = {
-  patients: Patient[];
+  patients: any;
+  patientsdata: any;
 };
 
-function PatientRow({ patient }: { patient: Patient }) {
+function PatientRow({ patient }: { patient: any }) {
   const pathname = usePathname();
   const campId = getCampId(pathname);
 
@@ -60,30 +61,32 @@ function PatientRow({ patient }: { patient: Patient }) {
       <TableCell>
         <div className="font-medium">{patient.name}</div>
         <div className="hidden text-sm text-muted-foreground md:inline">
-          {patient.email}
+          {patient.phoneNumber}
         </div>
       </TableCell>
-      <TableCell className="hidden sm:table-cell">{patient.type}</TableCell>
-      <TableCell className="hidden sm:table-cell">
+      <TableCell className="hidden sm:table-cell">{patient.dateOfBirth}</TableCell>
+      {/* <TableCell className="hidden sm:table-cell">
         <Badge className="text-xs" variant="outline">
           {patient.status.label}
         </Badge>
+      </TableCell> */}
+      <TableCell className="hidden md:table-cell">{patient.address}</TableCell>
+      <TableCell className="hidden md:table-cell">
+        {patient.location}
       </TableCell>
-      <TableCell className="hidden md:table-cell">{patient.date}</TableCell>
-      <TableCell className="text-right">
-        {patient.amount}
-        <Link href={`/dashboard/${campId}/patients/${patient.id}`}>
-          <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
+      <TableCell className="hidden md:table-cell">
+        <Link href={`/dashboard/${campId}/patients/${patient._id}`}>
+          <Button variant="outline" size="icon" className="">
             <IconUser className="h-4 w-4" />
             <span className="sr-only">View Patient Details</span>
           </Button>
-        </Link>
-      </TableCell>
+        </Link></TableCell>
     </TableRow>
   );
 }
 
-export default function PatientsTable({ patients }: PatientsTableProps) {
+export default function PatientsTable({ patients, patientsdata }: PatientsTableProps) {
+  console.log(patientsdata);
   return (
     <main className="py-12 px-16 flex-1 items-start gap-4  md:gap-8 ">
       <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -127,29 +130,29 @@ export default function PatientsTable({ patients }: PatientsTableProps) {
               <CardHeader className="px-7">
                 <CardTitle>Patients</CardTitle>
                 <CardDescription>
-                  Recent Patients from your store.
+                  {/* Recent Patients from your store. */}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Customer</TableHead>
+                      <TableHead>Name/phone</TableHead>
                       <TableHead className="hidden sm:table-cell">
-                        Type
+                        Date of birth
                       </TableHead>
                       <TableHead className="hidden sm:table-cell">
-                        Status
+                        Address
                       </TableHead>
                       <TableHead className="hidden md:table-cell">
-                        Date
+                        Location
                       </TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">View</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {patients.map((patient) => (
-                      <PatientRow key={patient.id} patient={patient} />
+                    {patientsdata?.patients?.map((patient: any) => (
+                      <PatientRow key={patient._id} patient={patient} />
                     ))}
                   </TableBody>
                 </Table>

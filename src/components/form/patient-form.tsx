@@ -12,12 +12,16 @@ import { ScreeningQuestions } from "./screening-questions";
 import { DoctorComments } from "./doctor-comments";
 import { ClinicalFindings } from "./clinical-findings";
 import { toast } from "sonner";
+import projectApi from "../../../services/config";
+import moment from "moment";
+import { useState } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export const PatientFormSchema = z.object({
   // PatientInfo
   patientName: z.string().min(1, "Patient name is required"),
   age: z.number().min(0, "Age must be a positive number"),
-  gender: z.enum(["Male", "Female", "Other"]),
+  gender: z.enum(["male", "female", "other"]),
   dob: z.string().min(1, "Date of birth is required"),
   telNo: z.string().min(1, "Telephone number is required"),
   location: z.string().min(1, "Location is required"),
@@ -54,13 +58,14 @@ export const PatientFormSchema = z.object({
   prescription: z.string().min(1, "Prescription if any is required"),
   referral: z.enum(["yes", "no-need-counselled", "no-need-healthy"]),
 });
-export function AddPatientForm() {
+export function AddPatientForm({campId, session}: any) {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof PatientFormSchema>>({
     resolver: zodResolver(PatientFormSchema),
     defaultValues: {
       patientName: "",
       age: 1,
-      gender: "Female",
+      gender: "female",
       dob: "",
       telNo: "",
       location: "",
@@ -92,18 +97,59 @@ export function AddPatientForm() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof PatientFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof PatientFormSchema>) => {
     // Handle form submission here...
-    console.log(data);
-    toast("Item created successfully.", {
-      description: `You submmited ${data}`,
-      action: {
-        label: "Open",
-        onClick: () => {
-          console.log("Opening item...");
-        },
+    setLoading(true)
+    const datacleaned = {
+      name: data.patientName,
+      gender: data.gender,
+      dateOfBirth: moment(data.dob).format(),
+      phoneNumber: data.telNo,
+      location: data.location,
+      address: data.address,
+      screening: {
+        illness: data.chronicIllness,
+        medication: data.medications,
+        alcoholOrSmokeUsage: data.smokeDrink,
+        chronicDiseases: data.familyHistory,
+        vaccinationHistory: data.vaccinationHistory,
       },
-    });
+      clinicalFindings: {
+        height: data.height.toString(),
+        weight: data.weight.toString(),
+        bmi: data.bmi.toString(),
+        bloodPressure: data.bloodPressure,
+        rbgFbs: data.rbg,
+        bloodGroup: data.bloodGroup,
+        cholesterol: data.cholesterol,
+        physicalAppearance: data.physicalAppearance,
+        cancer: data.cancerReport,
+        ecgEcho: data.ecgReport,
+        mse: data.mse,
+        physio: data.physio,
+        ot: data.ot,
+        dental: data.dentalReport,
+        ophthalmology: data.ophthalmologyReport,
+        comments: data.doctorsComment,
+        prescription: data.prescription,
+        referral: data.referral,
+      },
+      camp: campId,
+      createdBy: session?.user?._id,
+    }
+    const res: any = await projectApi.post('/patients', {...datacleaned});
+    if(res.status === 200){
+      setLoading(false);
+      toast("Patient created successfully.", {
+        description: `You submmited ${data}`,
+      });
+    }else{
+      setLoading(false)
+      toast("An error occured please check your data before submitting", {
+        description: `You submmited ${data}`,
+      });
+    }
+    window.location.reload();
   };
 
   return (
@@ -115,6 +161,7 @@ export function AddPatientForm() {
         <DoctorComments form={form} />
         <div className="flex justify-between">
           <Button className="flex justify-start" type="submit">
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
             Submit
           </Button>
         </div>
