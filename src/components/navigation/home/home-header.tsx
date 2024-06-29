@@ -1,10 +1,7 @@
 "use client";
-import { AddForm } from "@/components/add-form";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { getTextAfterLastSlash } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default function HomeHeader() {
   const pathname = usePathname();
@@ -20,7 +17,6 @@ export default function HomeHeader() {
         </Avatar>
         <h1 className="text-xl font-semibold">{finalPage}</h1>
       </div>
-      <AddProjectOrCampDialog type={finalPage} projectId="" id="" />
     </header>
   );
 }

@@ -1,9 +1,12 @@
 import Homepage from "@/components/home";
+import { getCampStats } from "../../../../services/projects";
 
-export default function DashboardPage({
+export default async function DashboardPage({
   params,
 }: {
   params: { campId: string };
 }) {
-  return <Homepage />;
+  const { items: userStats } = await getCampStats(params.campId);
+
+  return <Homepage UserStats={userStats} />;
 }
