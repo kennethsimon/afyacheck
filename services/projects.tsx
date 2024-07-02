@@ -1,5 +1,6 @@
 "use server";
 
+import { PatientFilters } from "@/types/general";
 import projectApi from "./config";
 
 export const getProjects = async () => {
@@ -62,6 +63,25 @@ export const getCampStats = async (campId: string) => {
       }
     })
     .catch((error) => {
+      console.error(error);
+    });
+
+  console.log("Stats results: ", results.items);
+
+  return results;
+};
+
+export const getPatientAnalyticsData = async (filters: PatientFilters) => {
+  let results: any = {};
+  await projectApi
+    .get("/patients", { params: filters })
+    .then(({ data }) => {
+      if (data.status) {
+        results.items = data.data.patients;
+        results.count = data.data.count;
+      }
+    })
+    .catch((error: any) => {
       console.error(error);
     });
 
