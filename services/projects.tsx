@@ -38,7 +38,6 @@ export const getPermissions = async () => {
 };
 
 export const getPatients = async (queryParams?: any) => {
-  console.log({ queryParams });
   let results: any = {};
   await projectApi
     .get("/patients", { params: queryParams })
@@ -54,10 +53,16 @@ export const getPatients = async (queryParams?: any) => {
   return results;
 };
 
-export const getCampStats = async (campId: string) => {
+export const getCampStats = async (queryParams?: any) => {
   let results: any = {};
+  const campId = queryParams?.campId;
+
+  if (!campId) {
+    throw new Error("campId is required in queryParams");
+  }
+
   await projectApi
-    .get(`/camps/stats/${campId}`)
+    .get(`/camps/stats/${campId}`, { params: queryParams })
     .then(({ data }) => {
       if (data.status) {
         results.items = data.data;
@@ -67,15 +72,21 @@ export const getCampStats = async (campId: string) => {
       console.error(error);
     });
 
-  console.log("Stats results: ", results.items);
+  // console.log("Stats results: ", results.items);
 
   return results;
 };
 
-export const getPatientAnalyticsData = async (filters: PatientFilters) => {
+export const getPatientAnalyticsData = async (queryParams?: any) => {
   let results: any = {};
+  const campId = queryParams?.campId;
+
+  if (!campId) {
+    throw new Error("campId is required in queryParams");
+  }
+
   await projectApi
-    .get("/patients", { params: filters })
+    .get("/patients", { params: queryParams })
     .then(({ data }) => {
       if (data.status) {
         results.items = data.data.patients;
@@ -86,7 +97,7 @@ export const getPatientAnalyticsData = async (filters: PatientFilters) => {
       console.error(error);
     });
 
-  console.log("Stats results: ", results.items);
+  // console.log("Stats results: ", results.items);
 
   return results;
 };

@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,20 +31,22 @@ export default function PatientFilters({
     to: new Date(),
   });
 
-  // Get a new searchParams string by merging the current
-  // searchParams with a provided key/value pair
+  // Adjust createQueryString to accept an object of key-value pairs
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (paramsToUpdate: { [key: string]: string }) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
+      Object.entries(paramsToUpdate).forEach(([key, value]) => {
+        params.set(key, value);
+      });
       return params.toString();
     },
     [searchParams]
   );
 
+  // Update updateUrlParams to handle an object of key-value pairs
   const updateUrlParams = useCallback(
-    (name: string, value: string) => {
-      const updatedQueryString = createQueryString(name, value);
+    (paramsToUpdate: { [key: string]: string }) => {
+      const updatedQueryString = createQueryString(paramsToUpdate);
       router.push(`${pathname}?${updatedQueryString}`);
     },
     [createQueryString, pathname, router]
@@ -52,23 +54,25 @@ export default function PatientFilters({
 
   // Handle changes in the input fields
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateUrlParams(e.target.id, e.target.value);
+    updateUrlParams({ [e.target.id]: e.target.value });
   };
 
   // Handle changes in the select fields
   const handleSelectChange = (id: string, value: string) => {
-    updateUrlParams(id, value);
+    updateUrlParams({ [id]: value });
   };
 
-  // Handle changes in the date range fields
+  // Adjust handleDateRangeChange to use the new updateUrlParams format
   const handleDateRangeChange = (
     id: string,
     dateRange: { from: Date; to: Date }
   ) => {
     const from = dateRange.from.toISOString().split("T")[0];
     const to = dateRange.to.toISOString().split("T")[0];
-    updateUrlParams(`${id}-from`, from);
-    updateUrlParams(`${id}-to`, to);
+    updateUrlParams({
+      [`range-${id}-from`]: from,
+      [`range-${id}-to`]: to,
+    });
   };
 
   return (
@@ -92,20 +96,6 @@ export default function PatientFilters({
               className="w-full sm:w-auto"
               onChange={handleInputChange}
             />
-          </div>
-          <div className="grid gap-1">
-            <Label htmlFor="active">Active</Label>
-            <Select
-              onValueChange={(value) => handleSelectChange("active", value)}
-            >
-              <SelectTrigger className="w-full sm:w-auto">
-                <SelectValue placeholder="Active" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="true">Active</SelectItem>
-                <SelectItem value="false">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           <div className="grid gap-1">
             <Label htmlFor="created-range">Created Range</Label>
