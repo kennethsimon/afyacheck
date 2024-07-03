@@ -1,4 +1,3 @@
-import Homepage from "@/components/patient-stats";
 import PatientsTable from "@/components/patients-page";
 import { getPatients } from "../../../../../services/projects";
 

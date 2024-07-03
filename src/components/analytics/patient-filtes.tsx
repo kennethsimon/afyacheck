@@ -113,7 +113,7 @@ export default function PatientFilters({
               date={createdAtDateRange}
               onDateSelect={(dateRange) => {
                 setCreatedAtDateRange(dateRange);
-                handleDateRangeChange("created-range", dateRange);
+                handleDateRangeChange("created-at", dateRange);
               }}
             />
           </div>
@@ -123,7 +123,7 @@ export default function PatientFilters({
               date={birthDateDateRange}
               onDateSelect={(dateRange) => {
                 setBirthDateDateRange(dateRange);
-                handleDateRangeChange("birth-date-range", dateRange);
+                handleDateRangeChange("birth-date", dateRange);
               }}
             />
           </div>

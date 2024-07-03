@@ -38,6 +38,7 @@ export const getPermissions = async () => {
 };
 
 export const getPatients = async (queryParams?: any) => {
+  console.log({ queryParams });
   let results: any = {};
   await projectApi
     .get("/patients", { params: queryParams })
