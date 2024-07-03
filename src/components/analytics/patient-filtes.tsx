@@ -11,11 +11,12 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { CalendarDatePicker } from "@/components/calendar-date-picker";
+import { Button } from "@/components/ui/button";
 
 export default function PatientFilters({
-  isAnalyticsPage,
+  isDashboardPage,
 }: {
-  isAnalyticsPage: boolean;
+  isDashboardPage: boolean;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -75,15 +76,57 @@ export default function PatientFilters({
     });
   };
 
+  // Reset filters
+  const resetFilters = () => {
+    const defaultParams = {
+      "range-createdAt-from": createdAtDateRange.from
+        .toISOString()
+        .split("T")[0],
+      "range-createdAt-to": createdAtDateRange.to.toISOString().split("T")[0],
+      "range-dateOfBirth-from": birthDateDateRange.from
+        .toISOString()
+        .split("T")[0],
+      "range-dateOfBirth-to": birthDateDateRange.to.toISOString().split("T")[0],
+    };
+    const params = new URLSearchParams(defaultParams);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  // Initialize state from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const createdAtFrom = params.get("range-createdAt-from");
+    const createdAtTo = params.get("range-createdAt-to");
+    const birthDateFrom = params.get("range-dateOfBirth-from");
+    const birthDateTo = params.get("range-dateOfBirth-to");
+
+    if (createdAtFrom && createdAtTo) {
+      setCreatedAtDateRange({
+        from: new Date(createdAtFrom),
+        to: new Date(createdAtTo),
+      });
+    }
+
+    if (birthDateFrom && birthDateTo) {
+      setBirthDateDateRange({
+        from: new Date(birthDateFrom),
+        to: new Date(birthDateTo),
+      });
+    }
+  }, [searchParams]);
+
   return (
     <div className="col-span-full flex flex-col gap-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold">Demographic Insights</h2>
+          <h2 className="text-xl font-semibold">Camp Patients Insights</h2>
           <p className="text-muted-foreground">
-            Filter and explore patient demographics.
+            Filter and explore patient Insights.
           </p>
         </div>
+        <Button className="px-4 py-2 rounded-md" onClick={resetFilters}>
+          Reset Filters
+        </Button>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2 sm:gap-4">
@@ -95,32 +138,15 @@ export default function PatientFilters({
               placeholder="Camp ID"
               className="w-full sm:w-auto"
               onChange={handleInputChange}
+              defaultValue={searchParams.get("campId") || ""}
             />
           </div>
-          <div className="grid gap-1">
-            <Label htmlFor="created-range">Created Range</Label>
-            <CalendarDatePicker
-              date={createdAtDateRange}
-              onDateSelect={(dateRange) => {
-                setCreatedAtDateRange(dateRange);
-                handleDateRangeChange("created-at", dateRange);
-              }}
-            />
-          </div>
-          <div className="grid gap-1">
-            <Label htmlFor="birth-date-range">Birth Date Range </Label>
-            <CalendarDatePicker
-              date={birthDateDateRange}
-              onDateSelect={(dateRange) => {
-                setBirthDateDateRange(dateRange);
-                handleDateRangeChange("birth-date", dateRange);
-              }}
-            />
-          </div>
+
           <div className="grid gap-1">
             <Label htmlFor="gender">Gender</Label>
             <Select
               onValueChange={(value) => handleSelectChange("gender", value)}
+              defaultValue={searchParams.get("gender") || ""}
             >
               <SelectTrigger className="w-full sm:w-auto">
                 <SelectValue placeholder="Gender" />
@@ -139,6 +165,7 @@ export default function PatientFilters({
               placeholder="Phone Number"
               className="w-full sm:w-auto"
               onChange={handleInputChange}
+              defaultValue={searchParams.get("phoneNumber") || ""}
             />
           </div>
           <div className="grid gap-1">
@@ -149,6 +176,7 @@ export default function PatientFilters({
               placeholder="Location"
               className="w-full sm:w-auto"
               onChange={handleInputChange}
+              defaultValue={searchParams.get("location") || ""}
             />
           </div>
           <div className="grid gap-1">
@@ -159,9 +187,10 @@ export default function PatientFilters({
               placeholder="Insurance"
               className="w-full sm:w-auto"
               onChange={handleInputChange}
+              defaultValue={searchParams.get("insurance") || ""}
             />
           </div>
-          {!isAnalyticsPage && (
+          {!isDashboardPage && (
             <>
               <div className="grid gap-1">
                 <Label htmlFor="sort-by">Sort By</Label>
@@ -169,6 +198,7 @@ export default function PatientFilters({
                   onValueChange={(value) =>
                     handleSelectChange("sort-by", value)
                   }
+                  defaultValue={searchParams.get("sort-by") || ""}
                 >
                   <SelectTrigger className="w-full sm:w-auto">
                     <SelectValue placeholder="Sort By" />
@@ -184,6 +214,7 @@ export default function PatientFilters({
                 <Label htmlFor="order">Order</Label>
                 <Select
                   onValueChange={(value) => handleSelectChange("order", value)}
+                  defaultValue={searchParams.get("order") || ""}
                 >
                   <SelectTrigger className="w-full sm:w-auto">
                     <SelectValue placeholder="Order" />
@@ -196,6 +227,29 @@ export default function PatientFilters({
               </div>
             </>
           )}
+        </div>
+        <div>
+          <p className="text-muted-foreground">Date filters</p>
+          <div className="grid gap-1">
+            <Label htmlFor="created-range">Created Range</Label>
+            <CalendarDatePicker
+              date={createdAtDateRange}
+              onDateSelect={(dateRange) => {
+                setCreatedAtDateRange(dateRange);
+                handleDateRangeChange("createdAt", dateRange);
+              }}
+            />
+          </div>
+          <div className="grid gap-1">
+            <Label htmlFor="dateOfBirth-range">Birth Date Range </Label>
+            <CalendarDatePicker
+              date={birthDateDateRange}
+              onDateSelect={(dateRange) => {
+                setBirthDateDateRange(dateRange);
+                handleDateRangeChange("dateOfBirth", dateRange);
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -37,11 +37,6 @@ export default function DashboardSidebar() {
         label: "Add User",
       },
       {
-        href: `/dashboard/${campId}/analytics`,
-        icon: BarChartIcon,
-        label: "Analytics",
-      },
-      {
         href: `/dashboard/${campId}/settings`,
         icon: SettingsIcon,
         label: "Settings",

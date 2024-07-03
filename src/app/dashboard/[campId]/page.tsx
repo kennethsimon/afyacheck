@@ -27,7 +27,7 @@ export default async function DashboardPage({
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <PatientFilters isAnalyticsPage={true} />
+        <PatientFilters isDashboardPage={true} />
         {userStats && <PatientStats UserStats={userStats} />}
         {patients ? (
           patients.patients && patients.patients.length > 0 ? (
