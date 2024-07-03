@@ -14,11 +14,8 @@ export default async function AnalyticsPage({
   params: AnalyticsPageParams;
 }) {
   // Directly use params as filters, assuming all keys in params match the expected filter keys
-  const filters: PatientFilters = {
-    campId: params.campId,
-    ...params,
-    // You can add or override specific filters here if needed
-  };
+  const filters: PatientFilters = { ...params };
+  console.log({ filters });
 
   const { items: userStats, count } = await getPatientAnalyticsData(filters);
 
