@@ -77,7 +77,7 @@ const ChartsComponent: React.FC<ChartsComponentProps> = ({ patients }) => {
   }));
 
   return (
-    <div className="grid min-h-screen w-full grid-cols-1 gap-6 bg-background p-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid w-full grid-cols-1 gap-6 bg-background p-6 md:grid-cols-2">
       <Card className="flex flex-col">
         <CardHeader>
           <CardTitle>Demographic Breakdown</CardTitle>
