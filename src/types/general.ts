@@ -6,3 +6,8 @@ export type PatientFilters = {
   sortBy?: string;
   order?: "asc" | "desc";
 };
+
+export interface ChartProps {
+  data: any;
+  className?: string;
+}

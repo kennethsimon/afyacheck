@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import {
@@ -8,10 +8,12 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { ResponsivePie } from "@nivo/pie";
-import { ResponsiveBar } from "@nivo/bar";
-import { ResponsiveScatterPlot } from "@nivo/scatterplot";
 
+import { calculateAge } from "@/lib/utils";
+import { ChartProps } from "@/types/general";
+import { PieChart } from "@/components/charts/pie-chart";
+import { BarChart } from "@/components/charts/bar-chart";
+import { DotChart } from "@/components/charts/dot-chart";
 interface PatientInfo {
   _id: string;
   name: string;
@@ -115,152 +117,21 @@ const ChartsComponent: React.FC<ChartsComponentProps> = ({ patients }) => {
           <DotChart data={healthMetricsData} className="aspect-[4/3]" />
         </CardContent>
       </Card>
+      <Card className="flex flex-col">
+        <CardHeader>
+          <CardTitle>Health Metrics Correlation</CardTitle>
+          <CardDescription>
+            Explores the relationships between different health metrics, such as
+            the correlation between BMI and blood pressure levels among
+            patients.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DotChart data={healthMetricsData} className="aspect-[4/3]" />
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-interface ChartProps {
-  data: any;
-  className?: string;
-}
-
-const PieChart: React.FC<ChartProps> = ({ data, className }) => (
-  <div className={className}>
-    <ResponsivePie
-      data={data}
-      sortByValue
-      margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-      cornerRadius={0}
-      padAngle={0}
-      borderWidth={1}
-      borderColor={"#ffffff"}
-      enableArcLinkLabels={false}
-      arcLabel={(d: { id: any }) => `${d.id}`}
-      arcLabelsTextColor={"#ffffff"}
-      arcLabelsRadiusOffset={0.65}
-      colors={["#2563eb"]}
-      theme={{
-        labels: {
-          text: {
-            fontSize: "18px",
-          },
-        },
-        tooltip: {
-          chip: {
-            borderRadius: "9999px",
-          },
-          container: {
-            fontSize: "12px",
-            textTransform: "capitalize",
-            borderRadius: "6px",
-          },
-        },
-      }}
-      role="application"
-    />
-  </div>
-);
-
-const BarChart: React.FC<ChartProps> = ({ data, className }) => (
-  <div className={className}>
-    <ResponsiveBar
-      data={data}
-      keys={["count"]}
-      indexBy="ageRange"
-      margin={{ top: 0, right: 0, bottom: 40, left: 40 }}
-      padding={0.3}
-      colors={["#2563eb"]}
-      axisBottom={{
-        tickSize: 0,
-        tickPadding: 16,
-      }}
-      axisLeft={{
-        tickSize: 0,
-        tickValues: 4,
-        tickPadding: 16,
-      }}
-      gridYValues={4}
-      theme={{
-        tooltip: {
-          chip: {
-            borderRadius: "9999px",
-          },
-          container: {
-            fontSize: "12px",
-            textTransform: "capitalize",
-            borderRadius: "6px",
-          },
-        },
-        grid: {
-          line: {
-            stroke: "#f3f4f6",
-          },
-        },
-      }}
-      tooltipLabel={({ id }) => `${id}`}
-      enableLabel={false}
-      role="application"
-      ariaLabel="A bar chart showing data"
-    />
-  </div>
-);
-
-const DotChart: React.FC<ChartProps> = ({ data, className }) => (
-  <div className={className}>
-    <ResponsiveScatterPlot
-      data={data}
-      margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
-      xScale={{ type: "linear" }}
-      yScale={{ type: "linear" }}
-      blendMode="multiply"
-      axisTop={null}
-      axisRight={null}
-      axisBottom={{
-        tickSize: 0,
-        tickPadding: 16,
-      }}
-      axisLeft={{
-        tickSize: 0,
-        tickValues: 5,
-        tickPadding: 16,
-      }}
-      colors={["#2563eb", "#e11d48"]}
-      useMesh={true}
-      gridYValues={6}
-      theme={{
-        tooltip: {
-          chip: {
-            borderRadius: "9999px",
-          },
-          container: {
-            fontSize: "12px",
-            textTransform: "capitalize",
-            borderRadius: "6px",
-          },
-        },
-        grid: {
-          line: {
-            stroke: "#f3f4f6",
-          },
-        },
-      }}
-      role="application"
-    />
-  </div>
-);
-
-const calculateAge = (dateOfBirth: string): number => {
-  const today = new Date();
-  const birthDate = new Date(dateOfBirth);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDifference = today.getMonth() - birthDate.getMonth();
-  if (
-    monthDifference < 0 ||
-    (monthDifference === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    age--;
-  }
-  return age;
 };
 
 export default ChartsComponent;
