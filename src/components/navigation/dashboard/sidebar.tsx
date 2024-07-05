@@ -14,34 +14,62 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({ session }: { session: any }) {
   const pathname = usePathname();
   const campId = getCampId(pathname);
 
-  function getSidebarItems(campId: string) {
-    return [
-      { href: `/dashboard/${campId}`, icon: HomeIcon, label: "Dashboard" },
+  // Utility function to check if the user is an admin
+  function isAdmin(session: any): boolean {
+    // console.log("Checking if user is an admin", session);
+    return session.some(
+      (role: { name: string; active: boolean }) =>
+        role.name === "Admin" && role.active
+    );
+  }
+
+  function getSidebarItems(
+    campId: string,
+    userRoles: Array<{ name: string; active: boolean }>
+  ) {
+    let items = [
+      { href: `/dashboard/${campId}`, icon: <HomeIcon />, label: "Dashboard" },
       {
         href: `/dashboard/${campId}/patients`,
-        icon: UserIcon,
+        icon: <UserIcon />,
         label: "Patients",
       },
       {
         href: `/dashboard/${campId}/add-patient`,
-        icon: PlusIcon,
+        icon: <PlusIcon />,
         label: "Add Patient",
       },
-      {
-        href: `/dashboard/${campId}/add-user`,
-        icon: PlusIcon,
-        label: "Add User",
-      },
-      {
-        href: `/dashboard/${campId}/settings`,
-        icon: SettingsIcon,
-        label: "Settings",
-      },
     ];
+
+    if (isAdmin(userRoles)) {
+      console.log("User is an admin");
+      items = [
+        ...items,
+        {
+          href: `/dashboard/${campId}/analytics`,
+          icon: <PlusIcon />,
+          label: "Analytics",
+        },
+        {
+          href: `/dashboard/${campId}/add-user`,
+          icon: <PlusIcon />,
+          label: "Add User",
+        },
+        {
+          href: `/dashboard/${campId}/settings`,
+          icon: <SettingsIcon />,
+          label: "Settings",
+        },
+      ];
+    } else {
+      // console.log("User is not an admin");
+    }
+
+    return items;
   }
   return (
     <div className="hidden border-r bg-muted/40 lg:block">
@@ -62,7 +90,7 @@ export default function DashboardSidebar() {
         </div>
         <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-4 text-sm font-medium">
-            {getSidebarItems(campId).map((item) => (
+            {getSidebarItems(campId, session.user.roles).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -73,7 +101,7 @@ export default function DashboardSidebar() {
                 } hover:text-primary`}
                 prefetch={false}
               >
-                <item.icon className="h-4 w-4" />
+                <span className="h-4 w-4">{item.icon}</span>
                 {item.label}
               </Link>
             ))}
