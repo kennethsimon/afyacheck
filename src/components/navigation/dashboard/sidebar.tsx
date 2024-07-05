@@ -46,7 +46,7 @@ export default function DashboardSidebar({ session }: { session: any }) {
     ];
 
     if (isAdmin(userRoles)) {
-      console.log("User is an admin");
+      // console.log("User is an admin");
       items = [
         ...items,
         {

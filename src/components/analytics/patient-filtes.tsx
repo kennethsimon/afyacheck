@@ -118,12 +118,6 @@ export default function PatientFilters({
   return (
     <div className="col-span-full flex flex-col gap-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold">Camp Patients Insights</h2>
-          <p className="text-muted-foreground">
-            Filter and explore patient Insights.
-          </p>
-        </div>
         <Button className="px-4 py-2 rounded-md" onClick={resetFilters}>
           Reset Filters
         </Button>
