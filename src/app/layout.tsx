@@ -29,8 +29,6 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          {children}
-
           <div vaul-drawer-wrapper="" className="bg-background">
             {children}
           </div>
