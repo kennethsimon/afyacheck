@@ -33,7 +33,7 @@ export default async function DashboardPage({
             Filter and explore patient Insights.
           </p>
         </div>
-        <PatientFilters isDashboardPage={true} />
+        {/* <PatientFilters isDashboardPage={true} /> */}
         {userStats && <PatientStats UserStats={userStats} />}
       </main>
     </div>
