@@ -1,5 +1,6 @@
 "use client";
 
+import { ChartProps } from "@/types/general";
 import { ResponsiveBar } from "@nivo/bar";
 
 export const BarChart: React.FC<ChartProps> = ({ data, className }) => (

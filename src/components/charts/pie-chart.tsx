@@ -1,5 +1,6 @@
 "use client";
 import { ResponsivePie } from "@nivo/pie";
+import { ChartProps } from "@/types/general";
 
 export const PieChart: React.FC<ChartProps> = ({ data, className }) => (
   <div className={className}>

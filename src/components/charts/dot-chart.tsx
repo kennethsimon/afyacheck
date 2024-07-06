@@ -1,5 +1,6 @@
 "use client";
 import { ResponsiveScatterPlot } from "@nivo/scatterplot";
+import { ChartProps } from "@/types/general";
 
 export const DotChart: React.FC<ChartProps> = ({ data, className }) => (
   <div className={className}>
