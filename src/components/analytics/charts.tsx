@@ -113,15 +113,6 @@ export default function AnalyticCharts({
   const rangeCreatedAtFrom = params["range-createdAt-from"] as string;
   const rangeCreatedAtTo = params["range-createdAt-to"] as string;
 
-  // const dateRangeDescription = useMemo(
-  //   () =>
-  //     `${format(new Date(rangeCreatedAtFrom), "MMMM d, yyyy")} - ${format(
-  //       new Date(rangeCreatedAtTo),
-  //       "MMMM d, yyyy"
-  //     )}`,
-  //   [rangeCreatedAtFrom, rangeCreatedAtTo]
-  // );
-
   // Utility function to safely format dates
   const safeDateFormat = (dateInput: string | Date, dateFormat: string) => {
     const date =
