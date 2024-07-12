@@ -72,7 +72,7 @@ export const getCampStats = async (queryParams?: any) => {
       console.error(error);
     });
 
-  // console.log("Stats results: ", results.items);
+  console.log("Stats results: ", results.items);
 
   return results;
 };
