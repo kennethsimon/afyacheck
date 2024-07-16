@@ -44,3 +44,26 @@ export const calculateAge = (dateOfBirth: string): number => {
   }
   return age;
 };
+
+// export function isAdmin(session: any): boolean {
+//   return session.some(
+//     (role: { name: string; active: boolean }) =>
+//       role.name === "Admin" && role.active
+//   );
+// }
+
+// Utility function to check if the user is an admin
+export function isAdmin(session: any): boolean {
+  // console.log("Checking if user is an admin", session);
+  return session.user.roles.some(
+    (role: { name: string; active: boolean }) =>
+      role.name === "Admin" && role.active
+  );
+}
+
+// check if string is a uuid, for example if it is asd33 it will be false if 6675342f31f8c70caf1e91d7 ti will be true
+export function isUUID(str: string): boolean {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+  return uuidRegex.test(str);
+}
