@@ -32,8 +32,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { IconUser } from "./ui/icons";
-import { getCampId } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 type Patient = {
   id: string;
   name: string;
@@ -54,7 +53,9 @@ type PatientsTableProps = {
 
 function PatientRow({ patient }: { patient: any }) {
   const pathname = usePathname();
-  const campId = getCampId(pathname);
+  const params = useParams();
+  const campId = params.campId as string;
+  const projectId = params.projectId as string;
 
   return (
     <TableRow>
@@ -75,7 +76,9 @@ function PatientRow({ patient }: { patient: any }) {
       <TableCell className="hidden md:table-cell">{patient.address}</TableCell>
       <TableCell className="hidden md:table-cell">{patient.location}</TableCell>
       <TableCell className="hidden md:table-cell">
-        <Link href={`/dashboard/${campId}/patients/${patient._id}`}>
+        <Link
+          href={`/dashboard/${projectId}/${campId}/patients/${patient._id}`}
+        >
           <Button variant="outline" size="icon" className="">
             <IconUser className="h-4 w-4" />
             <span className="sr-only">View Patient Details</span>

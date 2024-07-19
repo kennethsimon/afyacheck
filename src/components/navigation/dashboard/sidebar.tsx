@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getTextAfterLastSlash, getCampId, getPatientId } from "@/lib/utils";
 import {
   Package2Icon,
   BellIcon,
@@ -12,15 +11,19 @@ import {
   BarChartIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 
 export default function DashboardSidebar({ session }: { session: any }) {
   const pathname = usePathname();
-  const campId = getCampId(pathname);
+  const params = useParams();
+  const campId = params.campId as string; // Assuming campId is available in the params
+  const projectId = params.projectId as string; // Assuming projectId is available in the params
 
+  console.log("pathname : ", pathname);
+  console.log("params : ", params);
+  console.log("campId : ", campId, "projectId : ", projectId);
   // Utility function to check if the user is an admin
   function isAdmin(session: any): boolean {
-    // console.log("Checking if user is an admin", session);
     return session.some(
       (role: { name: string; active: boolean }) =>
         role.name === "Admin" && role.active
@@ -28,49 +31,52 @@ export default function DashboardSidebar({ session }: { session: any }) {
   }
 
   function getSidebarItems(
+    projectId: string,
     campId: string,
     userRoles: Array<{ name: string; active: boolean }>
   ) {
     let items = [
-      { href: `/dashboard/${campId}`, icon: <HomeIcon />, label: "Dashboard" },
       {
-        href: `/dashboard/${campId}/patients`,
+        href: `/dashboard/${projectId}/${campId}`,
+        icon: <HomeIcon />,
+        label: "Dashboard",
+      },
+      {
+        href: `/dashboard/${projectId}/${campId}/patients`,
         icon: <UserIcon />,
         label: "Patients",
       },
       {
-        href: `/dashboard/${campId}/add-patient`,
+        href: `/dashboard/${projectId}/${campId}/add-patient`,
         icon: <PlusIcon />,
         label: "Add Patient",
       },
     ];
 
     if (isAdmin(userRoles)) {
-      // console.log("User is an admin");
       items = [
         ...items,
         {
-          href: `/dashboard/${campId}/analytics`,
-          icon: <PlusIcon />,
+          href: `/dashboard/${projectId}/${campId}/analytics`,
+          icon: <BarChartIcon />,
           label: "Analytics",
         },
         {
-          href: `/dashboard/${campId}/add-user`,
+          href: `/dashboard/${projectId}/${campId}/add-user`,
           icon: <PlusIcon />,
           label: "Add User",
         },
         {
-          href: `/dashboard/${campId}/settings`,
+          href: `/dashboard/${projectId}/${campId}/settings`,
           icon: <SettingsIcon />,
           label: "Settings",
         },
       ];
-    } else {
-      // console.log("User is not an admin");
     }
 
     return items;
   }
+
   return (
     <div className="hidden border-r bg-muted/40 lg:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
@@ -83,28 +89,26 @@ export default function DashboardSidebar({ session }: { session: any }) {
             <Package2Icon className="h-6 w-6" />
             <span className="">Clinic</span>
           </Link>
-          <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
-            <BellIcon className="h-4 w-4" />
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
         </div>
         <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-4 text-sm font-medium">
-            {getSidebarItems(campId, session.user.roles).map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                  pathname === item.href
-                    ? "text-primary"
-                    : "text-muted-foreground"
-                } hover:text-primary`}
-                prefetch={false}
-              >
-                <span className="h-4 w-4">{item.icon}</span>
-                {item.label}
-              </Link>
-            ))}
+            {getSidebarItems(projectId, campId, session.user.roles).map(
+              (item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    pathname === item.href
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  } hover:text-primary`}
+                  prefetch={false}
+                >
+                  <span className="h-4 w-4">{item.icon}</span>
+                  {item.label}
+                </Link>
+              )
+            )}
           </nav>
         </div>
       </div>

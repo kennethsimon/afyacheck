@@ -1,18 +1,40 @@
 import projectApi from "./config";
 
+export const getCampsByProjectId = async (projectId: string) => {
+  console.log("getCampsByProjectId Project ID: ", projectId);
+  let results: any = {};
 
-export const getCamps = async (queryParams?: any) => {
-    let results: any = {};
-    await projectApi
-          .get("/camps", { params: queryParams })
-          .then(({ data }) => {
-                if (data.status) {
-                      results.items = data.data;
-                }
-          })
-          .catch((error) => {
-                console.error(error);
-          });
+  await projectApi
+    .get(`/camps/project/${projectId}`)
+    .then(({ data }) => {
+      if (data.status) {
+        console.log(data);
+        results.items = data.data;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 
-    return results;
+  return results;
+};
+
+// get camp by campid
+export const getCampById = async (campId: string) => {
+  console.log("getCampById Camp ID: ", campId);
+  let results: any = {};
+
+  await projectApi
+    .get(`/camps/${campId}`)
+    .then(({ data }) => {
+      if (data.status) {
+        console.log(data);
+        results.items = data.data;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return results;
 };

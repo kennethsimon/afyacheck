@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { AddUserForm } from "@/components/form/add-user-form";
-import { getPermissions } from "../../../../../services/projects";
+import { getPermissions } from "../../../../../../services/projects";
 
 export default async function AddUser({
   params,

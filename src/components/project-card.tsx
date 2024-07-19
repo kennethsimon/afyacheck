@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ClockIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { getTextAfterLastSlash } from "@/lib/utils";
 import moment from "moment";
 
@@ -26,11 +26,19 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const pathname = usePathname();
   const finalPage = getTextAfterLastSlash(pathname);
+  const params = useParams();
+
+  // console.log("finalPage : ", finalPage);
+  // console.log("pathname : ", pathname);
+
+  const projectId = pathname.split("/")[2];
 
   return (
     <Link
       href={
-        finalPage === "camps" ? `/dashboard/${_id}` : `/project/${_id}/camps`
+        finalPage === "camps"
+          ? `/dashboard/${projectId}/${_id}`
+          : `/project/${_id}/camps`
       }
     >
       <Card className="bg-background shadow-lg rounded-lg overflow-hidden">

@@ -1,7 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { CircleUser, Package2Icon, SearchIcon } from "lucide-react";
+import {
+  BellIcon,
+  CircleUser,
+  HomeIcon,
+  Package2Icon,
+  SearchIcon,
+} from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -13,25 +20,62 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
+import { Switcher } from "@/components/navigation/dashboard/account-switcher";
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  // { label: string; icon?: ReactNode; id: string; }[]'.
+  projects: { label: string; icon?: React.ReactNode; id: string }[];
+  camps: { label: string; icon?: React.ReactNode; id: string }[];
+}
+
+export default function DashboardHeader(props: DashboardHeaderProps) {
+  const params = useParams();
+  const projectId = params?.projectId as string;
+  console.log("projectId : ", projectId);
+  const { projects, camps } = props;
+  // console.log("projects : ", projects);
+
   return (
     <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-muted/40 px-6">
       <Link href="#" className="lg:hidden" prefetch={false}>
         <Package2Icon className="h-6 w-6" />
         <span className="sr-only">Home</span>
       </Link>
-      <div className="w-full flex-1">
-        <form>
-          <div className="relative">
-            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search patients..."
-              className="w-full bg-background shadow-none appearance-none pl-8 md:w-2/3 lg:w-1/3"
-            />
-          </div>
-        </form>
+
+      <div className="w-full flex gap-4">
+        {projects && projects.length > 0 && (
+          <>
+            <div className="flex flex-col gap-2">
+              <Switcher
+                isCollapsed={false}
+                items={projects}
+                queryName="projectId"
+              />
+            </div>
+            {projectId !== "all" && camps && camps.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <Switcher
+                  isCollapsed={false}
+                  items={camps}
+                  queryName="campId"
+                />
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="flex-grow flex-col gap-2 max-w-[400px]">
+          <form>
+            <div className="relative">
+              <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search patients..."
+                className="w-full bg-background shadow-none appearance-none pl-8"
+              />
+            </div>
+          </form>
+        </div>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -59,6 +103,10 @@ export default function DashboardHeader() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
+        <BellIcon className="h-4 w-4" />
+        <span className="sr-only">Toggle notifications</span>
+      </Button>
     </header>
   );
 }

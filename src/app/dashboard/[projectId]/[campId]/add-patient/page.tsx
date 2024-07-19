@@ -8,7 +8,13 @@ export default async function AddPatientPage({
 }: {
   params: { campId: string };
 }) {
+  console.log("params add patient page: ", params);
   const session: any = await getServerSession(authOptions);
+  // if campId is al or not a valid uuid, tell user to select camp
+  if (params.campId === "all" || !params.campId) {
+    return <div>Please select a camp to add a patient</div>;
+  }
+
   return (
     <div className=" mx-auto p-8 ">
       <div className="text-start">

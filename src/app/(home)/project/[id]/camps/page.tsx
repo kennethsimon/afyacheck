@@ -3,17 +3,21 @@ import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { getCamps } from "../../../../../../services/camps";
+import { getCampsByProjectId } from "../../../../../../services/camps";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import { AddCampForm } from "@/components/add-camp";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
+import { getProjectById } from "../../../../../../services/projects";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;
   const session: any = await getServerSession(authOptions);
-  const { items } = await getCamps({ projectId });
-
+  const { items } = await getCampsByProjectId(projectId);
+  const project = await getProjectById(projectId); // Assuming getCampsByProjectId now also returns projectName
+  const projectName = project?.items?.data?.project?.name;
+  console.log("project : ", project);
+  console.log("projectName : ", projectName);
   if (!session) {
     redirect("/login");
   }
@@ -21,7 +25,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="py-8 text-center items-center">
-        Camps for project {projectId}
+        Camps for project {projectName || projectId}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {items?.camps.map((camp: any) => (
