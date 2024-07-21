@@ -33,18 +33,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { IconUser } from "./ui/icons";
 import { usePathname, useParams } from "next/navigation";
-type Patient = {
-  id: string;
-  name: string;
-  email: string;
-  type: string;
-  status: {
-    label: string;
-    variant: string;
-  };
-  date: string;
-  amount: string;
-};
 
 type PatientsTableProps = {
   patients: any;

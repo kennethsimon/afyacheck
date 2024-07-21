@@ -1,6 +1,7 @@
 "use server";
 
 import projectApi from "./config";
+import { unstable_noStore as noStore } from "next/cache";
 
 export const getProjects = async () => {
   let results: any = {};
@@ -54,20 +55,31 @@ export const getPermissions = async () => {
   return results;
 };
 
-export const getPatients = async (queryParams?: any) => {
-  // console.log("getPatients Query params: ", queryParams);
-  let results: any = {};
+export const getPatients = async (
+  queryParams?: any
+): Promise<{
+  data: any[];
+  pageCount: number;
+}> => {
+  noStore();
+
+  console.log(queryParams);
+
+  let results = { data: [], pageCount: 0 };
   await projectApi
     .get("/patients", { params: queryParams })
     .then(({ data }) => {
       if (data.status) {
-        results.items = data.data;
+        console.log("Patients Data : ", data);
+        results.data = data.data.patients || [];
+        results.pageCount = data.pageCount || 0;
       }
     })
     .catch((error) => {
       console.error(error);
     });
-
+  console.log("results", results);
+  // results = { data: [], pageCount: 0 };
   return results;
 };
 

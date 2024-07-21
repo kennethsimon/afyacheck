@@ -19,7 +19,7 @@ export default async function DashboardPage({
 
   params = { ...foundSearchParams, ...params };
   const { items: userStats } = await getCampStats(combinedParams);
-  const { items: patients } = await getPatients(combinedParams);
+  const { data: patients } = await getPatients(combinedParams);
   console.log("params : ", params);
   console.log("User Stats : ", userStats);
   // console.log(" patients : ", patients);

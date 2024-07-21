@@ -6,6 +6,7 @@ import { authOptions } from "../../../api/auth/[...nextauth]/options";
 import { isAdmin, isUUID } from "@/lib/utils";
 import { getProjects } from "../../../../../services/projects";
 import { getCampsByProjectId } from "../../../../../services/camps";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -53,15 +54,17 @@ export default async function Layout({
   let cleanedCampsAll = [{ _id: "all", name: "All" }, ...cleanedCamps];
   let cleanedProjectsAll = [{ _id: "all", name: "All" }, ...cleanedProjects];
   return (
-    <div className="grid min-h-screen w-full lg:grid-cols-[240px_1fr]">
-      <DashboardSidebar session={session} />
-      <div className="flex flex-col">
-        <DashboardHeader
-          projects={cleanedProjectsAll}
-          camps={cleanedCampsAll}
-        />
-        {children}
-      </div>
+    <div className="grid min-h-screen w-full lg:grid-cols-[180px_1fr]">
+      <TooltipProvider>
+        <DashboardSidebar session={session} />
+        <div className="flex flex-col">
+          <DashboardHeader
+            projects={cleanedProjectsAll}
+            camps={cleanedCampsAll}
+          />
+          {children}
+        </div>
+      </TooltipProvider>
     </div>
   );
 }
