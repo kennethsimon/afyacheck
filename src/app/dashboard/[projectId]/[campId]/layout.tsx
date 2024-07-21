@@ -2,10 +2,10 @@ import DashboardHeader from "@/components/navigation/dashboard/header";
 import DashboardSidebar from "@/components/navigation/dashboard/sidebar";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../api/auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { isAdmin, isUUID } from "@/lib/utils";
-import { getProjects } from "../../../../../services/projects";
-import { getCampsByProjectId } from "../../../../../services/camps";
+import { getProjects } from "@/services/projects";
+import { getCampsByProjectId } from "@/services/camps";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {

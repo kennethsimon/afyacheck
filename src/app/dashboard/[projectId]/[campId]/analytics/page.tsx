@@ -1,5 +1,5 @@
 import PatientStats from "@/components/analytics/patient-stats";
-import { getCampStats, getPatients } from "../../../../../../services/projects";
+import { getCampStats, getPatients } from "@/services/projects";
 import PatientFilters from "@/components/analytics/patient-filtes";
 import ChartsComponent from "@/components/analytics/patient-charts";
 import AnalyticCharts from "@/components/analytics/charts";

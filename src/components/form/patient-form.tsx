@@ -12,7 +12,7 @@ import { ScreeningQuestions } from "./screening-questions";
 import { DoctorComments } from "./doctor-comments";
 import { ClinicalFindings } from "./clinical-findings";
 import { toast } from "sonner";
-import projectApi from "../../../services/config";
+import projectApi from "../../services/config";
 import moment from "moment";
 import { useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";

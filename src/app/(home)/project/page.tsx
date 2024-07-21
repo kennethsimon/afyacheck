@@ -2,7 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import ProjectCard from "@/components/project-card";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { getProjects } from "../../../../services/projects";
+import { getProjects } from "../../../services/projects";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 
 export default async function Page() {

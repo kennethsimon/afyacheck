@@ -1,5 +1,5 @@
 import PatientFilters from "@/components/analytics/patient-filtes";
-import { getPatients } from "../../../../../../services/projects";
+import { getPatients } from "@/services/projects";
 import PatientsTable from "@/components/patients-page";
 import { TasksTableProvider } from "@/components/table/tasks-table-provider";
 import React from "react";

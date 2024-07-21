@@ -3,12 +3,12 @@ import ProjectCard from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { getCampsByProjectId } from "../../../../../../services/camps";
+import { getCampsByProjectId } from "@/services/camps";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
 import { AddCampForm } from "@/components/add-camp";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
-import { getProjectById } from "../../../../../../services/projects";
+import { getProjectById } from "@/services/projects";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;

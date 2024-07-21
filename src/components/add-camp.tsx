@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import projectApi from "../../services/config";
+import projectApi from "../services/config";
 
 const FormSchema = z.object({
   title: z.string().min(2, {

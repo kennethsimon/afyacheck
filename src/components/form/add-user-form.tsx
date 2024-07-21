@@ -27,7 +27,7 @@ import {
   Key,
   useState,
 } from "react";
-import projectApi from "../../../services/config";
+import projectApi from "../../services/config";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 const AddUserFormSchema = z.object({
@@ -151,7 +151,7 @@ export function AddUserForm({ campId, permissions }: AddUserFormProps) {
                           <FormLabel>{permission.name}</FormLabel>
                         </FormItem>
                       );
-                    },
+                    }
                   )}
                 </RadioGroup>
               </FormControl>

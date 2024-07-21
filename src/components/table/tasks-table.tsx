@@ -19,7 +19,7 @@ import { DataTableFilterField, Order } from "@/types/general";
 
 import { DateFilters } from "@/components/table-filters/date-filters";
 import { CustomFilters } from "@/components/table-filters/custom-filters";
-import { getPatients } from "../../../services/projects";
+import { getPatients } from "../../services/projects";
 
 interface TasksTableProps {
   patientPromise: ReturnType<typeof getPatients>;

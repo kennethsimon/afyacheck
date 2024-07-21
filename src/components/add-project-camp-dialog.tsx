@@ -5,7 +5,7 @@ import AwesomeDrawer from "@/components/drawer";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { toast } from "sonner";
-import projectApi from "../../services/config";
+import projectApi from "../services/config";
 
 type AddProjectOrCampDialogProps = {
   type: "Project" | "Camp";
