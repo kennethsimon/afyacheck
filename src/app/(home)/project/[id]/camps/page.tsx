@@ -13,14 +13,12 @@ import { getProjectById } from "../../../../../../services/projects";
 export default async function Page({ params }: { params: { id: string } }) {
   const projectId = params.id;
   const session: any = await getServerSession(authOptions);
-  const { items } = await getCampsByProjectId(projectId);
-  const project = await getProjectById(projectId); // Assuming getCampsByProjectId now also returns projectName
-  const projectName = project?.items?.data?.project?.name;
-  console.log("project : ", project);
-  console.log("projectName : ", projectName);
   if (!session) {
     redirect("/login");
   }
+  const { items } = await getCampsByProjectId(projectId);
+  const project = await getProjectById(projectId);
+  const projectName = project?.items?.data?.project?.name;
 
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">

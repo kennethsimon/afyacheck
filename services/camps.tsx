@@ -1,14 +1,14 @@
 import projectApi from "./config";
 
 export const getCampsByProjectId = async (projectId: string) => {
-  console.log("getCampsByProjectId Project ID: ", projectId);
+  // console.log("getCampsByProjectId Project ID: ", projectId);
   let results: any = {};
 
   await projectApi
     .get(`/camps/project/${projectId}`)
     .then(({ data }) => {
       if (data.status) {
-        console.log(data);
+        // console.log("DATA HERE :", data);
         results.items = data.data;
       }
     })
@@ -28,7 +28,7 @@ export const getCampById = async (campId: string) => {
     .get(`/camps/${campId}`)
     .then(({ data }) => {
       if (data.status) {
-        console.log(data);
+        // console.log(data);
         results.items = data.data;
       }
     })
