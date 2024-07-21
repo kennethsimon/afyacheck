@@ -222,7 +222,7 @@ export default function PatientFilters({
             </>
           )}
         </div>
-        <div>
+        <div className="flex flex-col gap-2">
           <p className="text-muted-foreground">Date filters</p>
           <div className="grid gap-1">
             <Label htmlFor="created-range">Created Range</Label>

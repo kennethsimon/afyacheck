@@ -48,7 +48,7 @@ type Patient = {
 
 type PatientsTableProps = {
   patients: any;
-  patientsdata: any;
+  patientsData: any;
 };
 
 function PatientRow({ patient }: { patient: any }) {
@@ -91,84 +91,81 @@ function PatientRow({ patient }: { patient: any }) {
 
 export default function PatientsTable({
   patients,
-  patientsdata,
+  patientsData,
 }: PatientsTableProps) {
-  console.log(patientsdata);
+  console.log(patientsData);
   return (
-    <main className="py-12 px-16 flex-1 items-start gap-4  md:gap-8 ">
-      <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-        <Tabs defaultValue="week">
-          <div className="flex items-center">
-            <TabsList>
-              <TabsTrigger value="week">Week</TabsTrigger>
-              <TabsTrigger value="month">Month</TabsTrigger>
-              <TabsTrigger value="year">Year</TabsTrigger>
-            </TabsList>
-            <div className="ml-auto flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 gap-1 text-sm"
-                  >
-                    <ListFilter className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only">Filter</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem checked>
-                    Fulfilled
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Declined</DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Refunded</DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button size="sm" variant="outline" className="h-7 gap-1 text-sm">
-                <File className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only">Export</span>
-              </Button>
-            </div>
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+      <Tabs defaultValue="week">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger value="week">Week</TabsTrigger>
+            <TabsTrigger value="month">Month</TabsTrigger>
+            <TabsTrigger value="year">Year</TabsTrigger>
+          </TabsList>
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1 text-sm"
+                >
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only">Filter</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem checked>
+                  Fulfilled
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem>Declined</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem>Refunded</DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button size="sm" variant="outline" className="h-7 gap-1 text-sm">
+              <File className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only">Export</span>
+            </Button>
           </div>
-          <TabsContent value="week">
-            <Card x-chunk="dashboard-05-chunk-3">
-              <CardHeader className="px-7">
-                <CardTitle>Patients</CardTitle>
-                <CardDescription>
-                  {/* Recent Patients from your store. */}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name/phone</TableHead>
-                      <TableHead className="hidden sm:table-cell">
-                        Date of birth
-                      </TableHead>
-                      <TableHead className="hidden sm:table-cell">
-                        Address
-                      </TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Location
-                      </TableHead>
-                      <TableHead className="text-right">View</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {patientsdata?.patients?.map((patient: any) => (
-                      <PatientRow key={patient._id} patient={patient} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-      <div></div>
-    </main>
+        </div>
+        <TabsContent value="week">
+          <Card x-chunk="dashboard-05-chunk-3">
+            <CardHeader className="px-7">
+              <CardTitle>Patients</CardTitle>
+              <CardDescription>
+                {/* Recent Patients from your store. */}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name/phone</TableHead>
+                    <TableHead className="hidden sm:table-cell">
+                      Date of birth
+                    </TableHead>
+                    <TableHead className="hidden sm:table-cell">
+                      Address
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Location
+                    </TableHead>
+                    <TableHead className="text-right">View</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {patientsData?.patients?.map((patient: any) => (
+                    <PatientRow key={patient._id} patient={patient} />
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

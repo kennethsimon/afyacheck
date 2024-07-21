@@ -1,6 +1,5 @@
 "use server";
 
-import { PatientFilters } from "@/types/general";
 import projectApi from "./config";
 
 export const getProjects = async () => {
