@@ -1,6 +1,7 @@
 import PatientStats from "@/components/analytics/patient-stats";
 import { getCampStats, getPatients } from "@/services/projects";
-import PatientFilters from "@/components/analytics/patient-filtes";
+import PatientFilters from "@/components/analytics/patient-filters";
+import { MainFilters } from "@/components/analytics/main-filters";
 import ChartsComponent from "@/components/analytics/patient-charts";
 import AnalyticCharts from "@/components/analytics/charts";
 // Assuming the context is to modify the DashboardPage function to use a different method for handling searchParams
@@ -20,7 +21,7 @@ export default async function AnalyticsPage({
 
   params = { ...foundSearchParams, ...params };
   const { items: userStats } = await getCampStats(combinedParams);
-  let { items: patients } = await getPatients(combinedParams);
+  let { data: patients } = await getPatients(combinedParams);
   console.log("params : ", params);
   console.log("User Stats : ", userStats);
   console.log("patients : ", patients);
@@ -36,6 +37,53 @@ export default async function AnalyticsPage({
     rangeCreatedAtTo = today.toISOString().split("T")[0];
   }
 
+  const filterFields = [
+    {
+      label: "Gender",
+      value: "gender",
+      type: "select",
+      options: [
+        { label: "Male", value: "male" },
+        { label: "Female", value: "female" },
+      ],
+      defaultValue: "",
+    },
+    {
+      label: "Phone Number",
+      value: "phoneNumber",
+      type: "input",
+      placeholder: "Enter Phone Number",
+      defaultValue: "",
+    },
+    {
+      label: "Location",
+      value: "location",
+      type: "input",
+      placeholder: "Enter Location",
+      defaultValue: "",
+    },
+    {
+      label: "Created Date Range",
+      value: "createdAt",
+      type: "date",
+      defaultValue: {
+        from: new Date(new Date().getFullYear(), 0, 1),
+        to: new Date(),
+      },
+    },
+    {
+      label: "Birth Date Range",
+      value: "dateOfBirth",
+      type: "date",
+      defaultValue: {
+        from: new Date(new Date().getFullYear() - 100, 0, 1),
+        to: new Date(),
+      },
+    },
+  ];
+
+  const dateRanges = ["createdAt", "dateOfBirth"];
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -46,10 +94,12 @@ export default async function AnalyticsPage({
           </p>
         </div>
         <PatientFilters isDashboardPage={true} />
+        <MainFilters filterFields={filterFields} dateRanges={dateRanges} />
+
         {userStats && <PatientStats UserStats={userStats} />}
         {patients ? (
-          patients.patients && patients.patients.length > 0 ? (
-            <AnalyticCharts params={params} patients={patients.patients} />
+          patients.length > 0 ? (
+            <AnalyticCharts params={params} patients={patients} />
           ) : (
             <p>No data to create charts</p>
           )

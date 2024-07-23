@@ -60,19 +60,18 @@ export default function AnalyticCharts({
   params: any;
   patients: PatientInfo[];
 }) {
-  // Assuming this code is added after fetching the patients
-  const patientsWithAge = patients.map((patient) => {
-    console.log(patient.dateOfBirth);
+  const patientsWithAge = patients?.map((patient) => {
+    // console.log(patient.dateOfBirth);
 
     const dob = parseISO(patient.dateOfBirth); // Assuming dateOfBirth is in ISO format
-    console.log({ dob });
+    // console.log({ dob });
 
     const age = differenceInYears(new Date(), dob);
-    console.log({ age });
+    // console.log({ age });
     return { ...patient, age };
   });
 
-  console.log({ patientsWithAge });
+  // console.log({ patientsWithAge });
 
   const patientInfo = useMemo(
     () =>
@@ -132,7 +131,7 @@ export default function AnalyticCharts({
     [rangeCreatedAtFrom, rangeCreatedAtTo]
   );
 
-  console.log("patientInfo", patientInfo);
+  // console.log("patientInfo", patientInfo);
 
   // Adjusted useMemo for vitalSignsData
   const vitalSignsData = useMemo(
@@ -184,7 +183,7 @@ export default function AnalyticCharts({
     ],
   };
 
-  console.log({ ageDistributionChartData });
+  // console.log({ ageDistributionChartData });
 
   // BMI Distribution Data
   const bmiDistributionData = useMemo(

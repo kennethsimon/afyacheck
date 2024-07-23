@@ -1,4 +1,4 @@
-import PatientFilters from "@/components/analytics/patient-filtes";
+import PatientFilters from "@/components/analytics/patient-filters";
 import { getPatients } from "@/services/projects";
 import PatientsTable from "@/components/patients-page";
 import { TasksTableProvider } from "@/components/table/tasks-table-provider";

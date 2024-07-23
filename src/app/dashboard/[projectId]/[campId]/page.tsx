@@ -1,6 +1,6 @@
 import PatientStats from "@/components/analytics/patient-stats";
 import { getCampStats, getPatients } from "@/services/projects";
-import PatientFilters from "@/components/analytics/patient-filtes";
+import PatientFilters from "@/components/analytics/patient-filters";
 import ChartsComponent from "@/components/analytics/patient-charts";
 // Assuming the context is to modify the DashboardPage function to use a different method for handling searchParams
 
