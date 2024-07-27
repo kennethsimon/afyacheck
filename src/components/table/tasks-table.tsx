@@ -31,8 +31,8 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
 
   const { data, pageCount } = React.use(patientPromise);
 
-  console.log(data);
-  console.log(data);
+  // console.log(data);
+  // console.log(data);
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo(() => getColumns(), []);
@@ -50,14 +50,14 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
    */
   const filterFields: DataTableFilterField<any>[] = [
     {
-      label: "Tracking Number",
-      value: "trackingNumber",
-      placeholder: "Search Tracking Number...",
+      label: "Phone Number",
+      value: "phoneNumber",
+      placeholder: "Search Phone Number...",
     },
     {
-      label: "Customer Name",
-      value: "recipient_name",
-      placeholder: "Search Customer Name...",
+      label: "Patient Name",
+      value: "name",
+      placeholder: "Search Patient Name...",
     },
   ];
 
