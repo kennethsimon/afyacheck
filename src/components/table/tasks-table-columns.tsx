@@ -33,21 +33,43 @@ import { Order, Patient } from "@/types/general";
 import { differenceInYears, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 import { getCampById } from "@/services/camps";
+import { getUserById } from "@/services/users";
 import { PreviewPatientSheet } from "./preview-patient-sheet";
 
 function CampNameCell({ campId }: { campId: string }) {
-  const [campName, setCampName] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
+  const campName = React.useMemo(() => {
     const fetchCampName = async () => {
       const { items: campDetails } = await getCampById(campId);
-      // console.log({ campDetails });
-      setCampName(campDetails.camp.name);
+      return campDetails.camp.name;
     };
-    fetchCampName();
+    return fetchCampName();
   }, [campId]);
 
-  return <div>{campName || "Loading..."}</div>;
+  const [campNameState, setCampNameState] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    campName.then(setCampNameState);
+  }, [campName]);
+
+  return <div>{campNameState || "Loading..."}</div>;
+}
+
+function CreatedByCell({ userId }: { userId: string }) {
+  const userName = React.useMemo(() => {
+    const fetchUserName = async () => {
+      const { items: userDetails } = await getUserById(userId);
+      return userDetails.user.name;
+    };
+    return fetchUserName();
+  }, [userId]);
+
+  const [userNameState, setUserNameState] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    userName.then(setUserNameState);
+  }, [userName]);
+
+  return <div>{userNameState || "Loading..."}</div>;
 }
 
 export function getColumns(): ColumnDef<Patient>[] {
@@ -201,7 +223,9 @@ export function getColumns(): ColumnDef<Patient>[] {
         const gender = row.original.gender;
         const bgColor = getGenderBackgroundColor(gender);
         return (
-          <div className={`p-1 text-center ${bgColor} rounded`}>{gender}</div>
+          <div className={`p-1 text-center font-[500] ${bgColor} rounded`}>
+            {gender}
+          </div>
         );
       },
       enableSorting: true,
@@ -240,7 +264,15 @@ export function getColumns(): ColumnDef<Patient>[] {
       enableSorting: true,
       enableHiding: true,
     },
-
+    {
+      accessorKey: "createdBy",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Created By" />
+      ),
+      cell: ({ row }) => <CreatedByCell userId={row.original.createdBy} />,
+      enableSorting: true,
+      enableHiding: true,
+    },
     // {
     //   accessorKey: "dateCreated",
     //   header: ({ column }) => (

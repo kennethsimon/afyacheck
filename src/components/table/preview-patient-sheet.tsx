@@ -15,6 +15,7 @@ import { Patient } from "@/types/general";
 import { parseISO, differenceInYears } from "date-fns";
 import { useParams } from "next/navigation";
 import { getCampById } from "@/services/camps";
+import { getUserById } from "@/services/users";
 import Link from "next/link";
 
 interface PreviewPatientSheetProps
@@ -28,15 +29,22 @@ export function PreviewPatientSheet({
 }: PreviewPatientSheetProps) {
   const params = useParams();
   const campId = params.campId as string;
-  const [campName, setCampName] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
+  const campName = React.useMemo(() => {
     const fetchCampName = async () => {
       const { items: campDetails } = await getCampById(campId);
-      setCampName(campDetails.camp.name);
+      return campDetails.camp.name;
     };
-    fetchCampName();
+    return fetchCampName();
   }, [campId]);
+
+  const creatorName = React.useMemo(() => {
+    const fetchCreatorName = async () => {
+      const { items: userDetails } = await getUserById(patient.createdBy);
+      return userDetails.user.name;
+    };
+    return fetchCreatorName();
+  }, [patient.createdBy]);
 
   const calculateAge = (dateOfBirth: string) => {
     const dob = parseISO(dateOfBirth);
@@ -93,37 +101,16 @@ export function PreviewPatientSheet({
               </div>
             )}
           </section>
-          <section>
-            <h3 className="text-xl font-bold  mb-4">Insurance Information</h3>
-            {patient.insurance && (
+          {patient.insurance && (
+            <section>
+              <h3 className="text-xl font-bold  mb-4">Insurance Information</h3>
+
               <div>
                 <strong>Insurance:</strong> {patient.insurance}
               </div>
-            )}
-          </section>
-          <section>
-            <h3 className="text-xl font-bold  mb-4">Appointment Details</h3>
-            {patient.date && (
-              <div>
-                <strong>Date:</strong> {patient.date}
-              </div>
-            )}
-            {patient.amount && (
-              <div>
-                <strong>Amount:</strong> {patient.amount}
-              </div>
-            )}
-            {patient.type && (
-              <div>
-                <strong>Type:</strong> {patient.type}
-              </div>
-            )}
-            {patient.status && (
-              <div>
-                <strong>Status:</strong> {patient.status.label}
-              </div>
-            )}
-          </section>
+            </section>
+          )}
+
           <section>
             <h3 className="text-xl font-bold  mb-4">Screening Information</h3>
             {patient.screening.illness && (
@@ -256,9 +243,9 @@ export function PreviewPatientSheet({
           </section>
           <section>
             <h3 className="text-xl font-bold  mb-4">Metadata</h3>
-            {patient.createdBy && (
+            {creatorName && (
               <div>
-                <strong>Created By:</strong> {patient.createdBy}
+                <strong>Created By :</strong> {creatorName}
               </div>
             )}
             {patient.createdAt && (
@@ -278,12 +265,12 @@ export function PreviewPatientSheet({
 
         <SheetFooter className="gap-2 pt-2 sm:space-x-0 flex-shrink-0 flex justify-end">
           <Link href={`/dashboard/patients/edit/${patient._id}`} passHref>
-            <Button as="a" type="button" variant="outline">
+            <Button type="button" variant="outline">
               Edit
             </Button>
           </Link>
           <Link href={`/dashboard/patients/${patient._id}`} passHref>
-            <Button as="a" type="button" variant="outline">
+            <Button type="button" variant="outline">
               Open
             </Button>
           </Link>
