@@ -1,13 +1,8 @@
 "use client";
 
 import * as React from "react";
-// import { tasks, type Task } from "@/db/schema"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { type ColumnDef } from "@tanstack/react-table";
-import { toast } from "sonner";
-
-// import { formatDate, getChannelColor, getServiceIdColor } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -15,61 +10,55 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { cn, getGenderBackgroundColor } from "@/lib/utils";
+import { getGenderBackgroundColor } from "@/lib/utils";
 
-import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { Order, Patient } from "@/types/general";
+import { Patient } from "@/types/general";
 import { differenceInYears, parseISO } from "date-fns";
-import { useRouter } from "next/navigation";
 import { getCampById } from "@/services/camps";
 import { getUserById } from "@/services/users";
 import { PreviewPatientSheet } from "./preview-patient-sheet";
 
 function CampNameCell({ campId }: { campId: string }) {
-  const campName = React.useMemo(() => {
-    const fetchCampName = async () => {
-      const { items: campDetails } = await getCampById(campId);
-      return campDetails.camp.name;
-    };
-    return fetchCampName();
-  }, [campId]);
-
-  const [campNameState, setCampNameState] = React.useState<string | null>(null);
+  const [campName, setCampName] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    campName.then(setCampNameState);
-  }, [campName]);
+    const fetchCampName = async () => {
+      try {
+        const { items: campDetails } = await getCampById(campId);
+        setCampName(campDetails.camp.name);
+      } catch (error) {
+        console.error("Failed to fetch camp name:", error);
+        setCampName("Error loading camp name");
+      }
+    };
+    fetchCampName();
+  }, [campId]);
 
-  return <div>{campNameState || "Loading..."}</div>;
+  return <div>{campName || "Loading..."}</div>;
 }
 
 function CreatedByCell({ userId }: { userId: string }) {
-  const userName = React.useMemo(() => {
-    const fetchUserName = async () => {
-      const { items: userDetails } = await getUserById(userId);
-      return userDetails.user.name;
-    };
-    return fetchUserName();
-  }, [userId]);
-
-  const [userNameState, setUserNameState] = React.useState<string | null>(null);
+  const [userName, setUserName] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    userName.then(setUserNameState);
-  }, [userName]);
+    const fetchUserName = async () => {
+      try {
+        const { items: userDetails } = await getUserById(userId);
+        setUserName(userDetails.user.name);
+      } catch (error) {
+        console.error("Failed to fetch user name:", error);
+        setUserName("Error loading user name");
+      }
+    };
+    fetchUserName();
+  }, [userId]);
 
-  return <div>{userNameState || "Loading..."}</div>;
+  return <div>{userName || "Loading..."}</div>;
 }
 
 export function getColumns(): ColumnDef<Patient>[] {
@@ -82,7 +71,9 @@ export function getColumns(): ColumnDef<Patient>[] {
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={(value: any) =>
+            table.toggleAllPageRowsSelected(!!value)
+          }
           aria-label="Select all"
           className="translate-y-0.5"
         />
@@ -90,7 +81,7 @@ export function getColumns(): ColumnDef<Patient>[] {
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
           aria-label="Select row"
           className="translate-y-0.5"
         />
@@ -158,7 +149,6 @@ export function getColumns(): ColumnDef<Patient>[] {
                   Copy Patient ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-
                 <DropdownMenuItem
                   onSelect={() => setShowPreviewPatientSheet(true)}
                 >
@@ -185,16 +175,14 @@ export function getColumns(): ColumnDef<Patient>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="View Patient" />
       ),
-      cell: ({ row }) => {
-        return (
-          <Link
-            href={`/dashboard/patients/${row.original._id}`}
-            className="text-primary underline"
-          >
-            View Patient
-          </Link>
-        );
-      },
+      cell: ({ row }) => (
+        <Link
+          href={`/dashboard/patients/${row.original._id}`}
+          className="text-primary underline"
+        >
+          View Patient
+        </Link>
+      ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -203,9 +191,7 @@ export function getColumns(): ColumnDef<Patient>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => {
-        return <div>{row.original.name}</div>;
-      },
+      cell: ({ row }) => <div>{row.original.name}</div>,
     },
     {
       accessorKey: "campId",
@@ -247,9 +233,7 @@ export function getColumns(): ColumnDef<Patient>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Phone Number" />
       ),
-      cell: ({ row }) => {
-        return <div>{row.original.phoneNumber}</div>;
-      },
+      cell: ({ row }) => <div>{row.original.phoneNumber}</div>,
       enableSorting: true,
       enableHiding: true,
     },
@@ -258,9 +242,7 @@ export function getColumns(): ColumnDef<Patient>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Location" />
       ),
-      cell: ({ row }) => {
-        return <div>{row.original.location}</div>;
-      },
+      cell: ({ row }) => <div>{row.original.location}</div>,
       enableSorting: true,
       enableHiding: true,
     },
@@ -273,46 +255,5 @@ export function getColumns(): ColumnDef<Patient>[] {
       enableSorting: true,
       enableHiding: true,
     },
-    // {
-    //   accessorKey: "dateCreated",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Date Created" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     const date = new Date(row.getValue("dateCreated"));
-    //     const formatted = date.toLocaleDateString();
-    //     return <div className="font-medium">{formatted}</div>;
-    //   },
-    // },
-    // {
-    //   accessorKey: "channel",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Channel / Service Id" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     // const channel1: any = row.getValue("channel");
-    //     const channel: any = row.original.channel;
-    //     const serviceId: any = row.original.serviceId;
-    //     const channelColor = getChannelColor(channel);
-    //     // console.log({ channel1 });
-    //     const serviceColor = getServiceIdColor(serviceId);
-
-    //     // console.log({ channel });
-    //     // console.log({ serviceId });
-    //     // console.log({ channel1 });
-
-    //     return (
-    //       <>
-    //         <Badge variant="secondary" className={`${channelColor}`}>
-    //           {channel}
-    //         </Badge>{" "}
-    //         /{" "}
-    //         <Badge variant="secondary" className={`${serviceColor}`}>
-    //           {serviceId}
-    //         </Badge>
-    //       </>
-    //     );
-    //   },
-    // },
   ];
 }
