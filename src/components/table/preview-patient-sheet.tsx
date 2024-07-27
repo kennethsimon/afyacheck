@@ -28,20 +28,20 @@ export function PreviewPatientSheet({
   ...props
 }: PreviewPatientSheetProps) {
   const params = useParams();
-  const campId = params.campId as string;
 
   const campName = React.useMemo(() => {
     const fetchCampName = async () => {
-      const { items: campDetails } = await getCampById(campId);
-      return campDetails.camp.name;
+      console.log("patient.camp : ", patient.camp);
+      const { items: campDetails } = await getCampById(patient.camp);
+      return campDetails?.camp?.name || "N/A";
     };
     return fetchCampName();
-  }, [campId]);
+  }, [patient.camp]);
 
   const creatorName = React.useMemo(() => {
     const fetchCreatorName = async () => {
       const { items: userDetails } = await getUserById(patient.createdBy);
-      return userDetails.user.name;
+      return userDetails?.user?.name || "N/A";
     };
     return fetchCreatorName();
   }, [patient.createdBy]);
