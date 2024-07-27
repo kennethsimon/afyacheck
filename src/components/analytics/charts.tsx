@@ -32,7 +32,7 @@ const chartConfig = {
     label: "Female",
     color: "hsl(var(--chart-2))",
   },
-  other: {
+  others: {
     label: "Other",
     color: "hsl(var(--chart-3))",
   },

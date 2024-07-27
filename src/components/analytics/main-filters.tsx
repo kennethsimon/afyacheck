@@ -28,14 +28,13 @@ export function MainFilters({ filterFields, dateRanges }: MainFiltersProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Filters</h2>
-        {/* <Button onClick={resetFilters}>Reset Filters</Button> */}
         <Button
           aria-label="Reset filters"
           variant="ghost"
           className="h-8 px-2 lg:px-3"
           onClick={resetFilters}
         >
-          Reset
+          Reset Filters
           <Cross2Icon className="ml-2 size-4" aria-hidden="true" />
         </Button>
       </div>

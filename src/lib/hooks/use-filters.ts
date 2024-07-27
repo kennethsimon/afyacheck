@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export interface FilterField {
   label: string;
   value: string;
-  type: "input" | "select" | "date";
+  type: "input" | "select" | "date" | string;
   placeholder?: string;
   options?: { label: string; value: string }[];
   defaultValue?: string | { from: Date; to: Date };

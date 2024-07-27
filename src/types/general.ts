@@ -7,6 +7,8 @@ export type PatientFilters = {
   order?: "asc" | "desc";
 };
 
+export type Genders = "male" | "female" | "others";
+
 export interface ChartProps {
   data: any;
   className?: string;
@@ -37,16 +39,23 @@ export interface DataTableFilterOption<TData> {
 }
 
 export type Patient = {
-  id: string;
+  _id: string;
+  gender: "female" | "male" | "others"; // Assuming gender is limited to 'female' or 'male', add more options as needed
+  dateOfBirth: string; // ISO date string
+  phoneNumber: string;
+  location: string;
+  address: string;
+  camp: string;
   name: string;
+  insurance: string;
   email: string;
+  date: string;
+  amount: string;
   type: string;
   status: {
     label: string;
     variant: string;
   };
-  date: string;
-  amount: string;
   screening: {
     illness: "dont-know" | string;
     medication: "no" | string;
@@ -74,13 +83,6 @@ export type Patient = {
     prescription: string;
     referral: string;
   };
-  _id: string;
-  gender: "female" | "male" | string; // Assuming gender is limited to 'female' or 'male', add more options as needed
-  dateOfBirth: string; // ISO date string
-  phoneNumber: string;
-  location: string;
-  address: string;
-  camp: string;
   createdBy: string;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string

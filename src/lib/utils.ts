@@ -67,3 +67,16 @@ export function isUUID(str: string): boolean {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
   return uuidRegex.test(str);
 }
+
+export function getGenderBackgroundColor(gender: string): string {
+  switch (gender.toLowerCase()) {
+    case "male":
+      return "bg-blue-100";
+    case "female":
+      return "bg-pink-100";
+    case "other":
+      return "bg-gradient-to-r from-red-400 via-yellow-400 to-green-400";
+    default:
+      return "bg-gray-100";
+  }
+}

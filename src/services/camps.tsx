@@ -25,7 +25,7 @@ export const getCampById = async (campId: string) => {
   let results: any = {};
 
   await projectApi
-    .get(`/camps/${campId}`)
+    .get(`/camps/camp/${campId}`)
     .then(({ data }) => {
       if (data.status) {
         // console.log(data);

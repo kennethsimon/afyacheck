@@ -25,17 +25,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { cn } from "@/lib/utils";
+import { cn, getGenderBackgroundColor } from "@/lib/utils";
 
-// import { updateTask } from "../_lib/actions";
-// import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { Order } from "@/types/general";
-// import { DeleteTasksDialog } from "./delete-tasks-dialog"
-// import { UpdateTaskSheet } from "./update-task-sheet"
+import { Order, Patient } from "@/types/general";
+import { differenceInYears, parseISO } from "date-fns";
+import { useRouter } from "next/navigation";
+import { getCampById } from "@/services/camps";
+import { PreviewPatientSheet } from "./preview-patient-sheet";
 
-export function getColumns(): ColumnDef<Order>[] {
+function CampNameCell({ campId }: { campId: string }) {
+  const [campName, setCampName] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchCampName = async () => {
+      const { items: campDetails } = await getCampById(campId);
+      // console.log({ campDetails });
+      setCampName(campDetails.camp.name);
+    };
+    fetchCampName();
+  }, [campId]);
+
+  return <div>{campName || "Loading..."}</div>;
+}
+
+export function getColumns(): ColumnDef<Patient>[] {
   return [
     {
       id: "select",
@@ -63,46 +78,98 @@ export function getColumns(): ColumnDef<Order>[] {
     },
     {
       id: "actions",
-      cell: ({ row }) => {
+      cell: function Cell({ row }) {
+        const [showPreviewPatientSheet, setShowPreviewPatientSheet] =
+          React.useState(false);
+        const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+        const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+        const handleMouseEnter = () => {
+          if (closeTimeoutRef.current) {
+            clearTimeout(closeTimeoutRef.current);
+            closeTimeoutRef.current = null;
+          }
+          if (!isDropdownOpen) {
+            setIsDropdownOpen(true);
+          }
+        };
+
+        const handleMouseLeave = () => {
+          closeTimeoutRef.current = setTimeout(() => {
+            setIsDropdownOpen(false);
+          }, 200); // Adjust the delay as needed
+        };
+
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  navigator.clipboard.writeText(row.original.trackingNumber)
-                }
+          <>
+            <PreviewPatientSheet
+              open={showPreviewPatientSheet}
+              onOpenChange={setShowPreviewPatientSheet}
+              patient={row.original}
+            />
+            <DropdownMenu
+              open={isDropdownOpen}
+              onOpenChange={setIsDropdownOpen}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  aria-label="Open menu"
+                  variant="ghost"
+                  className="flex size-8 p-0 data-[state=open]:bg-muted"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <DotsHorizontalIcon className="size-4" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
-                Copy Tracking Number
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View Customer</DropdownMenuItem>
-              <DropdownMenuItem>View Transactions</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigator.clipboard.writeText(row.original._id)
+                  }
+                >
+                  Copy Patient ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onSelect={() => setShowPreviewPatientSheet(true)}
+                >
+                  Preview Patient
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/dashboard/patients/${row.original._id}`}>
+                    Open Patient
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/dashboard/patients/edit/${row.original._id}`}>
+                    Edit Patient
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
         );
       },
-      enableSorting: false,
-      enableHiding: false,
     },
     {
       accessorKey: "id",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="View Order" />
+        <DataTableColumnHeader column={column} title="View Patient" />
       ),
       cell: ({ row }) => {
         return (
           <Link
-            href={`/dashboard/orders/${row.original._id}`}
+            href={`/dashboard/patients/${row.original._id}`}
             className="text-primary underline"
           >
-            View Order
+            View Patient
           </Link>
         );
       },
@@ -110,24 +177,81 @@ export function getColumns(): ColumnDef<Order>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "trackingNumber",
+      accessorKey: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Tracking Number" />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "dateCreated",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Date Created" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => {
-        const date = new Date(row.getValue("dateCreated"));
-        const formatted = date.toLocaleDateString();
-        return <div className="font-medium">{formatted}</div>;
+        return <div>{row.original.name}</div>;
       },
     },
+    {
+      accessorKey: "campId",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Camp Name" />
+      ),
+      cell: ({ row }) => <CampNameCell campId={row.original.camp} />,
+    },
+    {
+      accessorKey: "gender",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Gender" />
+      ),
+      cell: ({ row }) => {
+        const gender = row.original.gender;
+        const bgColor = getGenderBackgroundColor(gender);
+        return (
+          <div className={`p-1 text-center ${bgColor} rounded`}>{gender}</div>
+        );
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "dateOfBirth",
+      header: "Age",
+      cell: ({ row }) => {
+        const dob = parseISO(row.original.dateOfBirth);
+        const age = differenceInYears(new Date(), dob);
+        return age;
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "phoneNumber",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Phone Number" />
+      ),
+      cell: ({ row }) => {
+        return <div>{row.original.phoneNumber}</div>;
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "location",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Location" />
+      ),
+      cell: ({ row }) => {
+        return <div>{row.original.location}</div>;
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    // {
+    //   accessorKey: "dateCreated",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Date Created" />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const date = new Date(row.getValue("dateCreated"));
+    //     const formatted = date.toLocaleDateString();
+    //     return <div className="font-medium">{formatted}</div>;
+    //   },
+    // },
     // {
     //   accessorKey: "channel",
     //   header: ({ column }) => (
@@ -158,40 +282,5 @@ export function getColumns(): ColumnDef<Order>[] {
     //     );
     //   },
     // },
-
-    {
-      accessorKey: "createdBy",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Placed By" />
-      ),
-      cell: ({ row }) => {
-        const createdBy: any = row.getValue("createdBy");
-        const name = createdBy?.name ?? "Na";
-        return <div>{name}</div>;
-      },
-    },
-
-    {
-      accessorKey: "instructions",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Instructions" />
-      ),
-      cell: ({ row }) => {
-        const shippingAddress: any = row.getValue("shippingAddress");
-        const instructions = shippingAddress?.instructions ?? "NA";
-        return <div>{instructions}</div>;
-      },
-    },
-    {
-      accessorKey: "recipient_name",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Recipient Name" />
-      ),
-      cell: ({ row }) => {
-        const shippingAddress: any = row.getValue("shippingAddress");
-        const recipient_name = shippingAddress?.recipient_name ?? "NA";
-        return <div>{recipient_name}</div>;
-      },
-    },
   ];
 }

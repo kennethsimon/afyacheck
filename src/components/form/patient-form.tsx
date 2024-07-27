@@ -21,7 +21,7 @@ export const PatientFormSchema = z.object({
   // PatientInfo
   patientName: z.string().min(1, "Patient name is required"),
   age: z.number().min(0, "Age must be a positive number"),
-  gender: z.enum(["male", "female", "other"]),
+  gender: z.enum(["male", "female", "others"]),
   dob: z.string().min(1, "Date of birth is required"),
   telNo: z.string().min(1, "Telephone number is required"),
   location: z.string().min(1, "Location is required"),
