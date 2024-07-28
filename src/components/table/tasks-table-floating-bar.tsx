@@ -28,7 +28,7 @@ import { Kbd } from "@/components/kbd";
 
 // import { deleteTasks, updateTasks } from "../_lib/client-actions";
 import { Order } from "@/types/general";
-import { channels } from "@/data/options";
+import { genders } from "@/data/options";
 
 interface TasksTableFloatingBarProps {
   table: Table<Order>;
@@ -114,13 +114,13 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
               </Tooltip>
               <SelectContent align="center">
                 <SelectGroup>
-                  {channels.map((channel) => (
+                  {genders.map((gender) => (
                     <SelectItem
-                      key={channel.value}
-                      value={channel.value}
+                      key={gender.value}
+                      value={gender.value}
                       className="capitalize"
                     >
-                      {channel.label}
+                      {gender.label}
                     </SelectItem>
                   ))}
                 </SelectGroup>
