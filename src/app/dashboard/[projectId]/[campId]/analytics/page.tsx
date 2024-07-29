@@ -72,7 +72,7 @@ export default async function AnalyticsPage({
       },
     },
     {
-      label: "Birth Date Range",
+      label: "Birth Date Range old",
       value: "dateOfBirth",
       type: "date",
       defaultValue: {

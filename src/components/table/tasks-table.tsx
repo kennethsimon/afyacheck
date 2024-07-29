@@ -87,7 +87,7 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
       <DataTableToolbar table={table} filterFields={filterFields}>
         <TasksTableToolbarActions table={table} />
       </DataTableToolbar>
-      <DateFilters />
+      {/* <DateFilters /> */}
       <CustomFilters />
 
       <DataTable

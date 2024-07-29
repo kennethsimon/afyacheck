@@ -67,13 +67,13 @@ interface DateRangePickerProps
 export function DateRangePicker({
   dateRange,
   dayCount,
-  placeholder = "Order Date",
+  placeholder = "Created Date",
   triggerVariant = "outline",
   triggerSize = "default",
   triggerClassName,
   className,
-  fromField = "from",
-  toField = "to",
+  fromField = "createdFrom",
+  toField = "createdTo",
   ...props
 }: DateRangePickerProps) {
   const router = useRouter();

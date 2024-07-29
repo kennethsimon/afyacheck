@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export interface FilterField {
-  label: string;
+  label?: string;
   value: string;
   type: "input" | "select" | "date" | string;
   placeholder?: string;

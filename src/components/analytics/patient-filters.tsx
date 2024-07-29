@@ -90,6 +90,8 @@ export default function PatientFilters({
     };
     const params = new URLSearchParams(defaultParams);
     router.push(`${pathname}?${params.toString()}`);
+    // refresh page
+    router.refresh();
   };
 
   // Initialize state from URL params

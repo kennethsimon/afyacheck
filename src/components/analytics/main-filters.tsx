@@ -73,11 +73,12 @@ export function MainFilters({ filterFields, dateRanges }: MainFiltersProps) {
       {dateRanges && (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {dateRanges.map((dateRange) => (
-            <div key={dateRange} className="space-y-2">
-              <Label>
-                {filterFields.find((f) => f.value === dateRange)?.label ||
-                  dateRange}
-              </Label>
+            <div key={dateRange}>
+              {/* {filterFields.find((f) => f.value === dateRange)?.label ? (
+                <Label>
+                  {filterFields.find((f) => f.value === dateRange)?.label}
+                </Label>
+              ) : null} */}
               <CalendarDatePicker
                 date={
                   getDateRangeValue(dateRange) || {
