@@ -26,7 +26,7 @@ export function PatientInfo({ form }: any) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <FormField
           control={form.control}
-          name="patientName"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Patient name:</FormLabel>
@@ -37,23 +37,7 @@ export function PatientInfo({ form }: any) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Age:</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number" // Ensure the input is treated as a number
-                  onChange={(e) => field.onChange(Number(e.target.value))} // Convert value to number
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         <FormField
           control={form.control}
           name="gender"
@@ -71,7 +55,7 @@ export function PatientInfo({ form }: any) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <FormField
           control={form.control}
-          name="dob"
+          name="dateOfBirth"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Date of birth:</FormLabel>
@@ -82,7 +66,7 @@ export function PatientInfo({ form }: any) {
                       variant={"outline"}
                       className={cn(
                         "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
@@ -116,7 +100,7 @@ export function PatientInfo({ form }: any) {
         />
         <FormField
           control={form.control}
-          name="telNo"
+          name="phoneNumber"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Tel. no:</FormLabel>
