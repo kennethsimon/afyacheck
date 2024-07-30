@@ -221,8 +221,8 @@ export function getColumns(): ColumnDef<Patient>[] {
       accessorKey: "dateOfBirth",
       header: "Age",
       cell: ({ row }) => {
-        const dob = parseISO(row.original.dateOfBirth);
-        const age = differenceInYears(new Date(), dob);
+        const dateOfBirth = parseISO(row.original.dateOfBirth);
+        const age = differenceInYears(new Date(), dateOfBirth);
         return age;
       },
       enableSorting: true,

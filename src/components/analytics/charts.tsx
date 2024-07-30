@@ -63,10 +63,10 @@ export default function AnalyticCharts({
   const patientsWithAge = patients?.map((patient) => {
     // console.log(patient.dateOfBirth);
 
-    const dob = parseISO(patient.dateOfBirth); // Assuming dateOfBirth is in ISO format
-    // console.log({ dob });
+    const dateOfBirth = parseISO(patient.dateOfBirth); // Assuming dateOfBirth is in ISO format
+    // console.log({ dateOfBirth });
 
-    const age = differenceInYears(new Date(), dob);
+    const age = differenceInYears(new Date(), dateOfBirth);
     // console.log({ age });
     return { ...patient, age };
   });

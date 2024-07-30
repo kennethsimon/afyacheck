@@ -47,8 +47,8 @@ export function PreviewPatientSheet({
   }, [patient.createdBy]);
 
   const calculateAge = (dateOfBirth: string) => {
-    const dob = parseISO(dateOfBirth);
-    return differenceInYears(new Date(), dob);
+    const dateOfBirth = parseISO(dateOfBirth);
+    return differenceInYears(new Date(), dateOfBirth);
   };
 
   return (
