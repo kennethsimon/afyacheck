@@ -5,9 +5,14 @@ import Image from "next/image";
 
 export default async function AddPatientPage({
   params,
+  searchParams,
 }: {
-  params: { campId: string };
+  params: { campId: string; projectId: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
+  const foundSearchParams = searchParams || {};
+  let patientId = foundSearchParams["patientId"] as string;
+
   console.log("params add patient page: ", params);
   const session: any = await getServerSession(authOptions);
   // if campId is al or not a valid uuid, tell user to select camp
@@ -26,9 +31,14 @@ export default async function AddPatientPage({
           height={50}
         />
         <h1 className="text-2xl font-bold text-center">
-          PATIENT SCREENING FORM
+          {patientId ? "UPDATE PATIENT" : "PATIENT SCREENING FORM"}
         </h1>
-        <AddPatientForm campId={params.campId} session={session} />
+        <AddPatientForm
+          campId={params.campId}
+          session={session}
+          patientId={patientId}
+          projectId={params.projectId}
+        />
       </div>
     </div>
   );

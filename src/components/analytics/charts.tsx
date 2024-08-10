@@ -14,7 +14,7 @@ interface PatientInfo {
   name: string;
   gender: string;
   dateOfBirth: string;
-  clinicalFindings: {
+  clinicalFindings?: {
     bmi: string;
     bloodPressure: string;
     lastCheckup: string;
@@ -60,33 +60,76 @@ export default function AnalyticCharts({
   params: any;
   patients: PatientInfo[];
 }) {
-  const patientsWithAge = patients?.map((patient) => {
-    // console.log(patient.dateOfBirth);
+  console.log("Unfiltered Patients:", patients);
 
-    const dateOfBirth = parseISO(patient.dateOfBirth); // Assuming dateOfBirth is in ISO format
-    // console.log({ dateOfBirth });
+  const filteredPatients = patients.filter((patient) => {
+    const { dateOfBirth, gender, clinicalFindings } = patient;
+    if (!clinicalFindings) {
+      console.log("Patient excluded due to missing clinicalFindings:", patient);
+      return false;
+    }
 
-    const age = differenceInYears(new Date(), dateOfBirth);
-    // console.log({ age });
-    return { ...patient, age };
+    const { bmi, bloodPressure, lastCheckup, heartRate, respiratoryRate } =
+      clinicalFindings;
+    const isValidDateOfBirth = isValid(parseISO(dateOfBirth));
+    const isValidLastCheckup = lastCheckup
+      ? isValid(parseISO(lastCheckup))
+      : false;
+
+    if (!isValidDateOfBirth) {
+      console.log("Patient excluded due to invalid dateOfBirth:", patient);
+    }
+    if (!gender) {
+      console.log("Patient excluded due to missing gender:", patient);
+    }
+    if (!bmi) {
+      console.log("Patient excluded due to missing bmi:", patient);
+    }
+    if (!bloodPressure) {
+      console.log("Patient excluded due to missing bloodPressure:", patient);
+    }
+    if (!lastCheckup) {
+      console.log("Patient excluded due to missing lastCheckup:", patient);
+    }
+    if (!isValidLastCheckup) {
+      console.log("Patient excluded due to invalid lastCheckup:", patient);
+    }
+    if (heartRate === undefined) {
+      console.log("Patient excluded due to missing heartRate:", patient);
+    }
+    if (respiratoryRate === undefined) {
+      console.log("Patient excluded due to missing respiratoryRate:", patient);
+    }
+
+    return (
+      isValidDateOfBirth &&
+      gender &&
+      bmi &&
+      bloodPressure &&
+      lastCheckup &&
+      isValidLastCheckup &&
+      heartRate !== undefined &&
+      respiratoryRate !== undefined
+    );
   });
 
-  // console.log({ patientsWithAge });
-
+  console.log("Filtered Patients:", filteredPatients);
   const patientInfo = useMemo(
     () =>
-      patients.map((patient) => ({
+      filteredPatients.map((patient) => ({
         id: patient._id,
         age: calculateAge(patient.dateOfBirth),
         gender: patient.gender,
-        bmi: parseFloat(patient.clinicalFindings.bmi),
-        bloodPressure: parseFloat(patient.clinicalFindings.bloodPressure),
-        lastCheckup: new Date(patient.clinicalFindings.lastCheckup),
-        heartRate: patient.clinicalFindings.heartRate,
-        respiratoryRate: patient.clinicalFindings.respiratoryRate,
+        bmi: parseFloat(patient.clinicalFindings!.bmi),
+        bloodPressure: parseFloat(patient.clinicalFindings!.bloodPressure),
+        lastCheckup: new Date(patient.clinicalFindings!.lastCheckup),
+        heartRate: patient.clinicalFindings!.heartRate,
+        respiratoryRate: patient.clinicalFindings!.respiratoryRate,
       })),
-    [patients]
+    [filteredPatients]
   );
+
+  console.log("Patient Info:", patientInfo);
 
   const genderDistributionData = useMemo(
     () =>
@@ -100,6 +143,8 @@ export default function AnalyticCharts({
     [patientInfo]
   );
 
+  console.log("Gender Distribution Data:", genderDistributionData);
+
   const totalCount = useMemo(
     () =>
       Object.values(genderDistributionData).reduce(
@@ -112,14 +157,13 @@ export default function AnalyticCharts({
   const rangeCreatedAtFrom = params["range-createdAt-from"] as string;
   const rangeCreatedAtTo = params["range-createdAt-to"] as string;
 
-  // Utility function to safely format dates
   const safeDateFormat = (dateInput: string | Date, dateFormat: string) => {
     const date =
       typeof dateInput === "string" ? new Date(dateInput) : dateInput;
     if (isValid(date)) {
       return format(date, dateFormat);
     }
-    return "N/A"; // Placeholder for invalid or missing dates
+    return "N/A";
   };
 
   const dateRangeDescription = useMemo(
@@ -131,9 +175,6 @@ export default function AnalyticCharts({
     [rangeCreatedAtFrom, rangeCreatedAtTo]
   );
 
-  // console.log("patientInfo", patientInfo);
-
-  // Adjusted useMemo for vitalSignsData
   const vitalSignsData = useMemo(
     () =>
       patientInfo.map((patient) => ({
@@ -145,7 +186,8 @@ export default function AnalyticCharts({
     [patientInfo]
   );
 
-  // Age Distribution Data
+  console.log("Vital Signs Data:", vitalSignsData);
+
   const ageDistributionData = useMemo(
     () =>
       patientInfo.reduce((acc, patient) => {
@@ -161,6 +203,8 @@ export default function AnalyticCharts({
     [patientInfo]
   );
 
+  console.log("Age Distribution Data:", ageDistributionData);
+
   const ageDistributionChartData = useMemo(
     () =>
       Object.entries(ageDistributionData).map(([ageRange, count]) => ({
@@ -170,22 +214,8 @@ export default function AnalyticCharts({
     [ageDistributionData]
   );
 
-  const testAgeDistributionChartData = {
-    ageDistributionChartData: [
-      { ageRange: "0-9", count: 5 },
-      { ageRange: "10-19", count: 3 },
-      { ageRange: "20-29", count: 2 },
-      { ageRange: "30-39", count: 1 },
-      { ageRange: "40-49", count: 1 },
-      { ageRange: "50-59", count: 1 },
-      { ageRange: "60-69", count: 1 },
-      { ageRange: "70-79", count: 1 },
-    ],
-  };
+  console.log("Age Distribution Chart Data:", ageDistributionChartData);
 
-  // console.log({ ageDistributionChartData });
-
-  // BMI Distribution Data
   const bmiDistributionData = useMemo(
     () =>
       patientInfo.map((patient) => ({
@@ -195,7 +225,8 @@ export default function AnalyticCharts({
     [patientInfo]
   );
 
-  // Blood Pressure Trends Data
+  console.log("BMI Distribution Data:", bmiDistributionData);
+
   const bloodPressureTrendsData = useMemo(
     () =>
       patientInfo.map((patient) => ({
@@ -205,15 +236,7 @@ export default function AnalyticCharts({
     [patientInfo]
   );
 
-  // Heart Rate vs. Respiratory Rate Data
-  const heartRateVsRespiratoryRateData = useMemo(
-    () =>
-      patientInfo.map((patient) => ({
-        heartRate: patient.heartRate,
-        respiratoryRate: patient.respiratoryRate,
-      })),
-    [patientInfo]
-  );
+  console.log("Blood Pressure Trends Data:", bloodPressureTrendsData);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -248,7 +271,6 @@ export default function AnalyticCharts({
         <LineChart
           data={bmiDistributionData}
           xKey="age"
-          // yKey="bmi"
           title="BMI Distribution Over Age"
           description={dateRangeDescription}
         />
@@ -257,7 +279,6 @@ export default function AnalyticCharts({
         <LineChart
           data={bloodPressureTrendsData}
           xKey="lastCheckup"
-          // yKey="bloodPressure"
           title="Blood Pressure Trends Over Time"
           description={dateRangeDescription}
         />

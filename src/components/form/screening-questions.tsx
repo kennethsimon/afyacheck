@@ -16,7 +16,7 @@ export function ScreeningQuestions({ form }: any) {
       <div className="space-y-2">
         <FormField
           control={form.control}
-          name="chronicIllness"
+          name="screening.illness"
           render={({ field }) => (
             <FormItem className="space-y-2">
               <FormLabel>Do you have any chronic illnesses?</FormLabel>
@@ -46,10 +46,10 @@ export function ScreeningQuestions({ form }: any) {
         />
         <FormField
           control={form.control}
-          name="medications"
+          name="screening.medication"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel>Are you on any medications?</FormLabel>
+              <FormLabel>Are you on any medication?</FormLabel>
               <FormControl>
                 <RadioGroup
                   value={field.value}
@@ -76,7 +76,7 @@ export function ScreeningQuestions({ form }: any) {
         />
         <FormField
           control={form.control}
-          name="smokeDrink"
+          name="screening.alcoholOrSmokeUsage"
           render={({ field }) => (
             <FormItem className="space-y-2">
               <FormLabel>Do you smoke/drink alcohol?</FormLabel>
@@ -106,7 +106,7 @@ export function ScreeningQuestions({ form }: any) {
         />
         <FormField
           control={form.control}
-          name="familyHistory"
+          name="screening.chronicDiseases"
           render={({ field }) => (
             <FormItem className="space-y-2">
               <FormLabel>
@@ -138,7 +138,7 @@ export function ScreeningQuestions({ form }: any) {
         />
         <FormField
           control={form.control}
-          name="vaccinationHistory"
+          name="screening.vaccinationHistory"
           render={({ field }) => (
             <FormItem className="space-y-2">
               <FormLabel>Vaccination history</FormLabel>

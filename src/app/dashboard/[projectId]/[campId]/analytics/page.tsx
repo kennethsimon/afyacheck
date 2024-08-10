@@ -71,15 +71,15 @@ export default async function AnalyticsPage({
         to: new Date(),
       },
     },
-    {
-      label: "Birth Date Range old",
-      value: "dateOfBirth",
-      type: "date",
-      defaultValue: {
-        from: new Date(new Date().getFullYear() - 100, 0, 1),
-        to: new Date(),
-      },
-    },
+    // {
+    //   label: "Birth Date Range old",
+    //   value: "dateOfBirth",
+    //   type: "date",
+    //   defaultValue: {
+    //     from: new Date(new Date().getFullYear() - 100, 0, 1),
+    //     to: new Date(),
+    //   },
+    // },
   ];
 
   const dateRanges = ["createdAt", "dateOfBirth"];

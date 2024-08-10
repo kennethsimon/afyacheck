@@ -18,7 +18,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="ecgReport"
+        name="doctorComments.ecgReport"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="ecg-report">ECG/ECHO and report</FormLabel>
@@ -32,7 +32,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="mse"
+        name="doctorComments.mse"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="mse">MSE:</FormLabel>
@@ -46,7 +46,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="physio"
+        name="doctorComments.physio"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="physio">PHYSIO:</FormLabel>
@@ -60,7 +60,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="ot"
+        name="doctorComments.ot"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="ot">OT:</FormLabel>
@@ -74,7 +74,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="dentalReport"
+        name="doctorComments.dentalReport"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="dental-report">
@@ -90,7 +90,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="ophthalmologyReport"
+        name="doctorComments.ophthalmologyReport"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="ophthalmology-report">
@@ -106,7 +106,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="doctorsComment"
+        name="doctorComments.doctorsComment"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="doctors-comment">
@@ -122,7 +122,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="prescription"
+        name="doctorComments.prescription"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="prescription">Prescription if any:</FormLabel>
@@ -136,7 +136,7 @@ export function DoctorComments({ form }: any) {
 
       <FormField
         control={form.control}
-        name="referral"
+        name="doctorComments.referral"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel>Referral:</FormLabel>

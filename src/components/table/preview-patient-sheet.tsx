@@ -29,26 +29,32 @@ export function PreviewPatientSheet({
 }: PreviewPatientSheetProps) {
   const params = useParams();
 
-  const campName = React.useMemo(() => {
+  const [campName, setCampName] = React.useState<string | null>(null);
+  const [creatorName, setCreatorName] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
     const fetchCampName = async () => {
-      console.log("patient.camp : ", patient.camp);
-      const { items: campDetails } = await getCampById(patient.camp);
-      return campDetails?.camp?.name || "N/A";
+      if (patient.camp) {
+        const { items: campDetails } = await getCampById(patient.camp);
+        setCampName(campDetails?.camp?.name || "N/A");
+      }
     };
-    return fetchCampName();
-  }, [patient.camp]);
 
-  const creatorName = React.useMemo(() => {
     const fetchCreatorName = async () => {
-      const { items: userDetails } = await getUserById(patient.createdBy);
-      return userDetails?.user?.name || "N/A";
+      if (patient.createdBy) {
+        const { items: userDetails } = await getUserById(patient.createdBy);
+        setCreatorName(userDetails?.user?.name || "N/A");
+      }
     };
-    return fetchCreatorName();
-  }, [patient.createdBy]);
 
-  const calculateAge = (dateOfBirth: string) => {
-    const dateOfBirth = parseISO(dateOfBirth);
-    return differenceInYears(new Date(), dateOfBirth);
+    fetchCampName();
+    fetchCreatorName();
+  }, [patient.camp, patient.createdBy]);
+
+  const calculateAge = (dateOfBirth?: string) => {
+    if (!dateOfBirth) return "N/A";
+    const newDateOfBirth = parseISO(dateOfBirth);
+    return differenceInYears(new Date(), newDateOfBirth);
   };
 
   return (
@@ -59,207 +65,152 @@ export function PreviewPatientSheet({
         </SheetHeader>
         <div className="flex flex-col gap-4 overflow-y-auto flex-grow">
           <section>
-            <h3 className="text-xl font-bold  mb-4">Basic Information</h3>
-            {patient.name && (
-              <div>
-                <strong>Name:</strong> {patient.name}
-              </div>
-            )}
-            {patient.dateOfBirth && (
-              <div>
-                <strong>Age:</strong> {calculateAge(patient.dateOfBirth)}
-              </div>
-            )}
-            {patient.gender && (
-              <div>
-                <strong>Gender:</strong> {patient.gender}
-              </div>
-            )}
-            {patient.phoneNumber && (
-              <div>
-                <strong>Phone Number:</strong> {patient.phoneNumber}
-              </div>
-            )}
-            {patient.email && (
-              <div>
-                <strong>Email:</strong> {patient.email}
-              </div>
-            )}
-            {patient.address && (
-              <div>
-                <strong>Address:</strong> {patient.address}
-              </div>
-            )}
-            {patient.location && (
-              <div>
-                <strong>Location:</strong> {patient.location}
-              </div>
-            )}
-            {campName && (
-              <div>
-                <strong>Camp Name:</strong> {campName}
-              </div>
-            )}
+            <h3 className="text-xl font-bold mb-4">Basic Information</h3>
+            <div>
+              <strong>Name:</strong> {patient.name || "N/A"}
+            </div>
+            <div>
+              <strong>Age:</strong> {calculateAge(patient.dateOfBirth)}
+            </div>
+            <div>
+              <strong>Gender:</strong> {patient.gender || "N/A"}
+            </div>
+            <div>
+              <strong>Phone Number:</strong> {patient.phoneNumber || "N/A"}
+            </div>
+            <div>
+              <strong>Email:</strong> {patient.email || "N/A"}
+            </div>
+            <div>
+              <strong>Address:</strong> {patient.address || "N/A"}
+            </div>
+            <div>
+              <strong>Location:</strong> {patient.location || "N/A"}
+            </div>
+            <div>
+              <strong>Camp Name:</strong> {campName || "N/A"}
+            </div>
           </section>
           {patient.insurance && (
             <section>
-              <h3 className="text-xl font-bold  mb-4">Insurance Information</h3>
-
+              <h3 className="text-xl font-bold mb-4">Insurance Information</h3>
               <div>
-                <strong>Insurance:</strong> {patient.insurance}
+                <strong>Insurance:</strong> {patient.insurance || "N/A"}
               </div>
             </section>
           )}
 
           <section>
-            <h3 className="text-xl font-bold  mb-4">Screening Information</h3>
-            {patient.screening.illness && (
-              <div>
-                <strong>Illness:</strong> {patient.screening.illness}
-              </div>
-            )}
-            {patient.screening.medication && (
-              <div>
-                <strong>Medication:</strong> {patient.screening.medication}
-              </div>
-            )}
-            {patient.screening.alcoholOrSmokeUsage && (
-              <div>
-                <strong>Alcohol or Smoke Usage:</strong>{" "}
-                {patient.screening.alcoholOrSmokeUsage}
-              </div>
-            )}
-            {patient.screening.chronicDiseases && (
-              <div>
-                <strong>Chronic Diseases:</strong>{" "}
-                {patient.screening.chronicDiseases}
-              </div>
-            )}
-            {patient.screening.vaccinationHistory && (
-              <div>
-                <strong>Vaccination History:</strong>{" "}
-                {patient.screening.vaccinationHistory}
-              </div>
-            )}
+            <h3 className="text-xl font-bold mb-4">Screening Information</h3>
+            <div>
+              <strong>Illness:</strong> {patient.screening?.illness || "N/A"}
+            </div>
+            <div>
+              <strong>Medication:</strong>{" "}
+              {patient.screening?.medication || "N/A"}
+            </div>
+            <div>
+              <strong>Alcohol or Smoke Usage:</strong>{" "}
+              {patient.screening?.alcoholOrSmokeUsage || "N/A"}
+            </div>
+            <div>
+              <strong>Chronic Diseases:</strong>{" "}
+              {patient.screening?.chronicDiseases || "N/A"}
+            </div>
+            <div>
+              <strong>Vaccination History:</strong>{" "}
+              {patient.screening?.vaccinationHistory || "N/A"}
+            </div>
           </section>
           <section>
-            <h3 className="text-xl font-bold  mb-4">Clinical Findings</h3>
-            {patient.clinicalFindings.height && (
-              <div>
-                <strong>Height:</strong> {patient.clinicalFindings.height}
-              </div>
-            )}
-            {patient.clinicalFindings.weight && (
-              <div>
-                <strong>Weight:</strong> {patient.clinicalFindings.weight}
-              </div>
-            )}
-            {patient.clinicalFindings.bmi && (
-              <div>
-                <strong>BMI:</strong> {patient.clinicalFindings.bmi}
-              </div>
-            )}
-            {patient.clinicalFindings.bloodPressure && (
-              <div>
-                <strong>Blood Pressure:</strong>{" "}
-                {patient.clinicalFindings.bloodPressure}
-              </div>
-            )}
-            {patient.clinicalFindings.rbgFbs && (
-              <div>
-                <strong>RBG/FBS:</strong> {patient.clinicalFindings.rbgFbs}
-              </div>
-            )}
-            {patient.clinicalFindings.bloodGroup && (
-              <div>
-                <strong>Blood Group:</strong>{" "}
-                {patient.clinicalFindings.bloodGroup}
-              </div>
-            )}
-            {patient.clinicalFindings.cholesterol && (
-              <div>
-                <strong>Cholesterol:</strong>{" "}
-                {patient.clinicalFindings.cholesterol}
-              </div>
-            )}
-            {patient.clinicalFindings.physicalAppearance && (
-              <div>
-                <strong>Physical Appearance:</strong>{" "}
-                {patient.clinicalFindings.physicalAppearance}
-              </div>
-            )}
-            {patient.clinicalFindings.cancer && (
-              <div>
-                <strong>Cancer:</strong> {patient.clinicalFindings.cancer}
-              </div>
-            )}
-            {patient.clinicalFindings.ecgEcho && (
-              <div>
-                <strong>ECG/Echo:</strong> {patient.clinicalFindings.ecgEcho}
-              </div>
-            )}
-            {patient.clinicalFindings.mse && (
-              <div>
-                <strong>MSE:</strong> {patient.clinicalFindings.mse}
-              </div>
-            )}
-            {patient.clinicalFindings.physio && (
-              <div>
-                <strong>Physio:</strong> {patient.clinicalFindings.physio}
-              </div>
-            )}
-            {patient.clinicalFindings.ot && (
-              <div>
-                <strong>OT:</strong> {patient.clinicalFindings.ot}
-              </div>
-            )}
-            {patient.clinicalFindings.dental && (
-              <div>
-                <strong>Dental:</strong> {patient.clinicalFindings.dental}
-              </div>
-            )}
-            {patient.clinicalFindings.ophthalmology && (
-              <div>
-                <strong>Ophthalmology:</strong>{" "}
-                {patient.clinicalFindings.ophthalmology}
-              </div>
-            )}
-            {patient.clinicalFindings.comments && (
-              <div>
-                <strong>Comments:</strong> {patient.clinicalFindings.comments}
-              </div>
-            )}
-            {patient.clinicalFindings.prescription && (
-              <div>
-                <strong>Prescription:</strong>{" "}
-                {patient.clinicalFindings.prescription}
-              </div>
-            )}
-            {patient.clinicalFindings.referral && (
-              <div>
-                <strong>Referral:</strong> {patient.clinicalFindings.referral}
-              </div>
-            )}
+            <h3 className="text-xl font-bold mb-4">Clinical Findings</h3>
+            <div>
+              <strong>Height:</strong>{" "}
+              {patient.clinicalFindings?.height || "N/A"}
+            </div>
+            <div>
+              <strong>Weight:</strong>{" "}
+              {patient.clinicalFindings?.weight || "N/A"}
+            </div>
+            <div>
+              <strong>BMI:</strong> {patient.clinicalFindings?.bmi || "N/A"}
+            </div>
+            <div>
+              <strong>Blood Pressure:</strong>{" "}
+              {patient.clinicalFindings?.bloodPressure || "N/A"}
+            </div>
+            <div>
+              <strong>RBG/FBS:</strong>{" "}
+              {patient.clinicalFindings?.rbgFbs || "N/A"}
+            </div>
+            <div>
+              <strong>Blood Group:</strong>{" "}
+              {patient.clinicalFindings?.bloodGroup || "N/A"}
+            </div>
+            <div>
+              <strong>Cholesterol:</strong>{" "}
+              {patient.clinicalFindings?.cholesterol || "N/A"}
+            </div>
+            <div>
+              <strong>Physical Appearance:</strong>{" "}
+              {patient.clinicalFindings?.physicalAppearance || "N/A"}
+            </div>
+            <div>
+              <strong>Cancer:</strong>{" "}
+              {patient.clinicalFindings?.cancer || "N/A"}
+            </div>
+            <div>
+              <strong>ECG/Echo:</strong>{" "}
+              {patient.clinicalFindings?.ecgEcho || "N/A"}
+            </div>
+            <div>
+              <strong>MSE:</strong> {patient.clinicalFindings?.mse || "N/A"}
+            </div>
+            <div>
+              <strong>Physio:</strong>{" "}
+              {patient.clinicalFindings?.physio || "N/A"}
+            </div>
+            <div>
+              <strong>OT:</strong> {patient.clinicalFindings?.ot || "N/A"}
+            </div>
+            <div>
+              <strong>Dental:</strong>{" "}
+              {patient.clinicalFindings?.dental || "N/A"}
+            </div>
+            <div>
+              <strong>Ophthalmology:</strong>{" "}
+              {patient.clinicalFindings?.ophthalmology || "N/A"}
+            </div>
+            <div>
+              <strong>Comments:</strong>{" "}
+              {patient.clinicalFindings?.comments || "N/A"}
+            </div>
+            <div>
+              <strong>Prescription:</strong>{" "}
+              {patient.clinicalFindings?.prescription || "N/A"}
+            </div>
+            <div>
+              <strong>Referral:</strong>{" "}
+              {patient.clinicalFindings?.referral || "N/A"}
+            </div>
           </section>
           <section>
-            <h3 className="text-xl font-bold  mb-4">Metadata</h3>
-            {creatorName && (
-              <div>
-                <strong>Created By :</strong> {creatorName}
-              </div>
-            )}
-            {patient.createdAt && (
-              <div>
-                <strong>Created At:</strong>{" "}
-                {new Date(patient.createdAt).toLocaleString()}
-              </div>
-            )}
-            {patient.updatedAt && (
-              <div>
-                <strong>Updated At:</strong>{" "}
-                {new Date(patient.updatedAt).toLocaleString()}
-              </div>
-            )}
+            <h3 className="text-xl font-bold mb-4">Metadata</h3>
+            <div>
+              <strong>Created By:</strong> {creatorName || "N/A"}
+            </div>
+            <div>
+              <strong>Created At:</strong>{" "}
+              {patient.createdAt
+                ? new Date(patient.createdAt).toLocaleString()
+                : "N/A"}
+            </div>
+            <div>
+              <strong>Updated At:</strong>{" "}
+              {patient.updatedAt
+                ? new Date(patient.updatedAt).toLocaleString()
+                : "N/A"}
+            </div>
           </section>
         </div>
 

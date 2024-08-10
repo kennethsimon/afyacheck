@@ -14,18 +14,18 @@ export function ClinicalFindings({ form }: any) {
   return (
     <div className="space-y-4 py-8">
       <h2 className="text-center text-lg font-bold">CLINICAL FINDINGS</h2>
-
       <FormField
         control={form.control}
-        name="height"
+        name="clinicalFindings.height"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="height">Height (cm):</FormLabel>
             <FormControl>
               <Input
-                onChange={(e) => field.onChange(Number(e.target.value))}
                 id="height"
                 type="number"
+                value={field.value !== undefined ? field.value.toString() : ""}
+                onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
             <FormMessage />
@@ -35,15 +35,16 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="weight"
+        name="clinicalFindings.weight"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="weight">Weight (kg):</FormLabel>
             <FormControl>
               <Input
-                onChange={(e) => field.onChange(Number(e.target.value))}
                 id="weight"
                 type="number"
+                value={field.value !== undefined ? field.value.toString() : ""}
+                onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
             <FormMessage />
@@ -53,7 +54,7 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="bmi"
+        name="clinicalFindings.bmi"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="bmi">BMI:</FormLabel>
@@ -61,6 +62,7 @@ export function ClinicalFindings({ form }: any) {
               <Input
                 id="bmi"
                 type="number"
+                value={field.value !== undefined ? field.value.toString() : ""}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
             </FormControl>
@@ -71,7 +73,7 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="bloodPressure"
+        name="clinicalFindings.bloodPressure"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="blood-pressure">Blood pressure:</FormLabel>
@@ -85,12 +87,12 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="rbg"
+        name="clinicalFindings.rbgFbs"
         render={({ field }) => (
           <FormItem className="space-y-2">
-            <FormLabel htmlFor="rbg">RBG/FBS:</FormLabel>
+            <FormLabel htmlFor="rbg-fbs">RBG/FBS:</FormLabel>
             <FormControl>
-              <Input id="rbg" type="text" {...field} />
+              <Input id="rbg-fbs" type="text" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -99,7 +101,7 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="bloodGroup"
+        name="clinicalFindings.bloodGroup"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="blood-group">Blood group:</FormLabel>
@@ -113,7 +115,7 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="cholesterol"
+        name="clinicalFindings.cholesterol"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="cholesterol">Cholesterol:</FormLabel>
@@ -127,11 +129,11 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="physicalAppearance"
+        name="clinicalFindings.physicalAppearance"
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="physical-appearance">
-              Physical appearance
+              Physical appearance:
             </FormLabel>
             <FormControl>
               <Textarea id="physical-appearance" {...field} />
@@ -143,14 +145,138 @@ export function ClinicalFindings({ form }: any) {
 
       <FormField
         control={form.control}
-        name="cancerReport"
+        name="clinicalFindings.cancer"
         render={({ field }) => (
           <FormItem className="space-y-2">
-            <FormLabel htmlFor="cancer-report">
-              Cancer screened and report
-            </FormLabel>
+            <FormLabel htmlFor="cancer">Cancer:</FormLabel>
             <FormControl>
-              <Textarea id="cancer-report" {...field} />
+              <Textarea id="cancer" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.ecgEcho"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="ecg-echo">ECG/Echo:</FormLabel>
+            <FormControl>
+              <Textarea id="ecg-echo" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.mse"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="mse">MSE:</FormLabel>
+            <FormControl>
+              <Textarea id="mse" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.physio"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="physio">Physio:</FormLabel>
+            <FormControl>
+              <Textarea id="physio" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.ot"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="ot">OT:</FormLabel>
+            <FormControl>
+              <Textarea id="ot" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.dental"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="dental">Dental:</FormLabel>
+            <FormControl>
+              <Textarea id="dental" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.ophthalmology"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="ophthalmology">Ophthalmology:</FormLabel>
+            <FormControl>
+              <Textarea id="ophthalmology" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.comments"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="comments">Comments:</FormLabel>
+            <FormControl>
+              <Textarea id="comments" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.prescription"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="prescription">Prescription:</FormLabel>
+            <FormControl>
+              <Textarea id="prescription" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="clinicalFindings.referral"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel htmlFor="referral">Referral:</FormLabel>
+            <FormControl>
+              <Textarea id="referral" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

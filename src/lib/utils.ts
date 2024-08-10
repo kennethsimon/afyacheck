@@ -31,6 +31,85 @@ export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+// Helper function to set nested values
+const setNestedValue = (obj: any, path: string, value: any) => {
+  const keys = path.split(".");
+  let current = obj;
+  for (let i = 0; i < keys.length; i++) {
+    if (i === keys.length - 1) {
+      current[keys[i]] = value;
+    } else {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+  }
+};
+
+export const cleanPatientFormData = (data: any, stage: number) => {
+  const allowedFields: { [key: number]: string[] } = {
+    0: [
+      "name",
+      "gender",
+      "dateOfBirth",
+      "phoneNumber",
+      "location",
+      "insurance",
+      "address",
+    ],
+    1: [
+      "screening.illness",
+      "screening.medication",
+      "screening.alcoholOrSmokeUsage",
+      "screening.chronicDiseases",
+      "screening.vaccinationHistory",
+    ],
+    2: [
+      "clinicalFindings.height",
+      "clinicalFindings.weight",
+      "clinicalFindings.bmi",
+      "clinicalFindings.bloodPressure",
+      "clinicalFindings.rbgFbs",
+      "clinicalFindings.bloodGroup",
+      "clinicalFindings.cholesterol",
+      "clinicalFindings.physicalAppearance",
+      "clinicalFindings.cancer",
+      "clinicalFindings.ecgEcho",
+      "clinicalFindings.mse",
+      "clinicalFindings.physio",
+      "clinicalFindings.ot",
+      "clinicalFindings.dental",
+      "clinicalFindings.ophthalmology",
+      "clinicalFindings.comments",
+      "clinicalFindings.prescription",
+      "clinicalFindings.referral",
+    ],
+    3: [
+      "doctorComments.ecgReport",
+      "doctorComments.mse",
+      "doctorComments.physio",
+      "doctorComments.ot",
+      "doctorComments.dentalReport",
+      "doctorComments.ophthalmologyReport",
+      "doctorComments.doctorsComment",
+      "doctorComments.prescription",
+      "doctorComments.referral",
+    ],
+  };
+
+  const cleanedData: { [key: string]: any } = {};
+
+  // Iterate over the allowed fields for the current stage and copy them to cleanedData
+  allowedFields[stage]?.forEach((field) => {
+    const value = field.split(".").reduce((acc, key) => acc?.[key], data);
+    if (value !== undefined) {
+      setNestedValue(cleanedData, field, value);
+    }
+  });
+
+  return cleanedData;
+};
 export const calculateAge = (dateOfBirth: string): number => {
   const today = new Date();
   const birthDate = new Date(dateOfBirth);

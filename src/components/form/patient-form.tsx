@@ -15,6 +15,7 @@ import { useState, useEffect, useMemo } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { getPermissions } from "@/services/projects";
 import { useRouter } from "next/navigation";
+import { cleanPatientFormData } from "@/lib/utils";
 
 const PatientInfoSchema = z.object({
   name: z.string().min(1, "Patient name is required"),
@@ -27,39 +28,54 @@ const PatientInfoSchema = z.object({
 });
 
 const ScreeningQuestionsSchema = z.object({
-  chronicIllness: z.enum(["yes", "no", "dont-know"]),
-  medications: z.enum(["yes", "no", "stopped"]),
-  smokeDrink: z.enum(["yes", "no", "stopped"]),
-  familyHistory: z.enum(["yes", "no", "dont-know"]),
-  vaccinationHistory: z.enum(["yes", "no", "ready", "refuse"]),
+  screening: z.object({
+    illness: z.enum(["yes", "no", "dont-know"]),
+    medication: z.enum(["yes", "no", "stopped"]),
+    alcoholOrSmokeUsage: z.enum(["yes", "no", "stopped"]),
+    chronicDiseases: z.enum(["yes", "no", "dont-know"]),
+    vaccinationHistory: z.enum(["yes", "no", "ready", "refuse"]),
+  }),
 });
 
 const ClinicalFindingsSchema = z.object({
-  height: z.number().min(0, "Height must be a positive number"),
-  weight: z.number().min(0, "Weight must be a positive number"),
-  bmi: z.number().min(0, "BMI must be a positive number"),
-  bloodPressure: z.string().min(1, "Blood pressure is required"),
-  rbg: z.string().min(1, "RBG/FBS is required"),
-  bloodGroup: z.string().min(1, "Blood group is required"),
-  cholesterol: z.string().min(1, "Cholesterol is required"),
-  physicalAppearance: z.string().min(1, "Physical appearance is required"),
-  cancerReport: z.string().min(1, "Cancer report is required"),
+  clinicalFindings: z.object({
+    height: z.number(),
+    weight: z.number(),
+    bmi: z.number(),
+    bloodPressure: z.string(),
+    rbgFbs: z.string(),
+    bloodGroup: z.string(),
+    cholesterol: z.string(),
+    physicalAppearance: z.string(),
+    cancer: z.string(),
+    ecgEcho: z.string(),
+    mse: z.string(),
+    physio: z.string(),
+    ot: z.string(),
+    dental: z.string(),
+    ophthalmology: z.string(),
+    comments: z.string(),
+    prescription: z.string(),
+    referral: z.string(),
+  }),
 });
 
 const DoctorCommentsSchema = z.object({
-  ecgReport: z.string().min(1, "ECG/ECHO and report is required"),
-  mse: z.string().min(1, "MSE is required"),
-  physio: z.string().min(1, "PHYSIO is required"),
-  ot: z.string().min(1, "OT is required"),
-  dentalReport: z.string().min(1, "Dental screening and report is required"),
-  ophthalmologyReport: z
-    .string()
-    .min(1, "Ophthalmology screening and report is required"),
-  doctorsComment: z
-    .string()
-    .min(1, "Doctors comment and/or diagnosis is required"),
-  prescription: z.string().min(1, "Prescription if any is required"),
-  referral: z.enum(["yes", "no-need-counselled", "no-need-healthy"]),
+  doctorComments: z.object({
+    ecgReport: z.string().min(1, "ECG/ECHO and report is required"),
+    mse: z.string().min(1, "MSE is required"),
+    physio: z.string().min(1, "PHYSIO is required"),
+    ot: z.string().min(1, "OT is required"),
+    dentalReport: z.string().min(1, "Dental screening and report is required"),
+    ophthalmologyReport: z
+      .string()
+      .min(1, "Ophthalmology screening and report is required"),
+    doctorsComment: z
+      .string()
+      .min(1, "Doctors comment and/or diagnosis is required"),
+    prescription: z.string().min(1, "Prescription if any is required"),
+    referral: z.enum(["yes", "no-need-counselled", "no-need-healthy"]),
+  }),
 });
 
 const schemas = [
@@ -85,8 +101,8 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
     setPermissions([
       "PatientInfo",
       "ScreeningQuestions",
-      "ClinicalFindings",
-      "DoctorComments",
+      // "ClinicalFindings",
+      // "DoctorComments",
     ]);
   }, [session]);
 
@@ -96,6 +112,7 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
         try {
           const response = await projectApi.get(`/patients/${patientId}`);
           const patientInfo = response?.data?.data.patient;
+          console.log("patientInfo : ", patientInfo);
           setPatientData(patientInfo);
           form.reset(patientInfo);
         } catch (error) {
@@ -110,13 +127,61 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
+      let updatedData = {};
+
       if (currentStage === 0 && !patientId) {
-        const updatedData = {
+        updatedData = {
           ...data,
           camp: campId,
           createdBy: session?.user?._id,
         };
-        const response = await projectApi.post("/patients", updatedData);
+      } else {
+        switch (currentStage) {
+          case 0:
+            updatedData = {
+              ...patientData,
+              ...data,
+            };
+            break;
+          case 1:
+            updatedData = {
+              ...patientData,
+              screening: {
+                ...patientData.screening,
+                ...data.screening,
+              },
+            };
+            break;
+          case 2:
+            updatedData = {
+              ...patientData,
+              clinicalFindings: {
+                ...patientData.clinicalFindings,
+                ...data.clinicalFindings,
+              },
+            };
+            break;
+          case 3:
+            updatedData = {
+              ...patientData,
+              doctorComments: {
+                ...patientData.doctorComments,
+                ...data.doctorComments,
+              },
+            };
+            break;
+          default:
+            updatedData = data;
+        }
+      }
+
+      console.log(updatedData);
+
+      const cleanData = cleanPatientFormData(updatedData, currentStage);
+      console.log(cleanData);
+
+      if (currentStage === 0 && !patientId) {
+        const response = await projectApi.post("/patients", cleanData);
         const patientId = response.data.patient._id;
         setPatientData(response.data.patient);
         toast("Patient created successfully.");
@@ -124,7 +189,10 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
           `/dashboard/${projectId}/${campId}/add-patient?patientId=${patientId}`
         );
       } else {
-        const response = await projectApi.put(`/patients/${patientId}`, data);
+        const response = await projectApi.put(
+          `/patients/${patientId}`,
+          cleanData
+        );
         setPatientData(response.data.patient);
         toast("Patient updated successfully.");
       }

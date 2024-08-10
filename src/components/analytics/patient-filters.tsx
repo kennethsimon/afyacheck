@@ -236,7 +236,7 @@ export default function PatientFilters({
               }}
             />
           </div>
-          <div className="grid gap-1">
+          {/* <div className="grid gap-1">
             <Label htmlFor="dateOfBirth-range">Birth Date Range </Label>
             <CalendarDatePicker
               date={birthDateDateRange}
@@ -245,7 +245,7 @@ export default function PatientFilters({
                 handleDateRangeChange("dateOfBirth", dateRange);
               }}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
