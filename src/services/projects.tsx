@@ -38,6 +38,16 @@ export const getProjectById = async (projectId: string) => {
   return results;
 };
 
+export const getAddPatientFormPermissions = async () => {
+  const results = {
+    PatientInfo: true,
+    ScreeningQuestions: true,
+    ClinicalFindings: true,
+    DoctorComments: false,
+  };
+
+  return results;
+};
 export const getPermissions = async () => {
   let results: any = {};
   await projectApi

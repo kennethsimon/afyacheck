@@ -108,6 +108,14 @@ export const cleanPatientFormData = (data: any, stage: number) => {
     }
   });
 
+  // Allow 'camp' and 'createdBy' fields on the root level
+  if (data.camp !== undefined) {
+    cleanedData.camp = data.camp;
+  }
+  if (data.createdBy !== undefined) {
+    cleanedData.createdBy = data.createdBy;
+  }
+
   return cleanedData;
 };
 export const calculateAge = (dateOfBirth: string): number => {

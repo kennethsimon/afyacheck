@@ -13,70 +13,16 @@ import { toast } from "sonner";
 import projectApi from "../../services/config";
 import { useState, useEffect, useMemo } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { getPermissions } from "@/services/projects";
+import { getAddPatientFormPermissions } from "@/services/projects";
 import { useRouter } from "next/navigation";
 import { cleanPatientFormData } from "@/lib/utils";
-
-const PatientInfoSchema = z.object({
-  name: z.string().min(1, "Patient name is required"),
-  gender: z.enum(["male", "female", "others"]),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  phoneNumber: z.string().min(1, "Telephone number is required"),
-  location: z.string().min(1, "Location is required"),
-  insurance: z.string().optional(),
-  address: z.string().min(1, "Address is required"),
-});
-
-const ScreeningQuestionsSchema = z.object({
-  screening: z.object({
-    illness: z.enum(["yes", "no", "dont-know"]),
-    medication: z.enum(["yes", "no", "stopped"]),
-    alcoholOrSmokeUsage: z.enum(["yes", "no", "stopped"]),
-    chronicDiseases: z.enum(["yes", "no", "dont-know"]),
-    vaccinationHistory: z.enum(["yes", "no", "ready", "refuse"]),
-  }),
-});
-
-const ClinicalFindingsSchema = z.object({
-  clinicalFindings: z.object({
-    height: z.number(),
-    weight: z.number(),
-    bmi: z.number(),
-    bloodPressure: z.string(),
-    rbgFbs: z.string(),
-    bloodGroup: z.string(),
-    cholesterol: z.string(),
-    physicalAppearance: z.string(),
-    cancer: z.string(),
-    ecgEcho: z.string(),
-    mse: z.string(),
-    physio: z.string(),
-    ot: z.string(),
-    dental: z.string(),
-    ophthalmology: z.string(),
-    comments: z.string(),
-    prescription: z.string(),
-    referral: z.string(),
-  }),
-});
-
-const DoctorCommentsSchema = z.object({
-  doctorComments: z.object({
-    ecgReport: z.string().min(1, "ECG/ECHO and report is required"),
-    mse: z.string().min(1, "MSE is required"),
-    physio: z.string().min(1, "PHYSIO is required"),
-    ot: z.string().min(1, "OT is required"),
-    dentalReport: z.string().min(1, "Dental screening and report is required"),
-    ophthalmologyReport: z
-      .string()
-      .min(1, "Ophthalmology screening and report is required"),
-    doctorsComment: z
-      .string()
-      .min(1, "Doctors comment and/or diagnosis is required"),
-    prescription: z.string().min(1, "Prescription if any is required"),
-    referral: z.enum(["yes", "no-need-counselled", "no-need-healthy"]),
-  }),
-});
+import StepIndicator from "./step-indicator"; // Import the StepIndicator component
+import {
+  ClinicalFindingsSchema,
+  DoctorCommentsSchema,
+  PatientInfoSchema,
+  ScreeningQuestionsSchema,
+} from "@/types/schemas";
 
 const schemas = [
   PatientInfoSchema,
@@ -87,9 +33,12 @@ const schemas = [
 
 export function AddPatientForm({ campId, session, patientId, projectId }: any) {
   const [loading, setLoading] = useState(false);
-  const [permissions, setPermissions] = useState<any>(null);
+  const [allSteps, setAllSteps] = useState<any>([]);
+  const [allowedSteps, setAllowedSteps] = useState<any>([]);
   const [currentStage, setCurrentStage] = useState(0);
   const [patientData, setPatientData] = useState<any>(null);
+  const [stepStatus, setStepStatus] = useState<string[]>([]);
+  const [stepAllowed, setStepAllowed] = useState<boolean[]>([]);
   const router = useRouter();
 
   const form = useForm({
@@ -98,13 +47,24 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
   });
 
   useEffect(() => {
-    setPermissions([
-      "PatientInfo",
-      "ScreeningQuestions",
-      // "ClinicalFindings",
-      // "DoctorComments",
-    ]);
-  }, [session]);
+    const fetchSteps = async () => {
+      const allSteps = [
+        "PatientInfo",
+        "ScreeningQuestions",
+        "ClinicalFindings",
+        "DoctorComments",
+      ];
+      setAllSteps(allSteps);
+
+      const formPermissions = await getAddPatientFormPermissions();
+      console.log("formPermissions : ", formPermissions);
+      const allowedSteps = allSteps.filter((step) => formPermissions[step]);
+      console.log("allowedSteps : ", allowedSteps);
+      setAllowedSteps(allowedSteps);
+      updateStepStatus(patientData, formPermissions);
+    };
+    fetchSteps();
+  }, [session, currentStage]);
 
   useEffect(() => {
     if (patientId) {
@@ -115,6 +75,8 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
           console.log("patientInfo : ", patientInfo);
           setPatientData(patientInfo);
           form.reset(patientInfo);
+          const formPermissions = await getAddPatientFormPermissions();
+          updateStepStatus(patientInfo, formPermissions);
         } catch (error) {
           console.error("Error fetching patient data:", error);
           toast("Failed to fetch patient data. Please try again.");
@@ -122,7 +84,12 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
       };
       fetchPatientData();
     }
-  }, [patientId, form]);
+  }, [patientId, form, currentStage]);
+
+  useEffect(() => {
+    form.reset();
+    setCurrentStage(0);
+  }, []);
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -217,112 +184,70 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
     [form]
   );
 
-  const fetchLatestPatientData = async () => {
-    try {
-      const response = await projectApi.get(`/patients/${patientId}`);
-      const patientInfo = response?.data?.data.patient;
-      setPatientData(patientInfo);
-      form.reset(patientInfo);
-    } catch (error) {
-      console.error("Error fetching patient data:", error);
-      toast("Failed to fetch patient data. Please try again.");
-    }
-  };
-
   const renderStage = () => {
     console.log(`Rendering stage: ${stages[currentStage]?.name}`);
     return stages[currentStage]?.component;
   };
 
-  const nextStage = () => {
-    console.log("Triggering form validation...");
-    form.trigger().then((isValid) => {
-      console.log("Form validation result:", isValid);
-      if (isValid) {
-        // Submit the current stage data before moving to the next stage
-        form
-          .handleSubmit(onSubmit)()
-          .then(() => {
-            // Fetch the latest patient data
-            fetchLatestPatientData().then(() => {
-              let nextStageIndex = currentStage + 1;
-              console.log("Initial next stage index:", nextStageIndex);
-              while (
-                nextStageIndex < stages.length &&
-                !canAccessStage(stages[nextStageIndex].name)
-              ) {
-                console.log(
-                  `Cannot access stage: ${stages[nextStageIndex].name}, moving to next stage`
-                );
-                nextStageIndex++;
-              }
-              if (nextStageIndex < stages.length) {
-                console.log("Setting current stage to:", nextStageIndex);
-                setCurrentStage(nextStageIndex);
-                console.log("Resetting form with patient data:", patientData);
-                form.reset(patientData); // Reset form with current patient data
-              } else {
-                console.log("No accessible stages found beyond current stage.");
-                toast("No more stages available. Submitting form.");
-                form.handleSubmit(onSubmit)(); // Trigger form submission
-              }
-            });
-          });
-      } else {
-        console.log("Form is invalid. Showing toast message.");
-        toast("Please fill all required fields before proceeding.");
+  const updateStepStatus = (patientInfo: any, formPermissions: any) => {
+    const status = stages.map((stage, index) => {
+      switch (index) {
+        case 0:
+          return patientInfo?.name ? "Completed" : "Not Completed";
+        case 1:
+          return patientInfo?.screening ? "Completed" : "Not Completed";
+        case 2:
+          return patientInfo?.clinicalFindings ? "Completed" : "Not Completed";
+        case 3:
+          return patientInfo?.doctorComments ? "Completed" : "Not Completed";
+        default:
+          return "Not Completed";
       }
     });
+
+    const allowed = stages.map((stage) => formPermissions[stage.name] === true);
+    setStepStatus(status);
+    setStepAllowed(allowed);
   };
 
-  const prevStage = () => {
-    // Fetch the latest patient data
-    fetchLatestPatientData().then(() => {
-      let prevStageIndex = currentStage - 1;
-      while (
-        prevStageIndex >= 0 &&
-        !canAccessStage(stages[prevStageIndex].name)
-      ) {
-        prevStageIndex--;
-      }
-      if (prevStageIndex >= 0) {
-        setCurrentStage(prevStageIndex);
-        form.reset(patientData);
-      }
-    });
+  const handleStepClick = (index: number) => {
+    if (stepAllowed[index]) {
+      setCurrentStage(index);
+      form.reset(patientData);
+    }
   };
-
-  const canAccessStage = (stageName: string) =>
-    permissions?.includes(stageName);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="gap-8">
+        {!patientId && (
+          <div className="text-center mb-4">
+            Create patient to edit other patient details
+          </div>
+        )}
+        {patientData?.name && (
+          <div className="text-center mb-4">
+            Updating details for patient: {patientData.name}
+          </div>
+        )}
+        <StepIndicator
+          steps={[
+            "Patient Info",
+            "Screening Questions",
+            "Clinical Findings",
+            "Doctor Comments",
+          ]}
+          currentStep={currentStage}
+          stepStatus={stepStatus}
+          stepAllowed={stepAllowed}
+          onStepClick={handleStepClick}
+        />
         {renderStage()}
-        <div className="flex justify-between">
-          <Button
-            className="flex justify-start"
-            type="button"
-            onClick={prevStage}
-            disabled={currentStage === 0}
-          >
-            Previous
+        <div className="flex justify-center mt-4">
+          <Button className="flex justify-start" type="submit">
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            {currentStage === 0 && !patientId ? "Submit" : "Update"}
           </Button>
-          <Button
-            className="flex justify-start"
-            type="button"
-            onClick={nextStage}
-            disabled={currentStage === stages.length - 1}
-          >
-            Next
-          </Button>
-          {(currentStage === stages.length - 1 ||
-            !canAccessStage(stages[currentStage + 1]?.name)) && (
-            <Button className="flex justify-start" type="submit">
-              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-              Submit
-            </Button>
-          )}
         </div>
       </form>
     </Form>
