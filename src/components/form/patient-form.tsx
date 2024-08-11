@@ -39,6 +39,7 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
   const [patientData, setPatientData] = useState<any>(null);
   const [stepStatus, setStepStatus] = useState<string[]>([]);
   const [stepAllowed, setStepAllowed] = useState<boolean[]>([]);
+  const [formPermissions, setFormPermissions] = useState<any>(null);
   const router = useRouter();
 
   const form = useForm({
@@ -56,15 +57,18 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
       ];
       setAllSteps(allSteps);
 
-      const formPermissions = await getAddPatientFormPermissions();
-      console.log("formPermissions : ", formPermissions);
-      const allowedSteps = allSteps.filter((step) => formPermissions[step]);
-      console.log("allowedSteps : ", allowedSteps);
-      setAllowedSteps(allowedSteps);
-      updateStepStatus(patientData, formPermissions);
+      if (!formPermissions) {
+        const fetchedFormPermissions = await getAddPatientFormPermissions();
+        setFormPermissions(fetchedFormPermissions);
+        const allowedSteps = allSteps.filter(
+          (step) => fetchedFormPermissions[step]
+        );
+        setAllowedSteps(allowedSteps);
+        updateStepStatus(patientData, fetchedFormPermissions);
+      }
     };
     fetchSteps();
-  }, [session, currentStage]);
+  }, [session, currentStage, formPermissions]);
 
   useEffect(() => {
     if (patientId) {
@@ -72,11 +76,11 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
         try {
           const response = await projectApi.get(`/patients/${patientId}`);
           const patientInfo = response?.data?.data.patient;
-          console.log("patientInfo : ", patientInfo);
           setPatientData(patientInfo);
           form.reset(patientInfo);
-          const formPermissions = await getAddPatientFormPermissions();
-          updateStepStatus(patientInfo, formPermissions);
+          if (formPermissions) {
+            updateStepStatus(patientInfo, formPermissions);
+          }
         } catch (error) {
           console.error("Error fetching patient data:", error);
           toast("Failed to fetch patient data. Please try again.");
@@ -84,7 +88,7 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
       };
       fetchPatientData();
     }
-  }, [patientId, form, currentStage]);
+  }, [patientId, form, currentStage, formPermissions]);
 
   useEffect(() => {
     form.reset();
@@ -142,10 +146,7 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
         }
       }
 
-      console.log(updatedData);
-
       const cleanData = cleanPatientFormData(updatedData, currentStage);
-      console.log(cleanData);
 
       if (currentStage === 0 && !patientId) {
         const response = await projectApi.post("/patients", cleanData);
@@ -162,8 +163,30 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
         );
         setPatientData(response.data.patient);
         toast("Patient updated successfully.");
+        updateStepStatus(response.data.patient, formPermissions);
       }
+
       setLoading(false);
+
+      if (!formPermissions) {
+        const fetchedFormPermissions = await getAddPatientFormPermissions();
+        setFormPermissions(fetchedFormPermissions);
+      }
+
+      const allowed = stages.map(
+        (stage) => formPermissions[stage.name] === true
+      );
+
+      if (currentStage < stages.length - 1 && allowed[currentStage + 1]) {
+        setCurrentStage(currentStage + 1);
+        form.reset(patientData);
+      } else if (
+        currentStage < stages.length - 1 &&
+        !allowed[currentStage + 1]
+      ) {
+        console.error("You don't have permission to move to the next stage.");
+        toast("You don't have permission to move to the next stage.");
+      }
     } catch (error) {
       console.log("error : ", error);
       setLoading(false);
@@ -185,7 +208,6 @@ export function AddPatientForm({ campId, session, patientId, projectId }: any) {
   );
 
   const renderStage = () => {
-    console.log(`Rendering stage: ${stages[currentStage]?.name}`);
     return stages[currentStage]?.component;
   };
 
