@@ -20,6 +20,7 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="height">Height (cm):</FormLabel>
+            {/*  select */}
             <FormControl>
               <Input
                 id="height"
@@ -39,6 +40,8 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="weight">Weight (kg):</FormLabel>
+            {/* input*/}
+
             <FormControl>
               <Input
                 id="weight"
@@ -58,6 +61,8 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="bmi">BMI:</FormLabel>
+            {/* input*/}
+
             <FormControl>
               <Input
                 id="bmi"
@@ -77,6 +82,8 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="blood-pressure">Blood pressure:</FormLabel>
+            {/* input */}
+
             <FormControl>
               <Input id="blood-pressure" type="text" {...field} />
             </FormControl>
@@ -91,6 +98,7 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="rbg-fbs">RBG/FBS:</FormLabel>
+            {/* input */}
             <FormControl>
               <Input id="rbg-fbs" type="text" {...field} />
             </FormControl>
@@ -105,6 +113,7 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="blood-group">Blood group:</FormLabel>
+            {/* select */}
             <FormControl>
               <Input id="blood-group" type="text" {...field} />
             </FormControl>
@@ -119,6 +128,7 @@ export function ClinicalFindings({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel htmlFor="cholesterol">Cholesterol:</FormLabel>
+            {/* input */}
             <FormControl>
               <Input id="cholesterol" type="text" {...field} />
             </FormControl>
