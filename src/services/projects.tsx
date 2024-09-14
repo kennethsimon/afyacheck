@@ -43,7 +43,7 @@ export const getAddPatientFormPermissions = async () => {
     PatientInfo: true,
     ScreeningQuestions: true,
     ClinicalFindings: true,
-    DoctorComments: false,
+    DoctorComments: true,
   };
 
   return results;
