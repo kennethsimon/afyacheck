@@ -10,6 +10,7 @@ import {
   PlusIcon,
   BarChartIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 
@@ -107,8 +108,13 @@ export default function DashboardSidebar({ session }: { session: any }) {
             className="flex items-center gap-2 font-semibold"
             prefetch={false}
           >
-            <Package2Icon className="h-6 w-6" />
-            <span className="">Clinic</span>
+            <Image
+          src="/logo.png"
+          alt="AfyaCheck Logo"
+          className="mx-auto mb-4"
+          width={200}
+          height={100}
+        />
           </Link>
         </div>
         <div className="flex-1 overflow-auto py-2">

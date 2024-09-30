@@ -11,12 +11,12 @@ export default async function AddUser({
   return (
     <div className=" mx-auto p-8 ">
       <div className="text-start">
-        <Image
-          src="/favicon.ico"
+      <Image
+          src="/logo.png"
           alt="AfyaCheck Logo"
           className="mx-auto mb-4"
-          width={50}
-          height={50}
+          width={200}
+          height={100}
         />
         <h1 className="text-2xl font-bold text-center">Add User FORM</h1>
       </div>

@@ -108,8 +108,7 @@ export const getDiagnosis = async (
     .get("/patients/diagnosis", { params: queryParams })
     .then(({ data }) => {
       if (data.status) {
-        console.log("Patients Data : ", data);
-        results.data = data.data.patients || [];
+        results.data = data.data.diagnoses || [];
         results.pageCount = data.pageCount || 0;
       }
     })
