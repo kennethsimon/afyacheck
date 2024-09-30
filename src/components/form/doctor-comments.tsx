@@ -16,88 +16,15 @@ export function DoctorComments({ form }: any) {
     <div className="space-y-4 py-8">
       <h2 className="text-center text-lg font-bold">DOCTOR&lsquo;S COMMENTS</h2>
 
+      {/* New Patient Identifier Input */}
       <FormField
         control={form.control}
-        name="doctorComments.ecgReport"
+        name="doctorComments.patientIdentifier"
         render={({ field }) => (
           <FormItem className="space-y-2">
-            <FormLabel htmlFor="ecg-report">ECG/ECHO and report</FormLabel>
+            <FormLabel htmlFor="patient-identifier">Patient Identifier</FormLabel>
             <FormControl>
-              <Textarea id="ecg-report" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="doctorComments.mse"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel htmlFor="mse">MSE:</FormLabel>
-            <FormControl>
-              <Input id="mse" type="text" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="doctorComments.physio"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel htmlFor="physio">PHYSIO:</FormLabel>
-            <FormControl>
-              <Input id="physio" type="text" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="doctorComments.ot"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel htmlFor="ot">OT:</FormLabel>
-            <FormControl>
-              <Input id="ot" type="text" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="doctorComments.dentalReport"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel htmlFor="dental-report">
-              Dental screening and report
-            </FormLabel>
-            <FormControl>
-              <Textarea id="dental-report" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="doctorComments.ophthalmologyReport"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel htmlFor="ophthalmology-report">
-              Ophthalmology screening and report
-            </FormLabel>
-            <FormControl>
-              <Textarea id="ophthalmology-report" {...field} />
+              <Input id="patient-identifier" {...field} placeholder="Enter patient ID" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -128,37 +55,6 @@ export function DoctorComments({ form }: any) {
             <FormLabel htmlFor="prescription">Prescription if any:</FormLabel>
             <FormControl>
               <Textarea id="prescription" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="doctorComments.referral"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel>Referral:</FormLabel>
-            <FormControl>
-              <RadioGroup
-                value={field.value}
-                onValueChange={field.onChange}
-                className="flex flex-row space-x-2"
-              >
-                <FormItem className="flex items-baseline space-x-4">
-                  <RadioGroupItem value="yes" />
-                  <FormLabel>Yes (where?)</FormLabel>
-                </FormItem>
-                <FormItem className="flex items-baseline space-x-4">
-                  <RadioGroupItem value="no-need-counselled" />
-                  <FormLabel>No need counselled</FormLabel>
-                </FormItem>
-                <FormItem className="flex items-baseline space-x-4">
-                  <RadioGroupItem value="no-need-healthy" />
-                  <FormLabel>No need healthy</FormLabel>
-                </FormItem>
-              </RadioGroup>
             </FormControl>
             <FormMessage />
           </FormItem>

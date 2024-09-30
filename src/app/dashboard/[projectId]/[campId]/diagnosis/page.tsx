@@ -1,5 +1,5 @@
 import PatientFilters from "@/components/analytics/patient-filters";
-import { getPatients } from "@/services/projects";
+import { getDiagnosis, getPatients } from "@/services/projects";
 import PatientsTable from "@/components/patients-page";
 import { TasksTableProvider } from "@/components/table/tasks-table-provider";
 import React from "react";
@@ -24,7 +24,7 @@ export default async function PatientsPage({
   delete combinedParams.page;
   console.log(combinedParams);
 
-  const { data: patients, pageCount } = await getPatients(combinedParams);
+  const { data: patients, pageCount } = await getDiagnosis(combinedParams);
 
   console.log(patients);
   console.log(pageCount);
@@ -42,7 +42,9 @@ export default async function PatientsPage({
     rangeCreatedAtTo = today.toISOString().split("T")[0];
   }
 
-  const patientsPromise = getPatients(combinedParams);
+  const patientsPromise = getDiagnosis(combinedParams);
+
+  console.log(patientsPromise)
 
 
   const filterFields: FilterField[] = [

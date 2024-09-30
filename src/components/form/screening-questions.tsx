@@ -8,12 +8,30 @@ import {
   FormControl,
   FormMessage,
 } from "../ui/form";
+import { Input } from "@/components/ui/input"; // Assuming you have an Input component
 
 export function ScreeningQuestions({ form }: any) {
   return (
     <div className="space-y-4 py-8">
       <h2 className="text-center text-lg font-bold">SCREENING QUESTIONS</h2>
+      
+      {/* New Patient Identifier Input */}
       <div className="space-y-2">
+        <FormField
+          control={form.control}
+          name="screening.patientIdentifier"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel>Patient Identifier</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter patient ID" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        {/* Existing Screening Questions */}
         <FormField
           control={form.control}
           name="screening.illness"

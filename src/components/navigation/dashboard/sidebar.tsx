@@ -22,6 +22,7 @@ export default function DashboardSidebar({ session }: { session: any }) {
   console.log("pathname : ", pathname);
   console.log("params : ", params);
   console.log("campId : ", campId, "projectId : ", projectId);
+  
   // Utility function to check if the user is an admin
   function isAdmin(session: any): boolean {
     return session.some(
@@ -47,9 +48,29 @@ export default function DashboardSidebar({ session }: { session: any }) {
         label: "Patients",
       },
       {
+        href: `/dashboard/${projectId}/${campId}/diagnosis`,
+        icon: <UserIcon />,
+        label: "Diagnosis",
+      },
+      {
         href: `/dashboard/${projectId}/${campId}/add-patient`,
         icon: <PlusIcon />,
         label: "Add Patient",
+      },
+      {
+        href: `/dashboard/${projectId}/${campId}/add-screening`, // New route for adding screening
+        icon: <PlusIcon />, // You can choose a different icon if you prefer
+        label: "Add Screening",
+      },
+      {
+        href: `/dashboard/${projectId}/${campId}/add-clinical`, // New route for adding screening
+        icon: <PlusIcon />, // You can choose a different icon if you prefer
+        label: "Clinical Findings",
+      },
+      {
+        href: `/dashboard/${projectId}/${campId}/doctorscomments`, // New route for adding screening
+        icon: <PlusIcon />, // You can choose a different icon if you prefer
+        label: "Doctors comments",
       },
     ];
 

@@ -93,6 +93,34 @@ export const getPatients = async (
   return results;
 };
 
+export const getDiagnosis = async (
+  queryParams?: any
+): Promise<{
+  data: any[];
+  pageCount: number;
+}> => {
+  noStore();
+
+  console.log(queryParams);
+
+  let results = { data: [], pageCount: 0 };
+  await projectApi
+    .get("/patients/diagnosis", { params: queryParams })
+    .then(({ data }) => {
+      if (data.status) {
+        console.log("Patients Data : ", data);
+        results.data = data.data.patients || [];
+        results.pageCount = data.pageCount || 0;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  console.log("results", results);
+  // results = { data: [], pageCount: 0 };
+  return results;
+};
+
 export const getCampStats = async (queryParams?: any) => {
   let results: any = {};
 
