@@ -9,6 +9,9 @@ import {
   UserIcon,
   PlusIcon,
   BarChartIcon,
+  StethoscopeIcon, // for diagnosis or clinical findings
+  FilePlusIcon,    // for adding screenings
+  ClipboardListIcon // for doctors comments
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,38 +43,38 @@ export default function DashboardSidebar({ session }: { session: any }) {
     let items = [
       {
         href: `/dashboard/${projectId}/${campId}`,
-        icon: <HomeIcon />,
+        icon: <HomeIcon />,      // Home icon for the dashboard
         label: "Dashboard",
       },
       {
         href: `/dashboard/${projectId}/${campId}/patients`,
-        icon: <UserIcon />,
+        icon: <UserIcon />,      // User icon for patients
         label: "Patients",
       },
       {
         href: `/dashboard/${projectId}/${campId}/diagnosis`,
-        icon: <UserIcon />,
+        icon: <StethoscopeIcon />, // Stethoscope for diagnosis
         label: "Diagnosis",
       },
       {
         href: `/dashboard/${projectId}/${campId}/add-patient`,
-        icon: <PlusIcon />,
+        icon: <UserIcon />,      // Plus icon for adding patients
         label: "Add Patient",
       },
       {
         href: `/dashboard/${projectId}/${campId}/add-screening`, // New route for adding screening
-        icon: <PlusIcon />, // You can choose a different icon if you prefer
+        icon: <FilePlusIcon />,  // File plus icon for adding screening
         label: "Add Screening",
       },
       {
-        href: `/dashboard/${projectId}/${campId}/add-clinical`, // New route for adding screening
-        icon: <PlusIcon />, // You can choose a different icon if you prefer
+        href: `/dashboard/${projectId}/${campId}/add-clinical`,
+        icon: <StethoscopeIcon />, // Stethoscope for clinical findings
         label: "Clinical Findings",
       },
       {
-        href: `/dashboard/${projectId}/${campId}/doctorscomments`, // New route for adding screening
-        icon: <PlusIcon />, // You can choose a different icon if you prefer
-        label: "Doctors comments",
+        href: `/dashboard/${projectId}/${campId}/doctorscomments`,
+        icon: <ClipboardListIcon />, // Clipboard for doctor's comments
+        label: "Doctors Comments",
       },
     ];
 
@@ -80,17 +83,17 @@ export default function DashboardSidebar({ session }: { session: any }) {
         ...items,
         {
           href: `/dashboard/${projectId}/${campId}/analytics`,
-          icon: <BarChartIcon />,
+          icon: <BarChartIcon />, // Bar chart icon for analytics
           label: "Analytics",
         },
         {
           href: `/dashboard/${projectId}/${campId}/add-user`,
-          icon: <PlusIcon />,
+          icon: <PlusIcon />,    // Plus icon for adding users
           label: "Add User",
         },
         {
           href: `/dashboard/${projectId}/${campId}/settings`,
-          icon: <SettingsIcon />,
+          icon: <SettingsIcon />, // Settings icon for settings
           label: "Settings",
         },
       ];
@@ -109,12 +112,12 @@ export default function DashboardSidebar({ session }: { session: any }) {
             prefetch={false}
           >
             <Image
-          src="/logo.png"
-          alt="AfyaCheck Logo"
-          className="mx-auto mb-4"
-          width={200}
-          height={100}
-        />
+              src="/logo.png"
+              alt="AfyaCheck Logo"
+              className="mx-auto mb-4"
+              width={200}
+              height={100}
+            />
           </Link>
         </div>
         <div className="flex-1 overflow-auto py-2">

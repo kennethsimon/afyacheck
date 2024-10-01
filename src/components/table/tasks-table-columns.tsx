@@ -61,7 +61,7 @@ function CreatedByCell({ userId }: { userId: string }) {
   return <div>{userName || "Loading..."}</div>;
 }
 
-export function getColumns(): ColumnDef<Patient>[] {
+export function getColumns(): ColumnDef<any>[] {
   return [
     {
       id: "select",
@@ -149,7 +149,7 @@ export function getColumns(): ColumnDef<Patient>[] {
                   Copy Patient ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
+                {/* <DropdownMenuItem
                   onSelect={() => setShowPreviewPatientSheet(true)}
                 >
                   Preview Patient
@@ -163,7 +163,7 @@ export function getColumns(): ColumnDef<Patient>[] {
                   <Link href={`/dashboard/patients/edit/${row.original._id}`}>
                     Edit Patient
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </>
@@ -206,7 +206,7 @@ export function getColumns(): ColumnDef<Patient>[] {
         <DataTableColumnHeader column={column} title="Gender" />
       ),
       cell: ({ row }) => {
-        const gender = row.original.gender;
+        const gender = row?.original?.gender || '';
         const bgColor = getGenderBackgroundColor(gender);
         return (
           <div className={`p-1 text-center font-[500] ${bgColor} rounded`}>
@@ -221,7 +221,7 @@ export function getColumns(): ColumnDef<Patient>[] {
       accessorKey: "dateOfBirth",
       header: "Age",
       cell: ({ row }) => {
-        const dateOfBirth = parseISO(row.original.dateOfBirth);
+        const dateOfBirth = row?.original?.dateOfBirth ? parseISO(row?.original?.dateOfBirth) : '';
         const age = differenceInYears(new Date(), dateOfBirth);
         return age;
       },
@@ -242,7 +242,7 @@ export function getColumns(): ColumnDef<Patient>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Location" />
       ),
-      cell: ({ row }) => <div>{row.original.location}</div>,
+      cell: ({ row }) => <div>{row?.original?.region}, {row?.original?.district}</div>,
       enableSorting: true,
       enableHiding: true,
     },
