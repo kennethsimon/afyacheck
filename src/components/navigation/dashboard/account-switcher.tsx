@@ -1,91 +1,120 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+"use client";
+import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useRouter, useParams } from "next/navigation";
+  BellIcon,
+  CircleUser,
+  HomeIcon,
+  Package2Icon,
+  SearchIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
-interface AccountSwitcherProps {
-  queryName: string;
-  isCollapsed: boolean;
-  items: {
-    name: string;
-    icon?: React.ReactNode;
-    _id: string;
-  }[];
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { signOut } from "next-auth/react";
+import { Switcher } from "@/components/navigation/dashboard/account-switcher";
+
+interface DashboardHeaderProps {
+  // { label: string; icon?: ReactNode; id: string; }[]'.
+  projects: { label: string; icon?: React.ReactNode; id: string }[];
+  camps: { label: string; icon?: React.ReactNode; id: string }[];
 }
 
-export function Switcher({
-  isCollapsed,
-  items,
-  queryName,
-}: AccountSwitcherProps) {
-  const router = useRouter();
-  const params = useParams();
+export default function DashboardHeader(props: DashboardHeaderProps) {
+  const params = useParams();
+  const projectId = params?.projectId as string;
+  console.log("projectId : ", projectId);
+  const { projects, camps } = props;
+  // console.log("projects : ", projects);
 
-  // Determine the initial selected account based on the queryName in the URL parameters
-  const initialSelectedAccount = React.useMemo(() => {
-    const paramValue = params[queryName];
-    const foundItem = items.find((item) => item._id === paramValue);
-    return foundItem ? foundItem._id : items[0]?._id ?? "";
-  }, [params, queryName, items]);
+  return (
+    <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-muted/40 px-6">
+      <Link href="#" className="lg:hidden" prefetch={false}>
+        <Package2Icon className="h-6 w-6" />
+        <span className="sr-only">Home</span>
+      </Link>
 
-  const [selectedAccount, setSelectedAccount] = React.useState<string>(
-    initialSelectedAccount
-  );
+      <div className="w-full flex gap-4">
+        {projects && projects.length > 0 && (
+          <>
+            <div className="flex flex-col gap-2">
+              <Switcher
+                isCollapsed={false}
+                items={projects.map((project) => ({
+                  name: project.label,
+                  icon: project.icon,
+                  _id: project.id,
+                }))}
+                queryName="projectId"
+              />
+            </div>
+            {projectId !== "all" && camps && camps.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <Switcher
+                  isCollapsed={false}
+                  items={camps.map((camp) => ({
+                    name: camp.label,
+                    icon: camp.icon,
+                    _id: camp.id,
+                  }))}
+                  queryName="campId"
+                />
+              </div>
+            )}
+          </>
+        )}
 
-  const handleAccountChange = (_id: string) => {
-    const selected = items.find((account) => account._id === _id);
-    if (selected) {
-      setSelectedAccount(_id);
+        <div className="flex-grow flex-col gap-2 max-w-[400px]">
+          <form>
+            <div className="relative">
+              <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search patients..."
+                className="w-full bg-background shadow-none appearance-none pl-8"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full border w-8 h-8"
+          >
+            {/* <img src="/placeholder.svg" width="32" height="32" className="rounded-full" alt="Avatar" /> */}
+            <CircleUser className="h-5 w-5" />
 
-      let newPath;
-      console.log({ queryName });
-      if (queryName === "projectId") {
-        newPath = `/dashboard/${selected._id}/all/analytics`;
-      } else if (queryName === "campId") {
-        newPath = `/dashboard/${params.projectId}/${selected._id}/analytics`;
-      } else {
-        console.error("Invalid queryName");
-        return;
-      }
-
-      router.push(newPath);
-    }
-  };
-
-  return (
-    <Select defaultValue={selectedAccount} onValueChange={handleAccountChange}>
-      <SelectTrigger
-        className={cn(
-          "flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
-          isCollapsed &&
-            "flex h-9 w-9 shrink-0 items-center justify-center p-0 [&>span]:w-auto [&>svg]:hidden"
-        )}
-        aria-label="Select account"
-      >
-        {items.find((account) => account._id === selectedAccount)?.icon || null}
-        <span>
-          {queryName === "projectId" ? "Project" : "Camp"} :{" "}
-          {items.find((account) => account._id === selectedAccount)?.name}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        {items.map((account) => (
-          <SelectItem
-            key={account._id}
-            value={account._id}
-            className="flex items-center gap-2"
-          >
-            {account.icon || null}
-            <SelectValue> {account.name}</SelectValue>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
+            <span className="sr-only">Toggle user menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>Support</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => signOut({ callbackUrl: "/login", redirect: true })}
+          >
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
+        <BellIcon className="h-4 w-4" />
+        <span className="sr-only">Toggle notifications</span>
+      </Button>
+    </header>
+  );
 }
