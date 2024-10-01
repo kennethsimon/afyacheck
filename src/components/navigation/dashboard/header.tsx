@@ -48,7 +48,11 @@ export default function DashboardHeader(props: DashboardHeaderProps) {
             <div className="flex flex-col gap-2">
               <Switcher
                 isCollapsed={false}
-                items={projects}
+                items={projects.map((project) => ({
+                  name: project.label,
+                  icon: project.icon,
+                  _id: project.id,
+                }))}
                 queryName="projectId"
               />
             </div>
@@ -56,7 +60,11 @@ export default function DashboardHeader(props: DashboardHeaderProps) {
               <div className="flex flex-col gap-2">
                 <Switcher
                   isCollapsed={false}
-                  items={camps}
+                  items={camps.map((camp) => ({
+                    name: camp.label,
+                    icon: camp.icon,
+                    _id: camp.id,
+                  }))}
                   queryName="campId"
                 />
               </div>
