@@ -24,16 +24,19 @@ import { Switcher } from "@/components/navigation/dashboard/account-switcher";
 
 interface DashboardHeaderProps {
   // { label: string; icon?: ReactNode; id: string; }[]'.
-  projects: { label: string; icon?: React.ReactNode; id: string }[];
-  camps: { label: string; icon?: React.ReactNode; id: string }[];
+  projects: { name: string; icon?: React.ReactNode; _id: string }[];
+  camps: { name: string; icon?: React.ReactNode; _id: string }[];
 }
 
 export default function DashboardHeader(props: DashboardHeaderProps) {
+  // console.log("HERE PROPS: ", props);
+
   const params = useParams();
   const projectId = params?.projectId as string;
   console.log("projectId : ", projectId);
   const { projects, camps } = props;
-  // console.log("projects : ", projects);
+  // console.log("projects  HERE: ", projects);
+  // console.log("camps HERE  : ", camps);
 
   return (
     <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-muted/40 px-6">
@@ -49,9 +52,9 @@ export default function DashboardHeader(props: DashboardHeaderProps) {
               <Switcher
                 isCollapsed={false}
                 items={projects.map((project) => ({
-                  name: project.label,
+                  name: project.name,
                   icon: project.icon,
-                  _id: project.id,
+                  _id: project._id,
                 }))}
                 queryName="projectId"
               />
@@ -61,9 +64,9 @@ export default function DashboardHeader(props: DashboardHeaderProps) {
                 <Switcher
                   isCollapsed={false}
                   items={camps.map((camp) => ({
-                    name: camp.label,
+                    name: camp.name,
                     icon: camp.icon,
-                    _id: camp.id,
+                    _id: camp._id,
                   }))}
                   queryName="campId"
                 />
