@@ -8,7 +8,6 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Patient } from "@/types/general";
 import { parseISO, differenceInYears } from "date-fns";
 import { useParams } from "next/navigation";
 import { getCampById } from "@/services/camps";
@@ -206,9 +205,9 @@ export function PreviewDiagnosisSheet({
           </section>
 
           <section>
-            <h3 className="text-xl font-bold mb-4">Doctor's Comments</h3>
+            <h3 className="text-xl font-bold mb-4">Doctor&apos;s Comments</h3>
             <div>
-              <strong>Doctor's Comment:</strong>{" "}
+              <strong>Doctor&apos;s Comment:</strong>{" "}
               {patient.doctorComments?.doctorsComment || "N/A"}
             </div>
             <div>
