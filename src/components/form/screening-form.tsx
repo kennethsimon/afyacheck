@@ -24,22 +24,22 @@ export function AddScreeningForm({ campId, session, patientId, projectId }: any)
     defaultValues: patientData || {},
   });
 
-  useEffect(() => {
-    if (patientId) {
-      const fetchPatientData = async () => {
-        try {
-          const response = await projectApi.get(`/patients/${patientId}`);
-          const patientInfo = response?.data?.data.patient;
-          setPatientData(patientInfo);
-          form.reset(patientInfo);
-        } catch (error) {
-          console.error("Error fetching patient data:", error);
-          toast("Failed to fetch patient data. Please try again.");
-        }
-      };
-      fetchPatientData();
-    }
-  }, [patientId, form]);
+  // useEffect(() => {
+  //   if (patientId) {
+  //     const fetchPatientData = async () => {
+  //       try {
+  //         const response = await projectApi.get(`/patients/${patientId}`);
+  //         const patientInfo = response?.data?.data.patient;
+  //         setPatientData(patientInfo);
+  //         form.reset(patientInfo);
+  //       } catch (error) {
+  //         console.error("Error fetching patient data:", error);
+  //         toast("Failed to fetch patient data. Please try again.");
+  //       }
+  //     };
+  //     fetchPatientData();
+  //   }
+  // }, [patientId, form]);
 
   const onSubmit = async (data: any) => {
     setLoading(true);

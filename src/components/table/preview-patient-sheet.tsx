@@ -57,6 +57,7 @@ export function PreviewPatientSheet({
     return differenceInYears(new Date(), newDateOfBirth);
   };
 
+
   return (
     <Sheet {...props}>
       <SheetContent className="flex flex-col gap-6 sm:max-w-md">

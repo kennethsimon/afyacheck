@@ -19,6 +19,25 @@ export const ScreeningQuestionsSchema = z.object({
     alcoholOrSmokeUsage: z.enum(["yes", "no", "stopped"]),
     chronicDiseases: z.enum(["yes", "no", "dont-know"]),
     vaccinationHistory: z.enum(["yes", "no", "ready", "refuse"]),
+     // Height (cm)
+     height: z.number().min(0, "Height must be a positive number").optional(),
+
+     // Weight (kg)
+     weight: z.number().min(0, "Weight must be a positive number").optional(),
+ 
+     // BMI is calculated dynamically based on height and weight
+     bmi: z.string().optional(), // Will be calculated in the client
+ 
+     // Blood pressure with select options (low, normal, high)
+     bloodPressure: z.enum(["low", "normal", "high"], {
+       errorMap: () => ({ message: "Select a valid blood pressure option" }),
+     }).optional(),
+ 
+     // Hemoglobin (HB) status (low, normal, high)
+     hb: z.enum(["low", "normal", "high"], {
+       errorMap: () => ({ message: "Select a valid hemoglobin status" }),
+     }).optional(),
+ 
   }),
 });
 
@@ -26,25 +45,6 @@ export const ClinicalFindingsSchema = z.object({
   clinicalFindings: z.object({
     // Patient number (optional if it's included in the form)
     patientNumber: z.string().optional(),
-
-    // Height (cm)
-    height: z.number().min(0, "Height must be a positive number").optional(),
-
-    // Weight (kg)
-    weight: z.number().min(0, "Weight must be a positive number").optional(),
-
-    // BMI is calculated dynamically based on height and weight
-    bmi: z.string().optional(), // Will be calculated in the client
-
-    // Blood pressure with select options (low, normal, high)
-    bloodPressure: z.enum(["low", "normal", "high"], {
-      errorMap: () => ({ message: "Select a valid blood pressure option" }),
-    }).optional(),
-
-    // Hemoglobin (HB) status (low, normal, high)
-    hb: z.enum(["low", "normal", "high"], {
-      errorMap: () => ({ message: "Select a valid hemoglobin status" }),
-    }).optional(),
 
     // TB Screening with dynamic medication status
     tbScreening: z.object({

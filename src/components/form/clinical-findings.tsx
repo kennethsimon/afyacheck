@@ -14,15 +14,7 @@ import {
 
 export function ClinicalFindings({ form }: any) {
   // Calculate BMI when weight or height changes
-  useEffect(() => {
-    const weight = form.watch("clinicalFindings.weight");
-    const height = form.watch("clinicalFindings.height");
-
-    if (weight && height) {
-      const bmi = weight / Math.pow(height / 100, 2); // BMI formula
-      form.setValue("clinicalFindings.bmi", bmi.toFixed(2)); // Update BMI field with 2 decimal places
-    }
-  }, [form.watch("clinicalFindings.weight"), form.watch("clinicalFindings.height")]);
+ 
 
   // State to manage TB screening selection
   const [tbScreening, setTbScreening] = useState<any>(null);
@@ -58,9 +50,11 @@ export function ClinicalFindings({ form }: any) {
       <h2 className="text-center text-lg font-bold">CLINICAL FINDINGS</h2>
 
       {/* First Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Patient Number */}
-        <FormField
+
+    {/* Third Section - TB Screening */}
+<div className="grid grid-cols-1 gap-4">
+  {/* TB Screening */}
+  <FormField
           control={form.control}
           name="clinicalFindings.patientNumber"
           render={({ field }) => (
@@ -73,126 +67,6 @@ export function ClinicalFindings({ form }: any) {
             </FormItem>
           )}
         />
-
-        {/* Height */}
-        <FormField
-          control={form.control}
-          name="clinicalFindings.height"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel htmlFor="height">Height (cm):</FormLabel>
-              <FormControl>
-                <Input
-                  id="height"
-                  value={field.value !== undefined ? field.value.toString() : ""}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Weight */}
-        <FormField
-          control={form.control}
-          name="clinicalFindings.weight"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel htmlFor="weight">Weight (kg):</FormLabel>
-              <FormControl>
-                <Input
-                  id="weight"
-                  value={field.value !== undefined ? field.value.toString() : ""}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-
-      {/* Second Section - BMI, Blood Pressure, HB all in the same row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* BMI */}
-        <FormField
-          control={form.control}
-          name="clinicalFindings.bmi"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel htmlFor="bmi">BMI:</FormLabel>
-              <FormControl>
-                <Input
-                  id="bmi"
-                  type="number"
-                  value={field.value !== undefined ? field.value.toString() : ""}
-                  readOnly // Making the BMI field read-only as it auto-calculates
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Blood Pressure */}
-        <FormField
-          control={form.control}
-          name="clinicalFindings.bloodPressure"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel htmlFor="blood-pressure">Blood Pressure:</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* HB */}
-        <FormField
-          control={form.control}
-          name="clinicalFindings.hb"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel htmlFor="hb">HB:</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-
-    {/* Third Section - TB Screening */}
-<div className="grid grid-cols-1 gap-4">
-  {/* TB Screening */}
   <FormField
     control={form.control}
     name="clinicalFindings.tbScreening.status" // Change to status

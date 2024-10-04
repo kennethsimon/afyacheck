@@ -28,12 +28,8 @@ export default function DashboardSidebar({
   const params = useParams();
   const campId = params.campId as string; // Assuming campId is available in the params
   const projectId = params.projectId as string; // Assuming projectId is available in the params
-
   // console.log("permissions in sidebar : ", permissions);
   // console.log("session in sidebar : ", JSON.stringify(session));
-  console.log("pathname : ", pathname);
-  console.log("params : ", params);
-  console.log("campId : ", campId, "projectId : ", projectId);
 
   // Utility function to check if the user is an admin
   function isAdmin(roles: any): boolean {

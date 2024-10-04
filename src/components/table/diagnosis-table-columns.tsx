@@ -21,6 +21,7 @@ import { differenceInYears, parseISO } from "date-fns";
 import { getCampById } from "@/services/camps";
 import { getUserById } from "@/services/users";
 import { PreviewPatientSheet } from "./preview-patient-sheet";
+import { PreviewDiagnosisSheet } from "./preview-diagnosis-sheet";
 
 function formatValue(value: any) {
   return value !== null && value !== undefined ? value : "N/A";
@@ -118,7 +119,7 @@ export function getColumns(): ColumnDef<any>[] {
 
         return (
           <>
-            <PreviewPatientSheet
+            <PreviewDiagnosisSheet
               open={showPreviewPatientSheet}
               onOpenChange={setShowPreviewPatientSheet}
               patient={row.original}
@@ -152,12 +153,12 @@ export function getColumns(): ColumnDef<any>[] {
                   Copy Patient ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {/* <DropdownMenuItem
+                <DropdownMenuItem
                   onSelect={() => setShowPreviewPatientSheet(true)}
                 >
                   Preview Patient
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Link href={`/dashboard/patients/${row.original._id}`}>
                     Open Patient
                   </Link>
