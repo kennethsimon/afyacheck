@@ -26,6 +26,22 @@ export default async function DiagnosisPage({
 
   combinedParams["per_page"] = per_page;
 
+  // Extract createdAt-from and createdAt-to from searchParams
+  let rangeCreatedAtFrom = foundSearchParams["createdAt-from"] as string;
+  let rangeCreatedAtTo = foundSearchParams["createdAt-to"] as string;
+
+  // Set default values if not present
+  // Set default values if not present
+  if (!rangeCreatedAtFrom || !rangeCreatedAtTo) {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const startOfYear = new Date(currentYear, 0, 1); // January 1st
+    const endOfYear = new Date(currentYear, 11, 31); // December 31st
+
+    rangeCreatedAtFrom = startOfYear.toISOString().split("T")[0];
+    rangeCreatedAtTo = endOfYear.toISOString().split("T")[0];
+  }
+
   const diagnosisPromise = getDiagnosis(combinedParams);
 
   return (

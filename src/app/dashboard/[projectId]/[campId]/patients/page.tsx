@@ -34,12 +34,15 @@ export default async function PatientsPage({
   let rangeCreatedAtTo = foundSearchParams["createdAt-to"] as string;
 
   // Set default values if not present
+  // Set default values if not present
   if (!rangeCreatedAtFrom || !rangeCreatedAtTo) {
     const today = new Date();
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(today.getMonth() - 1);
-    rangeCreatedAtFrom = lastMonth.toISOString().split("T")[0];
-    rangeCreatedAtTo = today.toISOString().split("T")[0];
+    const currentYear = today.getFullYear();
+    const startOfYear = new Date(currentYear, 0, 1); // January 1st
+    const endOfYear = new Date(currentYear, 11, 31); // December 31st
+
+    rangeCreatedAtFrom = startOfYear.toISOString().split("T")[0];
+    rangeCreatedAtTo = endOfYear.toISOString().split("T")[0];
   }
 
   const patientsPromise = getPatients(combinedParams);
