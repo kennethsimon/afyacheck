@@ -28,6 +28,7 @@ export default async function Layout({
   const session: any = await getServerSession(authOptions);
 
   const permissions = await getPermissions();
+
   // console.log(
   //   "permissions in layout : ",
   //   JSON.stringify(permissions.items.data)
@@ -65,7 +66,7 @@ export default async function Layout({
       <TooltipProvider>
         <DashboardSidebar
           session={session}
-          permissions={permissions.items.data}
+          permissions={{permissions: session?.user?.permissions, roles: session?.user?.roles}}
           sidestate={'hidden'}
         />
         <div className="flex flex-col">
@@ -73,7 +74,7 @@ export default async function Layout({
             projects={cleanedProjectsAll}
             camps={cleanedCampsAll}
             session={session}
-            permissions={permissions.items.data}
+            permissions={{permissions: session?.user?.permissions, roles: session?.user?.roles}}
           />
           {children}
         </div>

@@ -33,16 +33,29 @@ export default function DashboardSidebar({
   // console.log("permissions in sidebar : ", permissions);
   // console.log("session in sidebar : ", JSON.stringify(session));
 
+
+
   // Utility function to check if the user is an admin
   function isAdmin(roles: any): boolean {
     return (
       Array.isArray(roles) &&
       roles.some(
         (role: { name: string; active: boolean }) =>
-          role.name === "Admin" && role.active
+        (role.name === "Admin" && role.active || role.name === "User" && role.active)
       )
     );
   }
+
+  function isAdmin2(roles: any): boolean {
+    return (
+      Array.isArray(roles) &&
+      roles.some(
+        (role: { name: string; active: boolean }) =>
+        (role.name === "Admin" && role.active)
+      )
+    );
+  }
+
 
   // Remove a permission for debugging purposes , remember also comment out isAdmin(userRoles) || when testing
   // Remember to remove this line when done debugging
@@ -53,6 +66,8 @@ export default function DashboardSidebar({
 
   // Utility function to check if the user has a specific permission
   function hasPermission(permissions: any, permissionName: string): boolean {
+    console.log(permissions);
+    console.log(permissionName);
     return (
       Array.isArray(permissions) &&
       permissions.some(
@@ -77,7 +92,7 @@ export default function DashboardSidebar({
     ];
 
     // Add Patient item
-    if (isAdmin(userRoles) || hasPermission(userPermissions, "Add user")) {
+    if (isAdmin(userRoles) && hasPermission(userPermissions, "Edit patient info step")) {
       items.push({
         href: `/dashboard/${projectId}/${campId}/add-patient`,
         icon: <UserIcon />, // Plus icon for adding patients
@@ -87,7 +102,7 @@ export default function DashboardSidebar({
 
     // Add Screening item
     if (
-      isAdmin(userRoles) ||
+      isAdmin(userRoles) &&
       hasPermission(userPermissions, "Edit screening questions step")
     ) {
       items.push({
@@ -99,7 +114,7 @@ export default function DashboardSidebar({
 
     // Add Clinical Findings item
     if (
-      isAdmin(userRoles) ||
+      isAdmin(userRoles) &&
       hasPermission(userPermissions, "Edit clinical findings step")
     ) {
       items.push({
@@ -111,7 +126,7 @@ export default function DashboardSidebar({
 
     // Add Doctors Comments item
     if (
-      isAdmin(userRoles) ||
+      isAdmin(userRoles) &&
       hasPermission(userPermissions, "Edit doctor comments step")
     ) {
       items.push({
@@ -122,7 +137,7 @@ export default function DashboardSidebar({
     }
 
     // Admin-specific items
-    if (isAdmin(userRoles)) {
+    if (isAdmin2(userRoles)) {
       items.push(
         {
           href: `/dashboard/${projectId}/${campId}/patients`,
