@@ -20,9 +20,11 @@ import { usePathname, useParams } from "next/navigation";
 export default function DashboardSidebar({
   session,
   permissions,
+  sidestate
 }: {
   session: any;
   permissions: any;
+  sidestate?: any
 }) {
   const pathname = usePathname();
   const params = useParams();
@@ -123,13 +125,18 @@ export default function DashboardSidebar({
     if (isAdmin(userRoles)) {
       items.push(
         {
+          href: `/dashboard/${projectId}/${campId}/patients`,
+          icon: <StethoscopeIcon />, // Stethoscope for diagnosis
+          label: "Patients",
+        },
+        {
           href: `/dashboard/${projectId}/${campId}/diagnosis`,
           icon: <StethoscopeIcon />, // Stethoscope for diagnosis
           label: "Diagnosis",
         },
         {
           href: `/dashboard/${projectId}/${campId}/analytics`,
-          icon: <BarChartIcon />, // Bar chart icon for analytics
+          icon: <BarChartIcon />, // Bar chart icon for analytics 
           label: "Analytics",
         },
         {
@@ -150,7 +157,7 @@ export default function DashboardSidebar({
   }
 
   return (
-    <div className="hidden border-r bg-muted/40 lg:block">
+    <div className={`${sidestate} border-r bg-muted/40 lg:block`}>
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-[60px] items-center border-b px-6">
           <Link

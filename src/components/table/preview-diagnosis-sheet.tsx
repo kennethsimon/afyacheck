@@ -72,6 +72,28 @@ export function PreviewDiagnosisSheet({
               <strong>Status:</strong> {patient.status || "N/A"}
             </div>
           </section>
+          <section>
+            <h3 className="text-xl font-bold mb-4">Screening Information</h3>
+            <div>
+              <strong>Illness:</strong> {patient.screening?.illness || "N/A"}
+            </div>
+            <div>
+              <strong>Medication:</strong>{" "}
+              {patient?.screening?.medication || "N/A"}
+            </div>
+            <div>
+              <strong>Alcohol or Smoke Usage:</strong>{" "}
+              {patient?.screening?.alcoholOrSmokeUsage || "N/A"}
+            </div>
+            <div>
+              <strong>Chronic Diseases:</strong>{" "}
+              {patient?.screening?.chronicDiseases || "N/A"}
+            </div>
+            <div>
+              <strong>Vaccination History:</strong>{" "}
+              {patient?.screening?.vaccinationHistory || "N/A"}
+            </div>
+          </section>
 
           <section>
             <h3 className="text-xl font-bold mb-4">Clinical Findings</h3>

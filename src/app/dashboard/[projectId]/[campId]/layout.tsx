@@ -66,11 +66,14 @@ export default async function Layout({
         <DashboardSidebar
           session={session}
           permissions={permissions.items.data}
+          sidestate={'hidden'}
         />
         <div className="flex flex-col">
           <DashboardHeader
             projects={cleanedProjectsAll}
             camps={cleanedCampsAll}
+            session={session}
+            permissions={permissions.items.data}
           />
           {children}
         </div>

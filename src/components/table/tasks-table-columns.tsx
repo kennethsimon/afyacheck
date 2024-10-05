@@ -45,18 +45,18 @@ function CampNameCell({ campId }: { campId: string }) {
 function CreatedByCell({ userId }: { userId: string }) {
   const [userName, setUserName] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const { items: userDetails } = await getUserById(userId);
-        setUserName(userDetails.user.name);
-      } catch (error) {
-        console.error("Failed to fetch user name:", error);
-        setUserName("Error loading user name");
-      }
-    };
-    fetchUserName();
-  }, [userId]);
+  // React.useEffect(() => {
+  //   const fetchUserName = async () => {
+  //     try {
+  //       const { items: userDetails } = await getUserById(userId);
+  //       setUserName(userDetails.user.name);
+  //     } catch (error) {
+  //       console.error("Failed to fetch user name:", error);
+  //       setUserName("Error loading user name");
+  //     }
+  //   };
+  //   fetchUserName();
+  // }, [userId]);
 
   return <div>{userName || "Loading..."}</div>;
 }
@@ -149,12 +149,12 @@ export function getColumns(): ColumnDef<any>[] {
                   Copy Patient ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {/* <DropdownMenuItem
+                <DropdownMenuItem
                   onSelect={() => setShowPreviewPatientSheet(true)}
                 >
                   Preview Patient
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Link href={`/dashboard/patients/${row.original._id}`}>
                     Open Patient
                   </Link>
@@ -171,22 +171,6 @@ export function getColumns(): ColumnDef<any>[] {
       },
     },
     {
-      accessorKey: "id",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="View Patient" />
-      ),
-      cell: ({ row }) => (
-        <Link
-          href={`/dashboard/patients/${row.original._id}`}
-          className="text-primary underline"
-        >
-          View Patient
-        </Link>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
@@ -194,11 +178,11 @@ export function getColumns(): ColumnDef<any>[] {
       cell: ({ row }) => <div>{row.original.name}</div>,
     },
     {
-      accessorKey: "campId",
+      accessorKey: "patientIdentifier",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Camp Name" />
+        <DataTableColumnHeader column={column} title="Patient ID" />
       ),
-      cell: ({ row }) => <CampNameCell campId={row.original.camp} />,
+      cell: ({ row }) => <div>{row.original.patientIdentifier}</div>,
     },
     {
       accessorKey: "gender",
@@ -246,14 +230,14 @@ export function getColumns(): ColumnDef<any>[] {
       enableSorting: true,
       enableHiding: true,
     },
-    {
-      accessorKey: "createdBy",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created By" />
-      ),
-      cell: ({ row }) => <CreatedByCell userId={row.original.createdBy} />,
-      enableSorting: true,
-      enableHiding: true,
-    },
+    // {
+    //   accessorKey: "createdBy",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Created By" />
+    //   ),
+    //   cell: ({ row }) => <CreatedByCell userId={row.original.createdBy} />,
+    //   enableSorting: true,
+    //   enableHiding: true,
+    // },
   ];
 }
