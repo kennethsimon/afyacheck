@@ -75,6 +75,22 @@ export function PreviewDiagnosisSheet({
           <section>
             <h3 className="text-xl font-bold mb-4">Screening Information</h3>
             <div>
+              <strong>Height:</strong> {patient.screening?.height || "N/A"}
+            </div>
+            <div>
+              <strong>Weight:</strong> {patient.screening?.weight || "N/A"}
+            </div>
+            <div>
+              <strong>BMI:</strong> {patient.screening?.bmi || "N/A"}
+            </div>
+            <div>
+              <strong>Blood Pressure:</strong>{" "}
+              {patient.screening?.bloodPressure || "N/A"}
+            </div>
+            <div>
+              <strong>HB:</strong> {patient.screening?.hb || "N/A"}
+            </div>
+            <div>
               <strong>Illness:</strong> {patient.screening?.illness || "N/A"}
             </div>
             <div>
@@ -104,22 +120,6 @@ export function PreviewDiagnosisSheet({
             <div>
               <strong>TB Medication Status:</strong>{" "}
               {patient.clinicalFindings?.tbScreening?.medicationStatus || "N/A"}
-            </div>
-            <div>
-              <strong>Height:</strong> {patient.clinicalFindings?.height || "N/A"}
-            </div>
-            <div>
-              <strong>Weight:</strong> {patient.clinicalFindings?.weight || "N/A"}
-            </div>
-            <div>
-              <strong>BMI:</strong> {patient.clinicalFindings?.bmi || "N/A"}
-            </div>
-            <div>
-              <strong>Blood Pressure:</strong>{" "}
-              {patient.clinicalFindings?.bloodPressure || "N/A"}
-            </div>
-            <div>
-              <strong>HB:</strong> {patient.clinicalFindings?.hb || "N/A"}
             </div>
             <div>
               <strong>HIV Testing:</strong>{" "}
