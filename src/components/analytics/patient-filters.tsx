@@ -78,17 +78,18 @@ export default function PatientFilters({
 
   // Reset filters
   const resetFilters = () => {
-    const defaultParams = {
-      "range-createdAt-from": createdAtDateRange.from
-        .toISOString()
-        .split("T")[0],
-      "range-createdAt-to": createdAtDateRange.to.toISOString().split("T")[0],
-      "range-dateOfBirth-from": birthDateDateRange.from
-        .toISOString()
-        .split("T")[0],
-      "range-dateOfBirth-to": birthDateDateRange.to.toISOString().split("T")[0],
-    };
-    const params = new URLSearchParams(defaultParams);
+    // const defaultParams = {
+    //   "range-createdAt-from": createdAtDateRange.from
+    //     .toISOString()
+    //     .split("T")[0],
+    //   "range-createdAt-to": createdAtDateRange.to.toISOString().split("T")[0],
+    //   "range-dateOfBirth-from": birthDateDateRange.from
+    //     .toISOString()
+    //     .split("T")[0],
+    //   "range-dateOfBirth-to": birthDateDateRange.to.toISOString().split("T")[0],
+    // };
+    // const params = new URLSearchParams(defaultParams);
+    const params = new URLSearchParams();
     router.push(`${pathname}?${params.toString()}`);
     // refresh page
     router.refresh();
@@ -97,24 +98,24 @@ export default function PatientFilters({
   // Initialize state from URL params
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    const createdAtFrom = params.get("range-createdAt-from");
-    const createdAtTo = params.get("range-createdAt-to");
-    const birthDateFrom = params.get("range-dateOfBirth-from");
-    const birthDateTo = params.get("range-dateOfBirth-to");
+    // const createdAtFrom = params.get("range-createdAt-from");
+    // const createdAtTo = params.get("range-createdAt-to");
+    // const birthDateFrom = params.get("range-dateOfBirth-from");
+    // const birthDateTo = params.get("range-dateOfBirth-to");
 
-    if (createdAtFrom && createdAtTo) {
-      setCreatedAtDateRange({
-        from: new Date(createdAtFrom),
-        to: new Date(createdAtTo),
-      });
-    }
+    // if (createdAtFrom && createdAtTo) {
+    //   setCreatedAtDateRange({
+    //     from: new Date(createdAtFrom),
+    //     to: new Date(createdAtTo),
+    //   });
+    // }
 
-    if (birthDateFrom && birthDateTo) {
-      setBirthDateDateRange({
-        from: new Date(birthDateFrom),
-        to: new Date(birthDateTo),
-      });
-    }
+    // if (birthDateFrom && birthDateTo) {
+    //   setBirthDateDateRange({
+    //     from: new Date(birthDateFrom),
+    //     to: new Date(birthDateTo),
+    //   });
+    // }
   }, [searchParams]);
 
   return (
@@ -148,8 +149,10 @@ export default function PatientFilters({
                 <SelectValue placeholder="Gender" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="male">Male</SelectItem>
                 <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -224,30 +227,31 @@ export default function PatientFilters({
             </>
           )}
         </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-muted-foreground">Date filters</p>
-          <div className="grid gap-1">
-            <Label htmlFor="created-range">Created Range</Label>
-            <CalendarDatePicker
-              date={createdAtDateRange}
-              onDateSelect={(dateRange) => {
-                setCreatedAtDateRange(dateRange);
-                handleDateRangeChange("createdAt", dateRange);
-              }}
-            />
-          </div>
-          {/* <div className="grid gap-1">
-            <Label htmlFor="dateOfBirth-range">Birth Date Range </Label>
-            <CalendarDatePicker
-              date={birthDateDateRange}
-              onDateSelect={(dateRange) => {
-                setBirthDateDateRange(dateRange);
-                handleDateRangeChange("dateOfBirth", dateRange);
-              }}
-            />
-          </div> */}
-        </div>
       </div>
+      {/* <p className="text-muted-foreground">Date filters</p>
+
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid gap-1">
+          <Label htmlFor="created-range">Created Range</Label>
+          <CalendarDatePicker
+            date={createdAtDateRange}
+            onDateSelect={(dateRange) => {
+              setCreatedAtDateRange(dateRange);
+              handleDateRangeChange("createdAt", dateRange);
+            }}
+          />
+        </div>
+        <div className="grid gap-1">
+          <Label htmlFor="dateOfBirth-range">Birth Date Range </Label>
+          <CalendarDatePicker
+            date={birthDateDateRange}
+            onDateSelect={(dateRange) => {
+              setBirthDateDateRange(dateRange);
+              handleDateRangeChange("dateOfBirth", dateRange);
+            }}
+          />
+        </div>
+      </div> */}
     </div>
   );
 }
