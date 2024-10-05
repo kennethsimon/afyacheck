@@ -26,29 +26,46 @@ type PatientStatsProps = {
       attended: number;
       male: number;
       female: number;
-      others: number;
+      others?: number;
       children: number;
       teenagers: number;
       adults: number;
       seniors: number;
+      newPatientsToday: number;
+      newPatientsThisWeek: number;
+      newPatientsThisMonth: number;
+      newPatientsThisYear: number;
+      prevNewPatientsToday?: number;
+      prevNewPatientsThisWeek?: number;
+      prevNewPatientsThisMonth?: number;
+      prevNewPatientsThisYear?: number;
     };
   };
 };
+
 export default function PatientStats({
   UserStats: {
     stats: {
       attended,
       male,
       female,
-      others,
+      others = 0, // Default value
       children,
       teenagers,
       adults,
       seniors,
+      newPatientsToday,
+      newPatientsThisWeek,
+      newPatientsThisMonth,
+      newPatientsThisYear,
+      prevNewPatientsToday = 0, // Default value
+      prevNewPatientsThisWeek = 0, // Default value
+      prevNewPatientsThisMonth = 0, // Default value
+      prevNewPatientsThisYear = 0, // Default value
     },
   },
 }: PatientStatsProps) {
-  console.log("User Stats : ", {
+  console.log("User Stats in component: ", {
     attended,
     male,
     female,
@@ -57,7 +74,38 @@ export default function PatientStats({
     teenagers,
     adults,
     seniors,
+    newPatientsToday,
+    newPatientsThisWeek,
+    newPatientsThisMonth,
+    newPatientsThisYear,
+    prevNewPatientsToday,
+    prevNewPatientsThisWeek,
+    prevNewPatientsThisMonth,
+    prevNewPatientsThisYear,
   });
+
+  const calculateChange = (current: number, previous: number) => {
+    if (current === 0 && previous === 0) {
+      return "No change";
+    }
+    const change = current - previous;
+    let percentageChange;
+
+    if (previous === 0) {
+      percentageChange = current === 0 ? 0 : 100; // If previous is 0, treat it as 100% increase if current is not 0
+    } else {
+      percentageChange = Math.round((change / previous) * 100);
+    }
+
+    const formattedPercentage = percentageChange.toFixed(0).padStart(2, "0");
+
+    return change > 0
+      ? `+${formattedPercentage}% from last month`
+      : change < 0
+      ? `${formattedPercentage}% from last month`
+      : "No change";
+  };
+
   const cardData = [
     {
       title: "People Attended",
@@ -119,7 +167,45 @@ export default function PatientStats({
       chunk: "dashboard-01-chunk-7",
       additionalText: "",
     },
+    {
+      title: "New Patients Today",
+      icon: User2Icon,
+      value: `${newPatientsToday ?? 0}`,
+      chunk: "dashboard-01-chunk-8",
+      additionalText: calculateChange(newPatientsToday, prevNewPatientsToday),
+    },
+    {
+      title: "New Patients This Week",
+      icon: User2Icon,
+      value: `${newPatientsThisWeek ?? 0}`,
+      chunk: "dashboard-01-chunk-9",
+      additionalText: calculateChange(
+        newPatientsThisWeek,
+        prevNewPatientsThisWeek
+      ),
+    },
+    {
+      title: "New Patients This Month",
+      icon: User2Icon,
+      value: `${newPatientsThisMonth ?? 0}`,
+      chunk: "dashboard-01-chunk-10",
+      additionalText: calculateChange(
+        newPatientsThisMonth,
+        prevNewPatientsThisMonth
+      ),
+    },
+    {
+      title: "New Patients This Year",
+      icon: User2Icon,
+      value: `${newPatientsThisYear ?? 0}`,
+      chunk: "dashboard-01-chunk-11",
+      additionalText: calculateChange(
+        newPatientsThisYear,
+        prevNewPatientsThisYear
+      ),
+    },
   ];
+
   return (
     <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
       {cardData.map((card) => (

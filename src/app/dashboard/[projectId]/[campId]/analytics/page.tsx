@@ -23,7 +23,7 @@ export default async function AnalyticsPage({
   const { items: userStats } = await getCampStats(combinedParams);
   let { data: patients } = await getPatients(combinedParams);
   console.log("params : ", params);
-  console.log("User Stats : ", userStats);
+  console.log("User Stats in analytics page : ", userStats);
   console.log("patients : ", patients);
 
   // let rangeCreatedAtFrom = foundSearchParams["range-createdAt-from"] as string;
