@@ -6,6 +6,8 @@ import {
   Users,
   ActivityIcon,
   UsersIcon,
+  Baby,
+  PersonStanding,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -25,15 +27,37 @@ type PatientStatsProps = {
       male: number;
       female: number;
       others: number;
+      children: number;
+      teenagers: number;
+      adults: number;
+      seniors: number;
     };
   };
 };
 export default function PatientStats({
   UserStats: {
-    stats: { attended, male, female, others },
+    stats: {
+      attended,
+      male,
+      female,
+      others,
+      children,
+      teenagers,
+      adults,
+      seniors,
+    },
   },
 }: PatientStatsProps) {
-  console.log("User Stats : ", { attended, male, female, others });
+  console.log("User Stats : ", {
+    attended,
+    male,
+    female,
+    others,
+    children,
+    teenagers,
+    adults,
+    seniors,
+  });
   const cardData = [
     {
       title: "People Attended",
@@ -41,6 +65,7 @@ export default function PatientStats({
       value: `${attended ?? 0}`,
       chunk: "dashboard-01-chunk-0",
       additionalText: "",
+      iconClass: "text-green-500", // Color for People Attended
     },
     {
       title: "Males",
@@ -63,6 +88,35 @@ export default function PatientStats({
       icon: User2Icon,
       value: `${others ?? 0}`,
       chunk: "dashboard-01-chunk-3",
+      additionalText: "",
+      iconClass: "text-purple-500", // Color for Others
+    },
+    {
+      title: "Children (0-12)",
+      icon: Baby,
+      value: `${children ?? 0}`,
+      chunk: "dashboard-01-chunk-4",
+      additionalText: "",
+    },
+    {
+      title: "Teenagers (13-19)",
+      icon: PersonStanding,
+      value: `${teenagers ?? 0}`,
+      chunk: "dashboard-01-chunk-5",
+      additionalText: "",
+    },
+    {
+      title: "Adults (20-60)",
+      icon: PersonStanding,
+      value: `${adults ?? 0}`,
+      chunk: "dashboard-01-chunk-6",
+      additionalText: "",
+    },
+    {
+      title: "Seniors (60+)",
+      icon: PersonStanding,
+      value: `${seniors ?? 0}`,
+      chunk: "dashboard-01-chunk-7",
       additionalText: "",
     },
   ];
