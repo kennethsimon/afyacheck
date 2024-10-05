@@ -26,16 +26,16 @@ export default async function AnalyticsPage({
   console.log("User Stats : ", userStats);
   console.log("patients : ", patients);
 
-  let rangeCreatedAtFrom = foundSearchParams["range-createdAt-from"] as string;
-  let rangeCreatedAtTo = foundSearchParams["range-createdAt-to"] as string;
+  // let rangeCreatedAtFrom = foundSearchParams["range-createdAt-from"] as string;
+  // let rangeCreatedAtTo = foundSearchParams["range-createdAt-to"] as string;
 
-  if (!rangeCreatedAtFrom || !rangeCreatedAtTo) {
-    const today = new Date();
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(today.getMonth() - 1);
-    rangeCreatedAtFrom = lastMonth.toISOString().split("T")[0];
-    rangeCreatedAtTo = today.toISOString().split("T")[0];
-  }
+  // if (!rangeCreatedAtFrom || !rangeCreatedAtTo) {
+  //   const today = new Date();
+  //   const lastMonth = new Date(today);
+  //   lastMonth.setMonth(today.getMonth() - 1);
+  //   rangeCreatedAtFrom = lastMonth.toISOString().split("T")[0];
+  //   rangeCreatedAtTo = today.toISOString().split("T")[0];
+  // }
 
   const filterFields = [
     {
@@ -93,8 +93,8 @@ export default async function AnalyticsPage({
             Filter and explore patient Insights.
           </p>
         </div>
-        <PatientFilters isDashboardPage={true} />
-        <MainFilters filterFields={filterFields} dateRanges={dateRanges} />
+        {/* <PatientFilters isDashboardPage={true} /> */}
+        {/* <MainFilters filterFields={filterFields} dateRanges={dateRanges} /> */}
 
         {userStats && <PatientStats UserStats={userStats} />}
         {patients ? (
