@@ -82,7 +82,7 @@ export const getPatients = async (
       if (data.status) {
         console.log("Patients Data : ", data);
         results.data = data.data.patients || [];
-        results.pageCount = data.data.pageCount || 0; // Corrected line
+        results.pageCount = data.data.pageCount || 0;
       }
     })
     .catch((error) => {
@@ -107,7 +107,7 @@ export const getDiagnosis = async (
     .then(({ data }) => {
       if (data.status) {
         results.data = data.data.diagnoses || [];
-        results.pageCount = data.pageCount || 0;
+        results.pageCount = data.data.pageCount || 0;
       }
     })
     .catch((error) => {

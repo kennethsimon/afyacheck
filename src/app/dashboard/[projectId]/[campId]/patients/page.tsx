@@ -21,10 +21,13 @@ export default async function PatientsPage({
   const combinedParams: any = { ...foundSearchParams, ...params };
   console.log(combinedParams);
 
-  const { data: patients, pageCount } = await getPatients(combinedParams);
+  let per_page = foundSearchParams["per_page"] as string;
 
-  console.log(patients);
-  console.log(pageCount);
+  if (!per_page) {
+    per_page = "10";
+  }
+
+  combinedParams["per_page"] = per_page;
 
   // Extract createdAt-from and createdAt-to from searchParams
   let rangeCreatedAtFrom = foundSearchParams["createdAt-from"] as string;
@@ -59,6 +62,10 @@ export default async function PatientsPage({
     <div className="flex min-h-screen w-full px-2 flex-col">
       <main className=" flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 ">
         <div className=" auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+          <h2 className="text-xl text-center py-4 font-semibold">
+            Patients Table
+          </h2>
+
           <div className="mb-2">
             <MainFilters filterFields={filterFields} dateRanges={dateRanges} />
           </div>

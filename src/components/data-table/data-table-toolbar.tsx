@@ -78,8 +78,8 @@ export function DataTableToolbar<TData>({
                 />
               )
           )}
-        {/* {isFiltered && ( */}
-        {/* <Button
+        {/* {isFiltered && (
+        <Button
           aria-label="Reset filters"
           variant="ghost"
           className="h-8 px-2 lg:px-3"
@@ -87,8 +87,8 @@ export function DataTableToolbar<TData>({
         >
           Reset
           <Cross2Icon className="ml-2 size-4" aria-hidden="true" />
-        </Button> */}
-        {/* )} */}
+        </Button> 
+        )} */}
       </div>
       <div className="flex items-center gap-2">
         {children}
