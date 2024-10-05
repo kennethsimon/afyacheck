@@ -24,42 +24,44 @@ type PatientStatsProps = {
       attended: number;
       male: number;
       female: number;
+      others: number;
     };
   };
 };
 export default function PatientStats({
   UserStats: {
-    stats: { attended, male, female },
+    stats: { attended, male, female, others },
   },
 }: PatientStatsProps) {
-  console.log("User Stats : ", { attended, male, female });
-  const repeatingAttendees = 0;
+  console.log("User Stats : ", { attended, male, female, others });
   const cardData = [
     {
       title: "People Attended",
-      icon: User2Icon,
+      icon: UsersIcon,
       value: `${attended ?? 0}`,
       chunk: "dashboard-01-chunk-0",
       additionalText: "",
     },
     {
       title: "Males",
-      icon: UsersIcon,
+      icon: User2Icon,
       value: `${male ?? 0}`,
       chunk: "dashboard-01-chunk-1",
       additionalText: "",
+      iconClass: "text-blue-500", // Color for Males
     },
     {
       title: "Female",
-      icon: UsersIcon,
+      icon: User2Icon,
       value: `${female ?? 0}`,
       chunk: "dashboard-01-chunk-2",
       additionalText: "",
+      iconClass: "text-pink-500", // Color for Female
     },
     {
-      title: "Repeating Attendees",
-      icon: ActivityIcon,
-      value: `${repeatingAttendees ?? 0}`,
+      title: "Others",
+      icon: User2Icon,
+      value: `${others ?? 0}`,
       chunk: "dashboard-01-chunk-3",
       additionalText: "",
     },
@@ -70,7 +72,11 @@ export default function PatientStats({
         <Card x-chunk={card.chunk} key={card.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-            <card.icon className="h-4 w-4 text-muted-foreground" />
+            <card.icon
+              className={`h-4 w-4  ${
+                card.iconClass ?? "text-muted-foreground"
+              }`}
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{card.value}</div>
