@@ -82,17 +82,15 @@ export const getPatients = async (
       if (data.status) {
         console.log("Patients Data : ", data);
         results.data = data.data.patients || [];
-        results.pageCount = data.pageCount || 0;
+        results.pageCount = data.data.pageCount || 0; // Corrected line
       }
     })
     .catch((error) => {
       console.error(error);
     });
-  console.log("results", results);
-  // results = { data: [], pageCount: 0 };
+  console.log("results pageCount : ", results.pageCount);
   return results;
 };
-
 export const getDiagnosis = async (
   queryParams?: any
 ): Promise<{

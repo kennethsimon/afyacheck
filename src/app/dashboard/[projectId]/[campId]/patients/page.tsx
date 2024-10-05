@@ -19,9 +19,6 @@ export default async function PatientsPage({
 
   // Combine foundSearchParams and params
   const combinedParams: any = { ...foundSearchParams, ...params };
-  // remove sort and page from params
-  delete combinedParams.sort;
-  delete combinedParams.page;
   console.log(combinedParams);
 
   const { data: patients, pageCount } = await getPatients(combinedParams);
@@ -43,7 +40,6 @@ export default async function PatientsPage({
   }
 
   const patientsPromise = getPatients(combinedParams);
-
 
   const filterFields: FilterField[] = [
     {
@@ -72,8 +68,8 @@ export default async function PatientsPage({
               fallback={
                 <DataTableSkeleton
                   columnCount={3}
-                  searchableColumnCount={1}
-                  filterableColumnCount={2}
+                  searchableColumnCount={2}
+                  filterableColumnCount={1}
                   cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem"]}
                   shrinkZero
                 />

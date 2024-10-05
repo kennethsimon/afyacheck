@@ -31,7 +31,7 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
 
   const { data, pageCount } = React.use(patientPromise);
 
-  // console.log(data);
+  console.log("pageCount", pageCount);
   // console.log(data);
 
   // Memoize the columns so they don't re-render on every render

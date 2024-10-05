@@ -20,13 +20,9 @@ export default async function DiagnosisPage({
 
   // Combine foundSearchParams and params
   const combinedParams: any = { ...foundSearchParams, ...params };
-  // remove sort and page from params
-  delete combinedParams.sort;
-  delete combinedParams.page;
   console.log(combinedParams);
 
   const { data: diagnoses, pageCount } = await getDiagnosis(combinedParams);
-
 
   // Extract createdAt-from and createdAt-to from searchParams
   let rangeCreatedAtFrom = foundSearchParams["createdAt-from"] as string;
@@ -42,7 +38,6 @@ export default async function DiagnosisPage({
   }
 
   const patientsPromise = getDiagnosis(combinedParams);
-
 
   const filterFields: FilterField[] = [
     {
