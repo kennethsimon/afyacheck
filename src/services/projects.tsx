@@ -148,6 +148,7 @@ export const getCampStats = async (queryParams?: any) => {
 };
 
 export const getPatientAnalyticsData = async (queryParams?: any) => {
+  console.log("getPatientAnalyticsData Query params: ", queryParams);
   let results: any = {};
   const campId = queryParams?.campId;
 
@@ -156,11 +157,11 @@ export const getPatientAnalyticsData = async (queryParams?: any) => {
   }
 
   await projectApi
-    .get("/patients", { params: queryParams })
+    .get("camps/camp-stats/analytics", { params: queryParams })
     .then(({ data }) => {
       if (data.status) {
-        results.items = data.data.patients;
-        results.count = data.data.count;
+        console.log("Analytics Data HERE server : ", data);
+        results.items = data.data;
       }
     })
     .catch((error: any) => {

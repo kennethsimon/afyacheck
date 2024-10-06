@@ -1,4 +1,3 @@
-// components/charts/new-bar-chart.tsx
 "use client";
 
 import { TrendingUp } from "lucide-react";
@@ -25,6 +24,7 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 interface BarChartProps {
   data: any[];
   xKey: string;
@@ -35,11 +35,13 @@ interface BarChartProps {
   footerTrendDescription?: string;
   footerDescription?: string;
 }
+
 export interface BarChartConfig {
   xKey: string;
   yKey: string;
   color?: string;
 }
+
 export function BarChart({
   data,
   xKey,
@@ -73,19 +75,21 @@ export function BarChart({
             width={300}
             height={300}
             data={data}
+            layout="vertical"
             margin={{
-              top: 20,
+              left: 0,
             }}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis
+            <YAxis
               dataKey={xKey}
+              type="category"
               tickLine={false}
-              tickMargin={10}
+              tickMargin={20}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value}
             />
-            <YAxis />
+            <XAxis dataKey={yKey} type="number" hide />
             <Tooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
@@ -93,8 +97,16 @@ export function BarChart({
             <Legend />
             <Bar dataKey={yKey} fill={color} radius={8}>
               <LabelList
-                position="top"
-                offset={12}
+                dataKey={xKey}
+                position="insideLeft"
+                offset={8}
+                className="fill-[--color-label]"
+                fontSize={12}
+              />
+              <LabelList
+                dataKey={yKey}
+                position="right"
+                offset={8}
                 className="fill-foreground"
                 fontSize={12}
               />

@@ -104,7 +104,7 @@ export default function AnalyticCharts({
           name="Patients"
           data={genderDistributionData}
           title="Gender Demographic Breakdown"
-          description={dateRangeDescription}
+          description={"Breakdown of patients by Gender"}
           totalCount={analyticsData.attended}
           chartConfig={chartConfig}
         />
@@ -114,7 +114,9 @@ export default function AnalyticCharts({
           name="Insurance"
           data={insuranceDistributionData}
           title="Patients with Insurance vs. Without Insurance"
-          description={dateRangeDescription}
+          description={
+            "patient with no insure name  provided vs patient with insurance name provided"
+          }
           totalCount={withInsurance + withoutInsurance}
           chartConfig={insuranceChartConfig}
         />
@@ -125,10 +127,12 @@ export default function AnalyticCharts({
           xKey="ageRange"
           yKey="count"
           title="Age Distribution"
-          description={dateRangeDescription}
+          description={
+            "Breakdown of patients by Age Range such as Children, Teenagers, Adults, and Seniors"
+          }
         />
       </div>
-      <div className="flex flex-col">
+      {/* <div className="flex flex-col">
         <LineChart
           data={newPatientsOverTime}
           xKey="date"
@@ -136,7 +140,7 @@ export default function AnalyticCharts({
           title="New Patients Over Time"
           description={dateRangeDescription}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

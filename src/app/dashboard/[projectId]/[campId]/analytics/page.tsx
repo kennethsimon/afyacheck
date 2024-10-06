@@ -1,6 +1,10 @@
 import AnalyticCharts from "@/components/analytics/charts";
 import PatientStats from "@/components/analytics/patient-stats";
-import { getCampStats, getPatients } from "@/services/projects";
+import {
+  getCampStats,
+  getPatientAnalyticsData,
+  getPatients,
+} from "@/services/projects";
 
 export default async function AnalyticsPage({
   params,
@@ -16,30 +20,15 @@ export default async function AnalyticsPage({
   const combinedParams = { ...foundSearchParams, ...params };
 
   const { items: userStats } = await getCampStats(combinedParams);
-  let { data: patients } = await getPatients(combinedParams);
+  // const get analytics data
+  const { items: analyticsData } = await getPatientAnalyticsData(
+    combinedParams
+  );
   console.log("ANALYTICS PAGE");
   console.log("params : ", params);
   console.log("User Stats in analytics page : ", userStats);
-  console.log("patients : ", patients);
 
-  // Assuming analyticsData is derived from patients data
-  const analyticsData = {
-    attended: patients.length,
-    male: patients.filter((p: any) => p.gender === "male").length,
-    female: patients.filter((p: any) => p.gender === "female").length,
-    children: patients.filter((p: any) => p.age <= 12).length,
-    teenagers: patients.filter((p: any) => p.age >= 13 && p.age <= 19).length,
-    adults: patients.filter((p: any) => p.age >= 20 && p.age <= 60).length,
-    seniors: patients.filter((p: any) => p.age > 60).length,
-    withInsurance: patients.filter((p: any) => p.insurance).length,
-    withoutInsurance: patients.filter((p: any) => !p.insurance).length,
-    newPatientsOverTime: patients.map((p: any) => ({
-      date: p.registrationDate,
-      count: 1,
-    })),
-  };
-
-  console.log("Analytics Data: ", analyticsData);
+  console.log("Analytics Data: ", JSON.stringify(analyticsData));
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -52,12 +41,8 @@ export default async function AnalyticsPage({
         </div>
 
         {userStats && <PatientStats UserStats={userStats} />}
-        {patients ? (
-          patients.length > 0 ? (
-            <AnalyticCharts params={params} analyticsData={analyticsData} />
-          ) : (
-            <p>No data to create charts</p>
-          )
+        {analyticsData ? (
+          <AnalyticCharts params={params} analyticsData={analyticsData.stats} />
         ) : (
           <p>Charts Loading...</p>
         )}
