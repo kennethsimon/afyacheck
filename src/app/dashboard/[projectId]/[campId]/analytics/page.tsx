@@ -1,10 +1,6 @@
+import AnalyticCharts from "@/components/analytics/charts";
 import PatientStats from "@/components/analytics/patient-stats";
 import { getCampStats, getPatients } from "@/services/projects";
-import PatientFilters from "@/components/analytics/patient-filters";
-import { MainFilters } from "@/components/analytics/main-filters";
-import ChartsComponent from "@/components/analytics/patient-charts";
-import AnalyticCharts from "@/components/analytics/charts";
-// Assuming the context is to modify the DashboardPage function to use a different method for handling searchParams
 
 export default async function AnalyticsPage({
   params,
@@ -19,70 +15,31 @@ export default async function AnalyticsPage({
   // Combine foundSearchParams and params
   const combinedParams = { ...foundSearchParams, ...params };
 
-  params = { ...foundSearchParams, ...params };
   const { items: userStats } = await getCampStats(combinedParams);
   let { data: patients } = await getPatients(combinedParams);
+  console.log("ANALYTICS PAGE");
   console.log("params : ", params);
   console.log("User Stats in analytics page : ", userStats);
   console.log("patients : ", patients);
 
-  // let rangeCreatedAtFrom = foundSearchParams["range-createdAt-from"] as string;
-  // let rangeCreatedAtTo = foundSearchParams["range-createdAt-to"] as string;
+  // Assuming analyticsData is derived from patients data
+  const analyticsData = {
+    attended: patients.length,
+    male: patients.filter((p: any) => p.gender === "male").length,
+    female: patients.filter((p: any) => p.gender === "female").length,
+    children: patients.filter((p: any) => p.age <= 12).length,
+    teenagers: patients.filter((p: any) => p.age >= 13 && p.age <= 19).length,
+    adults: patients.filter((p: any) => p.age >= 20 && p.age <= 60).length,
+    seniors: patients.filter((p: any) => p.age > 60).length,
+    withInsurance: patients.filter((p: any) => p.insurance).length,
+    withoutInsurance: patients.filter((p: any) => !p.insurance).length,
+    newPatientsOverTime: patients.map((p: any) => ({
+      date: p.registrationDate,
+      count: 1,
+    })),
+  };
 
-  // if (!rangeCreatedAtFrom || !rangeCreatedAtTo) {
-  //   const today = new Date();
-  //   const lastMonth = new Date(today);
-  //   lastMonth.setMonth(today.getMonth() - 1);
-  //   rangeCreatedAtFrom = lastMonth.toISOString().split("T")[0];
-  //   rangeCreatedAtTo = today.toISOString().split("T")[0];
-  // }
-
-  const filterFields = [
-    {
-      label: "Gender",
-      value: "gender",
-      type: "select",
-      options: [
-        { label: "Male", value: "male" },
-        { label: "Female", value: "female" },
-      ],
-      defaultValue: "",
-    },
-    {
-      label: "Phone Number",
-      value: "phoneNumber",
-      type: "input",
-      placeholder: "Enter Phone Number",
-      defaultValue: "",
-    },
-    {
-      label: "Location",
-      value: "location",
-      type: "input",
-      placeholder: "Enter Location",
-      defaultValue: "",
-    },
-    {
-      label: "Created Date Range",
-      value: "createdAt",
-      type: "date",
-      defaultValue: {
-        from: new Date(new Date().getFullYear(), 0, 1),
-        to: new Date(),
-      },
-    },
-    // {
-    //   label: "Birth Date Range old",
-    //   value: "dateOfBirth",
-    //   type: "date",
-    //   defaultValue: {
-    //     from: new Date(new Date().getFullYear() - 100, 0, 1),
-    //     to: new Date(),
-    //   },
-    // },
-  ];
-
-  const dateRanges = ["createdAt", "dateOfBirth"];
+  console.log("Analytics Data: ", analyticsData);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -93,35 +50,18 @@ export default async function AnalyticsPage({
             Filter and explore patient Insights.
           </p>
         </div>
-        {/* <PatientFilters isDashboardPage={true} /> */}
-        {/* <MainFilters filterFields={filterFields} dateRanges={dateRanges} /> */}
 
         {userStats && <PatientStats UserStats={userStats} />}
         {patients ? (
           patients.length > 0 ? (
-            <AnalyticCharts params={params} patients={patients} />
+            <AnalyticCharts params={params} analyticsData={analyticsData} />
           ) : (
             <p>No data to create charts</p>
           )
         ) : (
           <p>Charts Loading...</p>
         )}
-
-        {/* Old ones */}
-        {/* {patients ? (
-          patients.patients && patients.patients.length > 0 ? (
-            <ChartsComponent patients={patients.patients} />
-          ) : (
-            <p>No data to create charts</p>
-          )
-        ) : (
-          <p>Charts Loading...</p>
-        )} */}
       </main>
     </div>
   );
 }
-
-// V0 Links
-// https://v0.dev/r/sE7ByzrwKiT
-// https://v0.dev/r/K7ko7IZUvbp
