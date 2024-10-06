@@ -92,11 +92,6 @@ export default function AnalyticCharts({
     return "N/A";
   };
 
-  const dateRangeDescription = `${safeDateFormat(
-    rangeCreatedAtFrom,
-    "MMMM d, yyyy"
-  )} - ${safeDateFormat(rangeCreatedAtTo, "MMMM d, yyyy")}`;
-
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="flex flex-col">
@@ -132,15 +127,16 @@ export default function AnalyticCharts({
           }
         />
       </div>
-      {/* <div className="flex flex-col">
+      <div className="flex flex-col">
         <LineChart
           data={newPatientsOverTime}
           xKey="date"
+          yKeys={["count"]}
           key="count"
           title="New Patients Over Time"
-          description={dateRangeDescription}
+          description={`Number of new patients over time`}
         />
-      </div> */}
+      </div>
     </div>
   );
 }
