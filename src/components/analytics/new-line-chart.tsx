@@ -1,4 +1,3 @@
-// components/charts/new-line-chart.tsx
 "use client";
 
 import {
@@ -19,11 +18,17 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
-import { ChartContainer } from "../ui/chart";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface LineChartProps {
   data: any[];
   xKey: string;
+  yKeys: string[];
   title: string;
   description: string;
   footerTrendDescription?: string;
@@ -33,25 +38,19 @@ interface LineChartProps {
 export function LineChart({
   data,
   xKey,
+  yKeys,
   title,
   description,
   footerTrendDescription,
   footerDescription,
 }: LineChartProps) {
-  // Example of building line configuration inside the component
-  // This should be adjusted based on your specific needs
-  const lineConfigs = data.map((item, index) => ({
-    key: `line-${index}`, // Example key, replace with your logic
-    color: `#${Math.floor(Math.random() * 16777215).toString(16)}`, // Random color, replace with your logic
-  }));
-
-  const chartConfig = {
-    [xKey]: {
-      label: xKey,
-      icon: undefined,
-      color: "hsl(var(--chart-1))",
-    },
-  };
+  const chartConfig: ChartConfig = yKeys.reduce((config, key, index) => {
+    config[key] = {
+      label: key,
+      color: `hsl(var(--chart-${index + 1}))`,
+    };
+    return config;
+  }, {} as ChartConfig);
 
   return (
     <Card className="flex flex-col">
@@ -64,18 +63,37 @@ export function LineChart({
           config={chartConfig}
           className="mx-auto aspect-square max-h-[250px]"
         >
-          <RechartsLineChart width={500} height={300} data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={xKey} />
+          <RechartsLineChart
+            width={500}
+            height={300}
+            data={data}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis
+              dataKey={xKey}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
             <YAxis />
-            <Tooltip />
+            <Tooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
+            />
             <Legend />
-            {lineConfigs.map((lineConfig) => (
+            {yKeys.map((key) => (
               <Line
-                key={lineConfig.key}
+                key={key}
                 type="monotone"
-                dataKey={lineConfig.key}
-                stroke={lineConfig.color}
+                dataKey={key}
+                stroke={chartConfig[key].color}
+                fillOpacity={0.4}
+                fill={chartConfig[key].color}
               />
             ))}
           </RechartsLineChart>

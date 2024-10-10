@@ -82,17 +82,15 @@ export const getPatients = async (
       if (data.status) {
         console.log("Patients Data : ", data);
         results.data = data.data.patients || [];
-        results.pageCount = data.pageCount || 0;
+        results.pageCount = data.data.pageCount || 0;
       }
     })
     .catch((error) => {
       console.error(error);
     });
-  console.log("results", results);
-  // results = { data: [], pageCount: 0 };
+  console.log("results pageCount : ", results.pageCount);
   return results;
 };
-
 export const getDiagnosis = async (
   queryParams?: any
 ): Promise<{
@@ -109,7 +107,7 @@ export const getDiagnosis = async (
     .then(({ data }) => {
       if (data.status) {
         results.data = data.data.diagnoses || [];
-        results.pageCount = data.pageCount || 0;
+        results.pageCount = data.data.pageCount || 0;
       }
     })
     .catch((error) => {
@@ -150,6 +148,7 @@ export const getCampStats = async (queryParams?: any) => {
 };
 
 export const getPatientAnalyticsData = async (queryParams?: any) => {
+  console.log("getPatientAnalyticsData Query params: ", queryParams);
   let results: any = {};
   const campId = queryParams?.campId;
 
@@ -158,11 +157,11 @@ export const getPatientAnalyticsData = async (queryParams?: any) => {
   }
 
   await projectApi
-    .get("/patients", { params: queryParams })
+    .get("camps/camp-stats/analytics", { params: queryParams })
     .then(({ data }) => {
       if (data.status) {
-        results.items = data.data.patients;
-        results.count = data.data.count;
+        console.log("Analytics Data HERE server : ", data);
+        results.items = data.data;
       }
     })
     .catch((error: any) => {
