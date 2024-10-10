@@ -13,7 +13,7 @@ export const PatientInfoSchema = z.object({
 
 export const ScreeningQuestionsSchema = z.object({
   screening: z.object({
-    patientIdentifier: z.string().min(1, "Patient Id is required"),
+    patientIdentifier: z.string().min(1, "Patient Id is required").regex(/^AC00000000/, "Patient Id must start with AC00000000"),
     illness: z.enum(["yes", "no", "dont-know"]),
     medication: z.enum(["yes", "no", "stopped"]),
     alcoholOrSmokeUsage: z.enum(["yes", "no", "stopped"]),
@@ -44,8 +44,7 @@ export const ScreeningQuestionsSchema = z.object({
 export const ClinicalFindingsSchema = z.object({
   clinicalFindings: z.object({
     // Patient number (optional if it's included in the form)
-    patientNumber: z.string().optional(),
-
+    patientNumber: z.string().min(1, "Patient Id is required").regex(/^AC00000000/, "Patient Id must start with AC00000000"),
     // TB Screening with dynamic medication status
     tbScreening: z.object({
       status: z.enum(["negative", "suspicious", "positive", "knownCase"], {
@@ -170,7 +169,7 @@ export const ClinicalFindingsSchema = z.object({
 
 export const DoctorCommentsSchema = z.object({
   doctorComments: z.object({
-    patientIdentifier: z.string().min(1, "patient id  is required"),
+    patientIdentifier: z.string().min(1, "Patient Id is required").regex(/^AC00000000/, "Patient Id must start with AC00000000"),
     doctorsComment: z
       .string()
       .min(1, "Doctors comment and/or diagnosis is required"),
