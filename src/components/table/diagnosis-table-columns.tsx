@@ -147,7 +147,9 @@ export function getColumns(): ColumnDef<any>[] {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() =>
-                    navigator.clipboard.writeText(row.original._id)
+                    navigator.clipboard.writeText(
+                      row.original.patientIdentifier
+                    )
                   }
                 >
                   Copy Patient ID
@@ -156,7 +158,7 @@ export function getColumns(): ColumnDef<any>[] {
                 <DropdownMenuItem
                   onSelect={() => setShowPreviewPatientSheet(true)}
                 >
-                  Preview Patient
+                  Preview Diagnosis
                 </DropdownMenuItem>
                 {/* <DropdownMenuItem>
                   <Link href={`/dashboard/patients/${row.original._id}`}>
