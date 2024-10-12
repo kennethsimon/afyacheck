@@ -40,53 +40,19 @@ export interface DataTableFilterOption<TData> {
 
 export type Patient = {
   _id: string;
-  gender: "female" | "male" | "others"; // Assuming gender is limited to 'female' or 'male', add more options as needed
-  dateOfBirth: string; // ISO date string
-  phoneNumber: string;
-  location: string;
-  address: string;
-  camp: string;
-  name: string;
-  insurance: string;
-  email: string;
-  date: string;
-  amount: string;
-  type: string;
-  status: {
-    label: string;
-    variant: string;
-  };
-  screening: {
-    illness: "dont-know" | string;
-    medication: "no" | string;
-    alcoholOrSmokeUsage: "no" | string;
-    chronicDiseases: "dont-know" | string;
-    vaccinationHistory: "no" | string;
-  };
-  clinicalFindings: {
-    height: string;
-    weight: string;
-    bmi: string;
-    bloodPressure: string;
-    rbgFbs: string;
-    bloodGroup: string;
-    cholesterol: string;
-    physicalAppearance: string;
-    cancer: string;
-    ecgEcho: string;
-    mse: string;
-    physio: string;
-    ot: string;
-    dental: string;
-    ophthalmology: string;
-    comments: string;
-    prescription: string;
-    referral: string;
-  };
-  createdBy: string;
+  patientIdentifier?: string;
+  name?: string;
+  gender: "female" | "male" | "others";
+  dateOfBirth?: string; // ISO date string
+  phoneNumber?: string;
+  region?: string;
+  district?: string;
+  address?: string;
+  insurance?: string;
+  camp: string; // Assuming this is the ObjectId as a string
+  createdBy: string; // Assuming this is the ObjectId as a string
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
-  __v: number;
 };
 
 export type Order = {
