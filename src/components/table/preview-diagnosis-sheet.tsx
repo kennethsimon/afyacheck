@@ -10,8 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { parseISO, differenceInYears } from "date-fns";
 import { useParams } from "next/navigation";
-import { getCampById } from "@/services/camps";
-import { getUserById } from "@/services/users";
+// import { getCampById } from "@/services/camps";
+// import { getUserById } from "@/services/users";
 import Link from "next/link";
 
 interface PreviewPatientSheetProps
@@ -25,27 +25,27 @@ export function PreviewDiagnosisSheet({
 }: PreviewPatientSheetProps) {
   const params = useParams();
 
-  const [campName, setCampName] = React.useState<string | null>(null);
-  const [creatorName, setCreatorName] = React.useState<string | null>(null);
+  // const [campName, setCampName] = React.useState<string | null>(null);
+  // const [creatorName, setCreatorName] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    const fetchCampName = async () => {
-      if (patient.camp) {
-        const { items: campDetails } = await getCampById(patient.camp);
-        setCampName(campDetails?.camp?.name || "N/A");
-      }
-    };
+  // React.useEffect(() => {
+  //   const fetchCampName = async () => {
+  //     if (patient.camp) {
+  //       const { items: campDetails } = await getCampById(patient.camp);
+  //       setCampName(campDetails?.camp?.name || "N/A");
+  //     }
+  //   };
 
-    const fetchCreatorName = async () => {
-      if (patient.createdBy) {
-        const { items: userDetails } = await getUserById(patient.createdBy);
-        setCreatorName(userDetails?.user?.name || "N/A");
-      }
-    };
+  //   const fetchCreatorName = async () => {
+  //     if (patient.createdBy) {
+  //       const { items: userDetails } = await getUserById(patient.createdBy);
+  //       setCreatorName(userDetails?.user?.name || "N/A");
+  //     }
+  //   };
 
-    fetchCampName();
-    fetchCreatorName();
-  }, [patient.camp, patient.createdBy]);
+  //   fetchCampName();
+  //   fetchCreatorName();
+  // }, [patient.camp, patient.createdBy]);
 
   const calculateAge = (dateOfBirth?: string) => {
     if (!dateOfBirth) return "N/A";
@@ -57,7 +57,7 @@ export function PreviewDiagnosisSheet({
     <Sheet {...props}>
       <SheetContent className="flex flex-col gap-6 sm:max-w-md">
         <SheetHeader className="text-left">
-          <SheetTitle>Patient Details Preview</SheetTitle>
+          <SheetTitle>Diagnosis Details Preview</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 overflow-y-auto flex-grow">
           <section>
@@ -65,9 +65,9 @@ export function PreviewDiagnosisSheet({
             <div>
               <strong>Patient ID:</strong> {patient.patientIdentifier || "N/A"}
             </div>
-            <div>
+            {/* <div>
               <strong>Camp Name:</strong> {campName || "N/A"}
-            </div>
+            </div> */}
             <div>
               <strong>Status:</strong> {patient.status || "N/A"}
             </div>
@@ -146,7 +146,8 @@ export function PreviewDiagnosisSheet({
               {patient.clinicalFindings?.hivResult || "N/A"}
             </div>
             <div>
-              <strong>HIV Case:</strong> {patient.clinicalFindings?.hivCase || "N/A"}
+              <strong>HIV Case:</strong>{" "}
+              {patient.clinicalFindings?.hivCase || "N/A"}
             </div>
             <div>
               <strong>HIV Known Case Medication:</strong>{" "}
@@ -240,9 +241,9 @@ export function PreviewDiagnosisSheet({
 
           <section>
             <h3 className="text-xl font-bold mb-4">Metadata</h3>
-            <div>
+            {/* <div>
               <strong>Created By:</strong> {creatorName || "N/A"}
-            </div>
+            </div> */}
             <div>
               <strong>Created At:</strong>{" "}
               {patient.createdAt
