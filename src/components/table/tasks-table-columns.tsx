@@ -142,7 +142,9 @@ export function getColumns(): ColumnDef<any>[] {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() =>
-                    navigator.clipboard.writeText(row.original._id)
+                    navigator.clipboard.writeText(
+                      row.original.patientIdentifier
+                    )
                   }
                 >
                   Copy Patient ID
