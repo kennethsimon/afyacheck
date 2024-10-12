@@ -88,7 +88,8 @@ export const getPatients = async (
     .catch((error) => {
       console.error(error);
     });
-  console.log("results pageCount : ", results.pageCount);
+  console.log("get Patients results pageCount : ", results.pageCount);
+  console.log("get Patients results data : ", JSON.stringify(results.data));
   return results;
 };
 export const getDiagnosis = async (
@@ -113,7 +114,8 @@ export const getDiagnosis = async (
     .catch((error) => {
       console.error(error);
     });
-  console.log("results", results);
+  console.log("get Diagnosis results pageCount : ", results.pageCount);
+  console.log("get Diagnosis results data : ", JSON.stringify(results.data));
   // results = { data: [], pageCount: 0 };
   return results;
 };
