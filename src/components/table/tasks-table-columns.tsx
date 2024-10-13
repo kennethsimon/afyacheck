@@ -19,28 +19,27 @@ import { getGenderBackgroundColor } from "@/lib/utils";
 import Link from "next/link";
 import { Patient } from "@/types/general";
 import { differenceInYears, parseISO } from "date-fns";
-import { getCampById } from "@/services/camps";
-import { getUserById } from "@/services/users";
+// import { getCampById } from "@/services/camps";
 import { PreviewPatientSheet } from "./preview-patient-sheet";
 
-function CampNameCell({ campId }: { campId: string }) {
-  const [campName, setCampName] = React.useState<string | null>(null);
+// function CampNameCell({ campId }: { campId: string }) {
+//   const [campName, setCampName] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    const fetchCampName = async () => {
-      try {
-        const { items: campDetails } = await getCampById(campId);
-        setCampName(campDetails.camp.name);
-      } catch (error) {
-        console.error("Failed to fetch camp name:", error);
-        setCampName("Error loading camp name");
-      }
-    };
-    fetchCampName();
-  }, [campId]);
+//   React.useEffect(() => {
+//     const fetchCampName = async () => {
+//       try {
+//         const { items: campDetails } = await getCampById(campId);
+//         setCampName(campDetails.camp.name);
+//       } catch (error) {
+//         console.error("Failed to fetch camp name:", error);
+//         setCampName("Error loading camp name");
+//       }
+//     };
+//     fetchCampName();
+//   }, [campId]);
 
-  return <div>{campName || "Loading..."}</div>;
-}
+//   return <div>{campName || "Loading..."}</div>;
+// }
 
 function CreatedByCell({ userId }: { userId: string }) {
   const [userName, setUserName] = React.useState<string | null>(null);
@@ -143,7 +142,9 @@ export function getColumns(): ColumnDef<any>[] {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() =>
-                    navigator.clipboard.writeText(row.original._id)
+                    navigator.clipboard.writeText(
+                      row.original.patientIdentifier
+                    )
                   }
                 >
                   Copy Patient ID
@@ -190,7 +191,7 @@ export function getColumns(): ColumnDef<any>[] {
         <DataTableColumnHeader column={column} title="Gender" />
       ),
       cell: ({ row }) => {
-        const gender = row?.original?.gender || '';
+        const gender = row?.original?.gender || "";
         const bgColor = getGenderBackgroundColor(gender);
         return (
           <div className={`p-1 text-center font-[500] ${bgColor} rounded`}>
@@ -205,7 +206,9 @@ export function getColumns(): ColumnDef<any>[] {
       accessorKey: "dateOfBirth",
       header: "Age",
       cell: ({ row }) => {
-        const dateOfBirth = row?.original?.dateOfBirth ? parseISO(row?.original?.dateOfBirth) : '';
+        const dateOfBirth = row?.original?.dateOfBirth
+          ? parseISO(row?.original?.dateOfBirth)
+          : "";
         const age = differenceInYears(new Date(), dateOfBirth);
         return age;
       },
@@ -226,7 +229,11 @@ export function getColumns(): ColumnDef<any>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Location" />
       ),
-      cell: ({ row }) => <div>{row?.original?.region}, {row?.original?.district}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row?.original?.region}, {row?.original?.district}
+        </div>
+      ),
       enableSorting: true,
       enableHiding: true,
     },

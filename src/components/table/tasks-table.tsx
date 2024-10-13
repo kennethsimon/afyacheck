@@ -50,14 +50,24 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
    */
   const filterFields: DataTableFilterField<any>[] = [
     {
-      label: "Phone Number",
-      value: "phoneNumber",
-      placeholder: "Search Phone Number...",
+      label: "Patient Id",
+      value: "patientIdentifier",
+      placeholder: "Search Patient Id...",
     },
     {
       label: "Patient Name",
       value: "name",
       placeholder: "Search Patient Name...",
+    },
+    {
+      label: "Phone Number",
+      value: "phoneNumber",
+      placeholder: "Search Phone Number...",
+    },
+    {
+      label: "Location",
+      value: "location",
+      placeholder: "Search Location (Region, District)...",
     },
   ];
 
