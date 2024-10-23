@@ -69,6 +69,26 @@ export const regionsData = [
                          ]
         },
         {
+          "name": "Geita",
+          "districts": [
+              {
+                  "name": "Geita"
+              },
+              {
+                  "name": "Bukombe"
+              },
+              {
+                  "name": "Chato"
+              },
+              {
+                  "name": "Nyang'wale"
+              },
+              {
+                  "name": "Mbogwe"
+              }
+          ]
+      },
+        {
             "name": "Iringa",
             "districts":[
                           {

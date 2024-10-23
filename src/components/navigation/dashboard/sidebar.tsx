@@ -9,9 +9,10 @@ import {
   UserIcon,
   PlusIcon,
   BarChartIcon,
-  StethoscopeIcon, // for diagnosis or clinical findings
-  FilePlusIcon, // for adding screenings
-  ClipboardListIcon, // for doctors comments
+  StethoscopeIcon,
+  FilePlusIcon,
+  ClipboardListIcon,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,14 +29,9 @@ export default function DashboardSidebar({
 }) {
   const pathname = usePathname();
   const params = useParams();
-  const campId = params.campId as string; // Assuming campId is available in the params
-  const projectId = params.projectId as string; // Assuming projectId is available in the params
-  // console.log("permissions in sidebar : ", permissions);
-  // console.log("session in sidebar : ", JSON.stringify(session));
+  const campId = params.campId as string;
+  const projectId = params.projectId as string;
 
-
-
-  // Utility function to check if the user is an admin
   function isAdmin(roles: any): boolean {
     return (
       Array.isArray(roles) &&
@@ -56,15 +52,6 @@ export default function DashboardSidebar({
     );
   }
 
-
-  // Remove a permission for debugging purposes , remember also comment out isAdmin(userRoles) || when testing
-  // Remember to remove this line when done debugging
-  // permissions.permissions = permissions.permissions.filter(
-  //   (permission: { name: string; active: boolean }) =>
-  //     permission.name !== "Edit doctor comments step"
-  // );
-
-  // Utility function to check if the user has a specific permission
   function hasPermission(permissions: any, permissionName: string): boolean {
     console.log(permissions);
     console.log(permissionName);
@@ -86,82 +73,82 @@ export default function DashboardSidebar({
     let items = [
       {
         href: `/dashboard/${projectId}/${campId}`,
-        icon: <HomeIcon />, // Home icon for the dashboard
+        icon: <HomeIcon />,
         label: "Dashboard",
       },
     ];
 
-    // Add Patient item
     if (isAdmin(userRoles) && hasPermission(userPermissions, "Edit patient info step")) {
       items.push({
         href: `/dashboard/${projectId}/${campId}/add-patient`,
-        icon: <UserIcon />, // Plus icon for adding patients
+        icon: <UserIcon />,
         label: "Add Patient",
       });
     }
 
-    // Add Screening item
     if (
       isAdmin(userRoles) &&
       hasPermission(userPermissions, "Edit screening questions step")
     ) {
       items.push({
-        href: `/dashboard/${projectId}/${campId}/add-screening`, // New route for adding screening
-        icon: <FilePlusIcon />, // File plus icon for adding screening
+        href: `/dashboard/${projectId}/${campId}/add-screening`,
+        icon: <FilePlusIcon />,
         label: "Add Screening",
       });
     }
 
-    // Add Clinical Findings item
     if (
       isAdmin(userRoles) &&
       hasPermission(userPermissions, "Edit clinical findings step")
     ) {
       items.push({
         href: `/dashboard/${projectId}/${campId}/add-clinical`,
-        icon: <StethoscopeIcon />, // Stethoscope for clinical findings
+        icon: <StethoscopeIcon />,
         label: "Clinical Findings",
       });
     }
 
-    // Add Doctors Comments item
     if (
       isAdmin(userRoles) &&
       hasPermission(userPermissions, "Edit doctor comments step")
     ) {
       items.push({
         href: `/dashboard/${projectId}/${campId}/doctorscomments`,
-        icon: <ClipboardListIcon />, // Clipboard for doctor's comments
+        icon: <ClipboardListIcon />,
         label: "Doctors Comments",
       });
     }
 
-    // Admin-specific items
     if (isAdmin2(userRoles)) {
       items.push(
         {
           href: `/dashboard/${projectId}/${campId}/patients`,
-          icon: <StethoscopeIcon />, // Stethoscope for diagnosis
+          icon: <StethoscopeIcon />,
           label: "Patients",
         },
         {
           href: `/dashboard/${projectId}/${campId}/diagnosis`,
-          icon: <StethoscopeIcon />, // Stethoscope for diagnosis
+          icon: <StethoscopeIcon />,
           label: "Diagnosis",
         },
         {
           href: `/dashboard/${projectId}/${campId}/analytics`,
-          icon: <BarChartIcon />, // Bar chart icon for analytics 
+          icon: <BarChartIcon />,
           label: "Analytics",
         },
         {
+          href: `/dashboard/${projectId}/${campId}/users`,
+          icon: <Users />,
+          label: "Users",
+        },
+        {
           href: `/dashboard/${projectId}/${campId}/add-user`,
-          icon: <PlusIcon />, // Plus icon for adding users
+          icon: <PlusIcon />,
           label: "Add User",
         },
         {
           href: `/dashboard/${projectId}/${campId}/settings`,
-          icon: <SettingsIcon />, // Settings icon for settings
+          icon: <SettingsIcon />,
           label: "Settings",
         }
       );

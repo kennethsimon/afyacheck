@@ -1,15 +1,15 @@
 "use client";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useParams } from "next/navigation"; // To get userId from URL
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,7 +19,8 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import projectApi from "../../services/config";
+import projectApi from "../../services/config"; // Import the getUserById function
+import { getUserById } from "@/services/users";
 
 const AddUserFormSchema = z.object({
   campId: z.string(),
@@ -45,8 +46,10 @@ type AddUserFormProps = {
   };
 };
 
-export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
+export default function EditUserForm({ campId, permissions }: AddUserFormProps) {
+  const { userId } = useParams(); // Get the userId from the URL params
   const [loading, setLoading] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(true); // Loading state for fetching user data
   const form = useForm<z.infer<typeof AddUserFormSchema>>({
     resolver: zodResolver(AddUserFormSchema),
     defaultValues: {
@@ -58,10 +61,37 @@ export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
     },
   });
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (userId) {
+        try {
+          const userData = await getUserById(userId); // Fetch user data by ID
+          if (userData?.items) {
+            const user = userData?.items?.user;
+            console.log('ken', user)
+            form.reset({
+              campId,
+              name: user?.name || "",
+              password: "", // Password won't be autofilled for security reasons
+              roles: user?.roles[0] || "",
+              permissions: user?.permissions || [],
+            });
+          }
+        } catch (error) {
+          toast.error("Error fetching user data.");
+        } finally {
+          setFetchingUser(false); // Set fetchingUser state to false after data is fetched
+        }
+      }
+    };
+
+    fetchUser();
+  }, [userId]);
+
   const onSubmit = async (data: z.infer<typeof AddUserFormSchema>) => {
     setLoading(true);
     try {
-      const res = await projectApi.post("/auth/user", {
+      const res = await projectApi.put(`/auth/admin/${userId}`, {
         name: data.name,
         password: data.password,
         username: data.name,
@@ -70,15 +100,25 @@ export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
         roles: [data.roles],
       });
       if (res.status === 200) {
-        toast("User created successfully.");
+        toast.success("User Edited successfully.");
         window.location.reload();
       }
     } catch (error) {
-      toast("Error creating user.", { description: "Please try again." });
+      toast.error("Error creating user.", { description: "Please try again." });
     } finally {
       setLoading(false);
     }
   };
+
+  // Display a loading spinner while fetching user data
+  if (fetchingUser) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ReloadIcon className="mr-2 h-6 w-6 animate-spin" />
+        Loading user data...
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -161,7 +201,7 @@ export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
                                       field.value?.filter(
                                         (value) => value !== permission._id
                                       )
-                                    )
+                                    );
                               }}
                             />
                           </FormControl>
@@ -169,7 +209,7 @@ export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
                             {permission.name}
                           </FormLabel>
                         </FormItem>
-                      )
+                      );
                     }}
                   />
                 ))}

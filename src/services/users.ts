@@ -1,7 +1,7 @@
 import projectApi from "./config";
 
 // get user details by userId
-export const getUserById = async (userId: string) => {
+export const getUserById = async (userId: any) => {
   console.log("getUserById User ID: ", userId);
   let results: any = {};
 

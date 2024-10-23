@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { getPermissions } from "@/services/projects";
-import AddUserForm from "@/components/form/add-user-form";
+import EditUserForm from "@/components/form/edit-user-form";
 
-export default async function AddUser({
+export default async function EditUser({
   params,
 }: {
   params: { campId: string };
@@ -18,9 +18,9 @@ export default async function AddUser({
           width={200}
           height={100}
         />
-        <h1 className="text-2xl font-bold text-center">Add User FORM</h1>
+        <h1 className="text-2xl font-bold text-center">Edit User FORM</h1>
       </div>
-      <AddUserForm permissions={items} campId={params.campId} />
+      <EditUserForm permissions={items} campId={params.campId} />
     </div>
   );
 }
