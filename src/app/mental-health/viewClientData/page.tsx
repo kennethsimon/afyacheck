@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { FaSearch, FaSignOutAlt, FaUserMd } from 'react-icons/fa';
 
 export default function ViewDataPage({ userInfo }) {
   const router = useRouter();
@@ -18,85 +19,90 @@ export default function ViewDataPage({ userInfo }) {
   };
 
   return (
-    <div className="container mt-5">
-      {/* Logo */}
-      <div className="text-center mb-4">
-        <Image src="/AC.png" alt="Logo" width={750} height={135} className="img-fluid" />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-500 py-16 px-4">
+      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Image src="/AC.png" alt="Logo" width={600} height={200} className="img-fluid" />
+        </div>
 
-      <h2 className="text-center">ALL CLIENTS</h2>
+        <h2 className="text-center text-3xl font-bold text-emerald-500 mb-6 flex items-center justify-center">
+          <FaUserMd className="mr-2 animate-bounce" /> ALL CLIENTS
+        </h2>
 
-      {/* Search Form */}
-      <form onSubmit={handleSearch} className="mb-4">
-        <div className="row align-items-center">
-          <div className="col-md-5">
+        {/* Search Form */}
+        <form onSubmit={handleSearch} className="mb-6">
+          <div className="flex flex-wrap items-center gap-4">
             <input
               type="text"
               name="name"
-              className="form-control"
-              placeholder="SEARCH BY NAME"
+              className="flex-grow p-2 border border-gray-600 rounded"
+              placeholder="Search by Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-          </div>
-          <div className="col-md-2">
             <input
               type="date"
               name="date"
-              className="form-control"
+              className="p-2 border border-gray-600 rounded"
               value={date}
-              style={{ color: date ? '#000' : '#aaa' }}
               onChange={(e) => setDate(e.target.value)}
-              onFocus={(e) => (e.target.style.color = '#000')}
             />
-          </div>
-          <div className="col-md-1">
-            <button type="submit" className="btn btn-primary w-100 fw-bold">SEARCH</button>
-          </div>
-          <div className="col-md-3 text-end">
-            <Link href="/specialist-login" className="btn btn-danger fw-bold" style={{ marginLeft: '315px' }}>
-              LOGOUT
+            <button
+              type="submit"
+              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              <FaSearch className="mr-2" /> Search
+            </button>
+            <Link href="/specialist-login" className="flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-auto">
+                  <FaSignOutAlt className="mr-2" /> 
+                    Logout
             </Link>
-          </div>
-        </div>
-      </form>
 
-      {/* Clients Table */}
-      <table className="table table-bordered" style={{ backgroundColor: 'blue', color: 'white' }}>
-        <thead style={{ backgroundColor: 'darkblue' }}>
-          <tr>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Education Level</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userInfo && userInfo.length > 0 ? (
-            userInfo.map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.date}</td>
-                <td>{user.education_level}</td>
-                <td>{user.age}</td>
-                <td>{user.gender}</td>
-                <td>
-                  <Link href={`/user-responses/${user.id}`} className="btn btn-primary">
-                    View Responses
-                  </Link>
-                </td>
+          </div>
+        </form>
+
+        {/* Clients Table */}
+        <div className="overflow-y-auto max-h-[500px]">
+          <table className="min-w-full table-auto border-collapse">
+            <thead className="sticky top-0 bg-emerald-500 text-white">
+              <tr>
+                <th className="p-3 text-left">Name</th>
+                <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-left">Education Level</th>
+                <th className="p-3 text-left">Age</th>
+                <th className="p-3 text-left">Gender</th>
+                <th className="p-3 text-left">Action</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center">No records found</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {userInfo && userInfo.length > 0 ? (
+                userInfo.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-100">
+                    <td className="p-3">{user.name}</td>
+                    <td className="p-3">{user.date}</td>
+                    <td className="p-3">{user.education_level}</td>
+                    <td className="p-3">{user.age}</td>
+                    <td className="p-3">{user.gender}</td>
+                    <td className="p-3">
+                    <Link href={`/user-responses/${user.id}`} className="bg-emerald-600 hover:bg-emerald-700 text-white py-1 px-3 rounded">
+                          View Responses
+                    </Link>
+
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center p-4 text-gray-500">
+                    No records found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
-

@@ -13,8 +13,9 @@ import {
   User,
   Calendar,
   GraduationCap,
-  VenetianMask,
 } from 'lucide-react';
+
+import {FaVenusMars} from 'react-icons/fa';
 
 type Question = {
   id: number;
@@ -114,7 +115,7 @@ const QuestionnairePage = () => {
                 </div>
                 <div>
                   <label className="block font-semibold mb-1 flex items-center gap-1">
-                    <VenetianMask className="text-red-600" size={16} /> Gender
+                    <FaVenusMars className="text-red-600" size={16} /> Gender
                   </label>
                   <select name="gender" required onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded">
                     <option value="">-- Select --</option>
