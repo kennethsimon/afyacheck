@@ -1,6 +1,4 @@
 'use client';
-
-import React, { useState } from 'react';
 import Image from 'next/image';
 import {
   Brain,
@@ -14,52 +12,80 @@ import {
   Calendar,
   GraduationCap,
 } from 'lucide-react';
-
-import {FaVenusMars} from 'react-icons/fa';
+import { FaVenusMars } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
 
 type Question = {
-  id: number;
+  _id: string;
   question_text: string;
   question_type: 'rating' | 'yes_no';
   icon: JSX.Element;
 };
 
-const questions: Question[] = [
-  { id: 1, question_text: 'How often do you feel overwhelmed or stressed?', question_type: 'rating', icon: <Brain className="text-purple-600 animate-bounce" /> },
-  { id: 2, question_text: 'How often do you feel sad or depressed?', question_type: 'rating', icon: <Frown className="text-blue-600 animate-pulse" /> },
-  { id: 3, question_text: 'How often do you feel anxious or worried?', question_type: 'rating', icon: <Brain className="text-pink-600 animate-spin" /> },
-  { id: 4, question_text: 'How often do you feel irritable or angry?', question_type: 'rating', icon: <Frown className="text-red-600 animate-bounce" /> },
-  { id: 5, question_text: 'How often do you feel lonely or isolated?', question_type: 'rating', icon: <Users className="text-yellow-600 animate-pulse" /> },
-  { id: 6, question_text: 'How often do you have trouble sleeping?', question_type: 'rating', icon: <Bed className="text-indigo-600 animate-bounce" /> },
-  { id: 7, question_text: 'How often do you feel tired or fatigued?', question_type: 'rating', icon: <Bed className="text-indigo-400 animate-spin" /> },
-  { id: 8, question_text: 'Do you often lack pleasure in activities you used to enjoy?', question_type: 'rating', icon: <Activity className="text-green-500 animate-pulse" /> },
-  { id: 9, question_text: 'How often do you struggle with concentration or focus?', question_type: 'rating', icon: <Brain className="text-purple-500 animate-bounce" /> },
-  { id: 10, question_text: 'Have you experienced any major life changes recently?', question_type: 'yes_no', icon: <HelpCircle className="text-orange-600 animate-pulse" /> },
-  { id: 11, question_text: 'Have you ever sought professional help for mental health?', question_type: 'yes_no', icon: <Pill className="text-cyan-600 animate-bounce" /> },
-  { id: 12, question_text: 'If yes, did it help?', question_type: 'yes_no', icon: <Pill className="text-cyan-400 animate-spin" /> },
-  { id: 13, question_text: 'Do you have a support system (e.g., friends, family)?', question_type: 'yes_no', icon: <Users className="text-yellow-500 animate-bounce" /> },
-  { id: 14, question_text: 'Are you currently on any mental health medication?', question_type: 'yes_no', icon: <Pill className="text-blue-500 animate-pulse" /> },
-  { id: 15, question_text: 'Do you engage in self-care activities (e.g., exercise)?', question_type: 'yes_no', icon: <Activity className="text-lime-500 animate-bounce" /> },
-  { id: 16, question_text: 'If yes, what activities do you enjoy?', question_type: 'yes_no', icon: <Activity className="text-lime-400 animate-spin" /> },
-];
-
 const QuestionnairePage = () => {
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [formData, setFormData] = useState<any>({});
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  useEffect(() => {
+
+    const iconMap = {
+      depression: <Frown className="text-purple-700" />,
+      sleep: <Bed className="text-blue-600" />,
+      medication: <Pill className="text-red-600" />,
+      activity: <Activity className="text-green-600" />,
+      social: <Users className="text-pink-600" />,
+      brain: <Brain className="text-indigo-600" />,
+      default: <HelpCircle className="text-gray-500" />,
+    };
+
+    const fetchQuestions = async () => {
+    try {
+      const res = await fetch('https://atosclone.onrender.com/api/questions');
+      const json = await res.json();
+
+      if (json.status && json.data?.questions) {
+        const questionsWithIcons = json.data.questions.map((q: any) => {
+          const keyword = q.question_text.toLowerCase();
+          let matchedIcon = iconMap.default;
+
+          if (keyword.includes('depress')) matchedIcon = iconMap.depression;
+          else if (keyword.includes('sleep')) matchedIcon = iconMap.sleep;
+          else if (keyword.includes('medicat')) matchedIcon = iconMap.medication;
+          else if (keyword.includes('active')) matchedIcon = iconMap.activity;
+          else if (keyword.includes('social')) matchedIcon = iconMap.social;
+          else if (keyword.includes('mental') || keyword.includes('brain')) matchedIcon = iconMap.brain;
+
+          return { ...q, icon: matchedIcon };
+        });
+
+        setQuestions(questionsWithIcons);
+      }
+    } catch (error) {
+      console.error("Failed to fetch questions:", error);
+    }
+  };
+
+  fetchQuestions();
+}, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const unanswered = questions.some((q) => !formData[`answer_${q.id}`]);
-    if (unanswered) {
-      alert('Please answer all the questions before submitting.');
-      return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevents page reload
+    try {
+      await fetch('https://atosclone.onrender.com/api/response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      setFormSubmitted(true);
+    } catch (error) {
+      console.error("Submission failed:", error);
     }
-    setFormSubmitted(true);
   };
 
   return (
@@ -131,8 +157,9 @@ const QuestionnairePage = () => {
             <div className="space-y-6">
               <h3 className="text-xl font-semibold text-emerald-800 mb-4">Mental Health Questions</h3>
               {questions.map((q) => (
-                <div key={q.id} className="border border-green-800 rounded p-4 bg-blue-50">
+                <div key={q._id} className="border border-green-800 rounded p-4 bg-blue-50">
                   <label className="block font-medium mb-2 text-gray-700 flex items-center gap-2">
+                    {/* You must map `q.icon_name` to an actual icon element if `icon` is not part of backend */}
                     {q.icon} {q.question_text}
                   </label>
                   <div className="space-y-1">
@@ -141,7 +168,7 @@ const QuestionnairePage = () => {
                       : ['Yes', 'No']
                     ).map((option) => (
                       <label key={option} className="block">
-                        <input type="radio" name={`answer_${q.id}`} value={option} onChange={handleInputChange} className="mr-2" />
+                        <input type="radio" name={`answer_${q._id}`} value={option} onChange={handleInputChange} className="mr-2" />
                         {option}
                       </label>
                     ))}
@@ -168,4 +195,3 @@ const QuestionnairePage = () => {
 };
 
 export default QuestionnairePage;
-

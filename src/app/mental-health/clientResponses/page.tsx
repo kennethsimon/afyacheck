@@ -60,7 +60,7 @@ const UserResponsesPage: React.FC<Props> = ({
           <FaUserCircle className="mr-2" /> Client: {user.name}
         </h2>
         <Link
-          href="/view-data"
+          href="/mental-health/viewClientData"
           className="flex items-center bg-blue-800 hover:bg-blue-900 text-white font-bold px-4 py-2 rounded transition duration-300"
         >
           <FaArrowLeft className="mr-2" /> Back to List
