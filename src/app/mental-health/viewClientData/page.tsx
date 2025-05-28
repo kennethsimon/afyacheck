@@ -1,21 +1,42 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FaSearch, FaSignOutAlt, FaUserMd } from 'react-icons/fa';
 
-export default function ViewDataPage({ userInfo }) {
+export default function ViewDataPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
+  const [userInfo, setUserInfo] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
+  // Fetch client data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('https://atosclone.onrender.com/api/responses');
+        const data = await res.json();
+        setUserInfo(data);
+        setFilteredData(data);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    const query = new URLSearchParams();
-    if (name) query.append('name', name);
-    if (date) query.append('date', date);
-    router.push(`/view-data?${query.toString()}`);
+    const filtered = userInfo.filter((user) => {
+      const matchesName = name ? user.name.toLowerCase().includes(name.toLowerCase()) : true;
+      const matchesDate = date ? user.date === date : true;
+      return matchesName && matchesDate;
+    });
+    setFilteredData(filtered);
   };
 
   return (
@@ -55,10 +76,9 @@ export default function ViewDataPage({ userInfo }) {
               <FaSearch className="mr-2" /> Search
             </button>
             <Link href="/specialist-login" className="flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-auto">
-                  <FaSignOutAlt className="mr-2" /> 
-                    Logout
+              <FaSignOutAlt className="mr-2" />
+              Logout
             </Link>
-
           </div>
         </form>
 
@@ -76,8 +96,8 @@ export default function ViewDataPage({ userInfo }) {
               </tr>
             </thead>
             <tbody>
-              {userInfo && userInfo.length > 0 ? (
-                userInfo.map((user) => (
+              {filteredData && filteredData.length > 0 ? (
+                filteredData.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-100">
                     <td className="p-3">{user.name}</td>
                     <td className="p-3">{user.date}</td>
@@ -85,10 +105,12 @@ export default function ViewDataPage({ userInfo }) {
                     <td className="p-3">{user.age}</td>
                     <td className="p-3">{user.gender}</td>
                     <td className="p-3">
-                    <Link href={`/user-responses/${user.id}`} className="bg-emerald-600 hover:bg-emerald-700 text-white py-1 px-3 rounded">
-                          View Responses
-                    </Link>
-
+                      <Link
+                        href={`/user-responses/${user.id}`}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white py-1 px-3 rounded"
+                      >
+                        View Responses
+                      </Link>
                     </td>
                   </tr>
                 ))
