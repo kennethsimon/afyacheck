@@ -12,7 +12,7 @@ import {
   FaVenusMars,
   FaHeartbeat,
   FaArrowLeft,
-} from 'react-icons/fa';
+} from 'react-icons/fa';``
 
 type QuestionResponse = {
   question: { question_text: string };
@@ -64,7 +64,7 @@ const UserResponsesPage: React.FC = () => {
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <Image src="/AC.png" alt="Logo" width={600} height={200} />
+          <Image src="/AFYACHECK-transformed.png" alt="Logo" width={600} height={200} />
         </div>
 
         {/* Header and Back Button */}

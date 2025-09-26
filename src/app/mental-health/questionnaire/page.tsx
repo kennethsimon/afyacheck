@@ -92,7 +92,7 @@ const QuestionnairePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-500 py-16 px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
         <div className="flex justify-center mb-8">
-          <Image src="/AC.png" alt="Logo" width={600} height={200} />
+          <Image src="/AFYACHECK-transformed.png" alt="Logo" width={600} height={200} />
         </div>
 
         <h2 className="text-center text-3xl font-semibold text-emerald-700 mb-8">

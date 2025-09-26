@@ -44,7 +44,7 @@ export default function ViewDataPage() {
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <Image src="/AC.png" alt="Logo" width={600} height={200} className="img-fluid" />
+          <Image src="/AFYACHECK-transformed.png" alt="Logo" width={600} height={200} className="img-fluid" />
         </div>
 
         <h2 className="text-center text-3xl font-bold text-emerald-500 mb-6 flex items-center justify-center">
