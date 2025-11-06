@@ -10,9 +10,9 @@ const MentalHealthPage = () => {
       <div className="min-h-[83vh] max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 sm:p-12 flex flex-col justify-between">
         <div className="text-center">
           <img
-            src="/AFYACHECK-transformed.png"
+            src="/logo.png"
             alt="AfyaCheck Logo"
-            className="mx-auto h-24 sm:h-28 mb-6"
+            className="mx-auto h-24 sm:h-30 mb-6"
           />
           <h1 className="mt-8 text-4xl font-extrabold text-green-600 leading-tight">
             Mental Health Assessment

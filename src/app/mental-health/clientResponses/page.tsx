@@ -64,7 +64,7 @@ const UserResponsesPage: React.FC = () => {
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <Image src="/AFYACHECK-transformed.png" alt="Logo" width={600} height={200} />
+          <Image src="/logo.png" alt="Logo" width={600} height={200} />
         </div>
 
         {/* Header and Back Button */}
