@@ -60,6 +60,9 @@ export function BarChart({
     },
   };
 
+  // Calculate total for percentage display
+  const total = data.reduce((sum, item) => sum + (item[yKey] || 0), 0);
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -69,46 +72,79 @@ export function BarChart({
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[300px]"
         >
           <RechartsBarChart
-            width={300}
-            height={300}
+            width={500}
+            height={350}
             data={data}
             layout="vertical"
             margin={{
-              left: 0,
+              left: 80,
+              right: 20,
+              top: 10,
+              bottom: 10,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+            <XAxis 
+              dataKey={yKey} 
+              type="number" 
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => value.toLocaleString()}
+            />
             <YAxis
               dataKey={xKey}
               type="category"
               tickLine={false}
-              tickMargin={20}
+              tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value}
+              width={70}
+              tickFormatter={(value) => {
+                // Shorten long labels
+                if (value.length > 15) {
+                  return value.substring(0, 12) + '...';
+                }
+                return value;
+              }}
             />
-            <XAxis dataKey={yKey} type="number" hide />
             <Tooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const value = payload[0].value as number;
+                  const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
+                  return (
+                    <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                      <p className="font-semibold">{payload[0].payload[xKey]}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Count: {value.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Percentage: {percentage}%
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
-            <Legend />
-            <Bar dataKey={yKey} fill={color} radius={8}>
-              <LabelList
-                dataKey={xKey}
-                position="insideLeft"
-                offset={8}
-                className="fill-[--color-label]"
-                fontSize={12}
-              />
+            <Bar 
+              dataKey={yKey} 
+              fill={color} 
+              radius={[0, 8, 8, 0]}
+            >
               <LabelList
                 dataKey={yKey}
                 position="right"
-                offset={8}
-                className="fill-foreground"
+                offset={10}
+                className="fill-foreground font-medium"
                 fontSize={12}
+                formatter={(value: number) => {
+                  const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
+                  return `${value.toLocaleString()} (${percentage}%)`;
+                }}
               />
             </Bar>
           </RechartsBarChart>
