@@ -38,6 +38,23 @@ export const getProjectById = async (projectId: string) => {
   return results;
 };
 
+export const deleteProject = async (projectId: string) => {
+  let results: any = {};
+  await projectApi
+    .delete(`/projects/${projectId}`)
+    .then(({ data }) => {
+      if (data.status) {
+        results = data;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      throw error;
+    });
+
+  return results;
+};
+
 export const getAddPatientFormPermissions = async () => {
   const results = {
     PatientInfo: true,
