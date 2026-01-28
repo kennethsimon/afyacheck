@@ -1,10 +1,12 @@
-import projectApi from "./config";
+"use server";
+
+import backend from "@/app/api/auth/[...nextauth]/backend";
 
 export const getCampsByProjectId = async (projectId: string) => {
   // console.log("getCampsByProjectId Project ID: ", projectId);
   let results: any = {};
 
-  await projectApi
+  await backend
     .get(`/camps/project/${projectId}`)
     .then(({ data }) => {
       if (data.status) {
@@ -13,7 +15,10 @@ export const getCampsByProjectId = async (projectId: string) => {
       }
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error fetching camps:", error);
+      if (error.response) {
+        console.error("Response error:", error.response.status, error.response.data);
+      }
     });
 
   return results;
@@ -24,7 +29,7 @@ export const getCampById = async (campId: string) => {
   console.log("getCampById Camp ID: ", campId);
   let results: any = {};
 
-  await projectApi
+  await backend
     .get(`/camps/camp/${campId}`)
     .then(({ data }) => {
       if (data.status) {
@@ -33,7 +38,10 @@ export const getCampById = async (campId: string) => {
       }
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error fetching camp:", error);
+      if (error.response) {
+        console.error("Response error:", error.response.status, error.response.data);
+      }
     });
 
   return results;
