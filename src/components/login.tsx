@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Moon, Menu, ShieldCheck } from "lucide-react";
 
 function Loginscreen() {
   const router = useRouter();
@@ -55,21 +56,30 @@ function Loginscreen() {
     }
   };
 
-  const onFinishFailed = (errorInfo: any) => {};
   return (
-    <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
-            </p>
-          </div>
-          <form onSubmit={(e) => onFinish(e)}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
+    <div className="w-full min-h-screen lg:grid lg:grid-cols-2">
+      {/* Left Panel - Login Form */}
+      <div className="flex flex-col bg-white min-h-screen">
+        {/* Top Left - Moon Icon */}
+        <div className="p-6">
+          <Moon className="w-5 h-5 text-gray-800" />
+        </div>
+
+        {/* Login Form */}
+        <div className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="w-full max-w-[350px] space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-gray-900">Login</h1>
+              <p className="text-gray-600 text-sm">
+                Enter your credentials to access your account
+              </p>
+            </div>
+
+            <form onSubmit={(e) => onFinish(e)} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-gray-700">
+                  Username or Email
+                </Label>
                 <Input
                   id="username"
                   type="text"
@@ -77,14 +87,18 @@ function Loginscreen() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  className="border-gray-300 focus:border-blue-600 focus:ring-blue-600"
                 />
               </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-gray-700">
+                    Password
+                  </Label>
                   <Link
                     href="/forgot-password"
-                    className="ml-auto inline-block text-sm underline"
+                    className="text-sm text-gray-600 hover:text-gray-900 underline"
                   >
                     Forgot your password?
                   </Link>
@@ -95,36 +109,76 @@ function Loginscreen() {
                   id="password"
                   type="password"
                   required
+                  className="border-gray-300 focus:border-blue-600 focus:ring-blue-600"
                 />
               </div>
-              <Button type="submit" className="w-full">
+
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-md py-2.5 font-medium"
+                disabled={loading}
+              >
                 {loading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Login
               </Button>
-              {/* <Button variant="outline" className="w-full">
-              Login with Google
-            </Button> */}
+            </form>
+
+            <div className="text-center text-sm text-gray-600">
+              Don&apos;t have an account?{" "}
+              <Link href="#" className="font-medium text-gray-900 hover:underline">
+                Contact Administrator
+              </Link>
             </div>
-          </form>
-          {/* <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="#" className="underline">
-              Sign up
-            </Link>
-          </div> */}
+          </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block h-screen">
-        <Image
-          src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Image"
-          width="1920"
-          height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-          objectFit="contain"
-        />
+
+      {/* Right Panel - Promotional Area */}
+      <div className="hidden lg:flex flex-col bg-teal-600 min-h-screen relative">
+        {/* Top Right - Menu Button */}
+        <div className="absolute top-6 right-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-blue-700 hover:bg-blue-800 text-white rounded-full w-10 h-10"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Secure Portal Badge */}
+        <div className="absolute bottom-6 left-6 flex items-center gap-2 text-teal-100">
+          <ShieldCheck className="w-5 h-5" />
+          <span className="text-sm font-medium">SECURE PORTAL</span>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-12 py-16 text-center">
+          {/* Medical Professional Illustration */}
+          <div className="mb-8 flex items-center justify-center">
+            <div className="relative w-64 h-80">
+              <Image
+                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Healthcare Professional"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Heading */}
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Empowering Healthcare Through Precision
+          </h2>
+
+          {/* Description */}
+          <p className="text-white text-lg max-w-md leading-relaxed">
+            Access patient records, analyze health data, and manage medical camps with our unified healthcare management platform.
+          </p>
+        </div>
       </div>
     </div>
   );
