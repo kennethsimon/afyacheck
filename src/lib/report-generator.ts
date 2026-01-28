@@ -70,11 +70,11 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   const contentWidth = pageWidth - 2 * margin;
   let yPosition = margin;
 
-  // Colors
-  const primaryColor = [59, 130, 246]; // Blue
-  const secondaryColor = [16, 185, 129]; // Green
-  const textColor = [31, 41, 55]; // Gray-800
-  const lightGray = [243, 244, 246]; // Gray-100
+  // Colors (as tuples for TypeScript)
+  const primaryColor: [number, number, number] = [59, 130, 246]; // Blue
+  const secondaryColor: [number, number, number] = [16, 185, 129]; // Green
+  const textColor: [number, number, number] = [31, 41, 55]; // Gray-800
+  const lightGray: [number, number, number] = [243, 244, 246]; // Gray-100
 
   // Helper function to add a new page if needed
   const checkNewPage = (requiredHeight: number) => {
