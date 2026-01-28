@@ -111,16 +111,19 @@ export default function UserTable() {
         },
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to delete user')
+      const data = await response.json()
+
+      if (!response.ok || !data.status) {
+        throw new Error(data.message || 'Failed to delete user')
       }
 
       setUsers(users.filter(user => user._id !== userToDelete._id))
       setUserToDelete(null)
       toast.success(`User ${userToDelete.name} has been deleted successfully.`)
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting user:', err)
-      toast.error("Failed to delete the user.")
+      const errorMessage = err?.message || "Failed to delete the user."
+      toast.error(errorMessage)
     } finally {
       setIsDeleting(false)
     }
@@ -340,7 +343,7 @@ export default function UserTable() {
                                   <DialogHeader>
                                     <DialogTitle>Confirm Deletion</DialogTitle>
                                     <DialogDescription>
-                                      Are you sure you want to delete the user <strong>{userToDelete?.name}</strong>? 
+                                      Are you sure you want to delete the user <strong>{userToDelete?.name || user.name}</strong>? 
                                       This action cannot be undone.
                                     </DialogDescription>
                                   </DialogHeader>
@@ -348,6 +351,7 @@ export default function UserTable() {
                                     <Button 
                                       variant="outline" 
                                       onClick={() => setUserToDelete(null)}
+                                      disabled={isDeleting}
                                     >
                                       Cancel
                                     </Button>

@@ -68,13 +68,21 @@ export default function EditUserForm({ campId, permissions }: AddUserFormProps) 
           const userData = await getUserById(userId); // Fetch user data by ID
           if (userData?.items) {
             const user = userData?.items?.user;
-            console.log('ken', user)
+            // Handle roles - could be array of objects with _id or array of strings
+            const roleId = user?.roles && user.roles.length > 0 
+              ? (typeof user.roles[0] === 'object' ? user.roles[0]._id : user.roles[0])
+              : "";
+            // Handle permissions - extract _id if objects, otherwise use as is
+            const permissionIds = user?.permissions 
+              ? user.permissions.map((perm: any) => typeof perm === 'object' ? perm._id : perm)
+              : [];
+            
             form.reset({
               campId,
               name: user?.name || "",
               password: "", // Password won't be autofilled for security reasons
-              roles: user?.roles[0] || "",
-              permissions: user?.permissions || [],
+              roles: roleId,
+              permissions: permissionIds,
             });
           }
         } catch (error) {
@@ -91,20 +99,28 @@ export default function EditUserForm({ campId, permissions }: AddUserFormProps) 
   const onSubmit = async (data: z.infer<typeof AddUserFormSchema>) => {
     setLoading(true);
     try {
-      const res = await projectApi.put(`/auth/admin/${userId}`, {
+      // Only include password if it's provided
+      const updateData: any = {
         name: data.name,
-        password: data.password,
         username: data.name,
         camp: campId,
         permissions: data.permissions,
         roles: [data.roles],
-      });
+      };
+      
+      // Only add password if it's not empty
+      if (data.password && data.password.trim() !== "") {
+        updateData.password = data.password;
+      }
+
+      const res = await projectApi.put(`/auth/admin/${userId}`, updateData);
       if (res.status === 200) {
-        toast.success("User Edited successfully.");
+        toast.success("User updated successfully.");
         window.location.reload();
       }
-    } catch (error) {
-      toast.error("Error creating user.", { description: "Please try again." });
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || "Error updating user.";
+      toast.error(errorMessage, { description: "Please try again." });
     } finally {
       setLoading(false);
     }

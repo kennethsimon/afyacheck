@@ -77,12 +77,15 @@ export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
         permissions: data.permissions,
         roles: [data.roles],
       });
-      if (res.status === 200) {
+      if (res.status === 200 && res.data.status) {
         toast.success("User created successfully.");
         router.back();
+      } else {
+        throw new Error(res.data.message || "Failed to create user");
       }
-    } catch (error) {
-      toast.error("Error creating user.", { description: "Please try again." });
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Error creating user.";
+      toast.error(errorMessage, { description: "Please try again." });
     } finally {
       setLoading(false);
     }
