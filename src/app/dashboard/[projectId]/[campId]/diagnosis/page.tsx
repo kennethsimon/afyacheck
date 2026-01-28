@@ -31,19 +31,18 @@ export default async function DiagnosisPage({
   combinedParams["page"] = page;
 
   // Extract createdAt-from and createdAt-to from searchParams
+  // Don't set default date ranges - let users filter if needed, or show all data
+  // This supports both old data (2024) and new data (2026+)
   let rangeCreatedAtFrom = foundSearchParams["createdAt-from"] as string;
   let rangeCreatedAtTo = foundSearchParams["createdAt-to"] as string;
 
-  // Set default values if not present
-  // Set default values if not present
-  if (!rangeCreatedAtFrom || !rangeCreatedAtTo) {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const startOfYear = new Date(currentYear, 0, 1); // January 1st
-    const endOfYear = new Date(currentYear, 11, 31); // December 31st
-
-    rangeCreatedAtFrom = startOfYear.toISOString().split("T")[0];
-    rangeCreatedAtTo = endOfYear.toISOString().split("T")[0];
+  // Only set date filters if explicitly provided by user
+  // This ensures backward compatibility with old data
+  if (rangeCreatedAtFrom) {
+    combinedParams["createdAt-from"] = rangeCreatedAtFrom;
+  }
+  if (rangeCreatedAtTo) {
+    combinedParams["createdAt-to"] = rangeCreatedAtTo;
   }
 
   const diagnosisPromise = getDiagnosis(combinedParams);
