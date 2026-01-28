@@ -136,9 +136,23 @@ function Loginscreen() {
       </div>
 
       {/* Right Panel - Promotional Area */}
-      <div className="hidden lg:flex flex-col bg-teal-600 min-h-screen relative">
+      <div className="hidden lg:flex flex-col min-h-screen relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://plus.unsplash.com/premium_photo-1673953510107-d5aee40d80a7?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Healthcare Background"
+            fill
+            className="object-cover"
+            priority
+            quality={90}
+          />
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-teal-600/80"></div>
+        </div>
+
         {/* Top Right - Menu Button */}
-        <div className="absolute top-6 right-6">
+        <div className="absolute top-6 right-6 z-10">
           <Button
             variant="ghost"
             size="icon"
@@ -149,26 +163,13 @@ function Loginscreen() {
         </div>
 
         {/* Secure Portal Badge */}
-        <div className="absolute bottom-6 left-6 flex items-center gap-2 text-teal-100">
+        <div className="absolute bottom-6 left-6 z-10 flex items-center gap-2 text-teal-100">
           <ShieldCheck className="w-5 h-5" />
           <span className="text-sm font-medium">SECURE PORTAL</span>
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-12 py-16 text-center">
-          {/* Medical Professional Illustration */}
-          <div className="mb-8 flex items-center justify-center">
-            <div className="relative w-64 h-80">
-              <Image
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Healthcare Professional"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </div>
-
+        <div className="flex-1 flex flex-col items-center justify-center px-12 py-16 text-center relative z-10">
           {/* Heading */}
           <h2 className="text-3xl font-bold text-white mb-4">
             Empowering Healthcare Through Precision
