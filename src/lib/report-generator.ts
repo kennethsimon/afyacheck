@@ -2,10 +2,18 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 
+interface ChartImage {
+  title: string;
+  imageData: string; // base64 image data
+  width: number;
+  height: number;
+}
+
 interface ReportData {
   projectName?: string;
   campName?: string;
   generatedAt: Date;
+  chartImages?: ChartImage[];
   stats: {
     attended: number;
     male: number;
@@ -185,7 +193,31 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   // Patient Demographics
   addSectionHeader('Patient Demographics');
 
-  // Gender Distribution
+  // Add chart images if available
+  if (data.chartImages && data.chartImages.length > 0) {
+    // Find and add relevant charts
+    const genderChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('gender') || 
+      chart.title.toLowerCase().includes('demographic')
+    );
+    if (genderChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Gender Distribution Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (genderChart.height / genderChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(genderChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // Gender Distribution Table
   const genderData = [
     ['Male', data.stats.male.toLocaleString(), `${((data.stats.male / data.stats.attended) * 100).toFixed(1)}%`],
     ['Female', data.stats.female.toLocaleString(), `${((data.stats.female / data.stats.attended) * 100).toFixed(1)}%`],
@@ -194,7 +226,30 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   ];
   addTable(['Gender', 'Count', 'Percentage'], genderData, 'Gender Distribution');
 
-  // Age Distribution
+  // Age Distribution Chart
+  if (data.chartImages) {
+    const ageChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('age') || 
+      chart.title.toLowerCase().includes('distribution')
+    );
+    if (ageChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Age Distribution Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (ageChart.height / ageChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(ageChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // Age Distribution Table
   const ageData = [
     ['Children (0-12)', data.stats.children.toLocaleString(), `${((data.stats.children / data.stats.attended) * 100).toFixed(1)}%`],
     ['Teenagers (13-19)', data.stats.teenagers.toLocaleString(), `${((data.stats.teenagers / data.stats.attended) * 100).toFixed(1)}%`],
@@ -203,7 +258,29 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   ];
   addTable(['Age Group', 'Count', 'Percentage'], ageData, 'Age Distribution');
 
-  // Insurance Status
+  // Insurance Status Chart
+  if (data.chartImages) {
+    const insuranceChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('insurance')
+    );
+    if (insuranceChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Insurance Coverage Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (insuranceChart.height / insuranceChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(insuranceChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // Insurance Status Table
   if (data.analytics.withInsurance !== undefined || data.analytics.withoutInsurance !== undefined) {
     const insuranceTotal = (data.analytics.withInsurance || 0) + (data.analytics.withoutInsurance || 0);
     if (insuranceTotal > 0) {
@@ -218,6 +295,31 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   // New Patients Over Time
   if (data.analytics.newPatientsOverTime && data.analytics.newPatientsOverTime.length > 0) {
     addSectionHeader('Patient Registration Trends');
+    
+    // Add line chart if available
+    if (data.chartImages) {
+      const trendChart = data.chartImages.find(chart => 
+        chart.title.toLowerCase().includes('patients over time') || 
+        chart.title.toLowerCase().includes('trend') ||
+        chart.title.toLowerCase().includes('new patients')
+      );
+      if (trendChart) {
+        checkNewPage(60);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('New Patients Over Time Chart', margin, yPosition);
+        yPosition += 7;
+        
+        const imgWidth = contentWidth * 0.8;
+        const imgHeight = (trendChart.height / trendChart.width) * imgWidth;
+        const imgX = margin + (contentWidth - imgWidth) / 2;
+        
+        checkNewPage(imgHeight + 5);
+        doc.addImage(trendChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 10;
+      }
+    }
+    
     const recentPatients = data.analytics.newPatientsOverTime.slice(-10); // Last 10 data points
     const patientTrendData = recentPatients.map(item => [
       format(new Date(item.date), 'MMM dd, yyyy'),
@@ -229,7 +331,29 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   // Clinical Findings
   addSectionHeader('Clinical Findings & Screening Results');
 
-  // HIV Testing
+  // HIV Testing Chart
+  if (data.chartImages) {
+    const hivChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('hiv')
+    );
+    if (hivChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('HIV Testing Results Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (hivChart.height / hivChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(hivChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // HIV Testing Table
   if (data.analytics.hivTested !== undefined && data.analytics.hivTested > 0) {
     const hivData = [
       ['Total Tested', data.analytics.hivTested.toLocaleString()],
@@ -239,7 +363,30 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
     addTable(['HIV Test Result', 'Count', 'Percentage'], hivData, 'HIV Testing Results');
   }
 
-  // TB Screening
+  // TB Screening Chart
+  if (data.chartImages) {
+    const tbChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('tb') || 
+      chart.title.toLowerCase().includes('tuberculosis')
+    );
+    if (tbChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TB Screening Results Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (tbChart.height / tbChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(tbChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // TB Screening Table
   if (data.analytics.tbPositive !== undefined || data.analytics.tbNegative !== undefined) {
     const tbTotal = (data.analytics.tbPositive || 0) + (data.analytics.tbNegative || 0);
     if (tbTotal > 0) {
@@ -252,7 +399,29 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
     }
   }
 
-  // Cancer Screening
+  // Cancer Screening Chart
+  if (data.chartImages) {
+    const cancerChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('cancer')
+    );
+    if (cancerChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Cancer Screening Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (cancerChart.height / cancerChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(cancerChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // Cancer Screening Table
   if (data.analytics.cancerScreened !== undefined && data.analytics.cancerScreened > 0) {
     const cancerData = [
       ['Total Screened', data.analytics.cancerScreened.toLocaleString()],
@@ -263,7 +432,30 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
     addTable(['Cancer Type', 'Screened'], cancerData, 'Cancer Screening Summary');
   }
 
-  // Specialty Referrals
+  // Specialty Referrals Chart
+  if (data.chartImages) {
+    const specialtyChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('specialty') || 
+      chart.title.toLowerCase().includes('abnormal findings')
+    );
+    if (specialtyChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Specialty Referrals Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (specialtyChart.height / specialtyChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(specialtyChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // Specialty Referrals Table
   const specialtyData: (string | number)[][] = [];
   if (data.analytics.physioAbnormal && data.analytics.physioAbnormal > 0) {
     specialtyData.push(['Physiotherapy', data.analytics.physioAbnormal.toLocaleString()]);
@@ -281,7 +473,30 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
     addTable(['Specialty', 'Abnormal Findings'], specialtyData, 'Specialty Referrals Required');
   }
 
-  // Radiology Findings
+  // Radiology Findings Chart
+  if (data.chartImages) {
+    const radiologyChart = data.chartImages.find(chart => 
+      chart.title.toLowerCase().includes('radiology') || 
+      chart.title.toLowerCase().includes('diagnostic')
+    );
+    if (radiologyChart) {
+      checkNewPage(60);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Radiology Findings Chart', margin, yPosition);
+      yPosition += 7;
+      
+      const imgWidth = contentWidth * 0.8;
+      const imgHeight = (radiologyChart.height / radiologyChart.width) * imgWidth;
+      const imgX = margin + (contentWidth - imgWidth) / 2;
+      
+      checkNewPage(imgHeight + 5);
+      doc.addImage(radiologyChart.imageData, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10;
+    }
+  }
+
+  // Radiology Findings Table
   const radiologyData: (string | number)[][] = [];
   if (data.analytics.ecgAbnormal && data.analytics.ecgAbnormal > 0) {
     radiologyData.push(['ECG', data.analytics.ecgAbnormal.toLocaleString()]);

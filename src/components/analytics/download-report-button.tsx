@@ -5,6 +5,7 @@ import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { generateAnalyticsReport } from "@/lib/report-generator";
 import { toast } from "sonner";
+import html2canvas from "html2canvas";
 
 interface DownloadReportButtonProps {
   projectName?: string;
@@ -71,8 +72,91 @@ export function DownloadReportButton({
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
+      toast.info("Capturing charts...", {
+        description: "Please wait while we capture chart images.",
+      });
+
+      // Capture all chart elements from the page
+      const chartImages: Array<{ title: string; imageData: string; width: number; height: number }> = [];
+      
+      // Find all chart cards
+      const chartCards = document.querySelectorAll('[data-chart]');
+      const chartContainers = document.querySelectorAll('.flex.flex-col');
+      
+      // Try to find charts by their Card components
+      const allCharts = Array.from(document.querySelectorAll('div')).filter((el) => {
+        const card = el.closest('[class*="Card"]') || el.querySelector('[class*="Card"]');
+        const hasChart = el.querySelector('svg') || el.querySelector('canvas') || el.querySelector('[class*="recharts"]');
+        return card && hasChart;
+      });
+
+      // Capture each chart
+      for (let i = 0; i < allCharts.length; i++) {
+        const chartElement = allCharts[i];
+        const card = chartElement.closest('[class*="Card"]') || chartElement.querySelector('[class*="Card"]');
+        
+        if (card) {
+          try {
+            // Get chart title
+            const titleElement = card.querySelector('h3, [class*="CardTitle"], [class*="title"]');
+            const title = titleElement?.textContent?.trim() || `Chart ${i + 1}`;
+
+            // Capture the chart as image
+            const canvas = await html2canvas(card as HTMLElement, {
+              backgroundColor: '#ffffff',
+              scale: 2,
+              logging: false,
+              useCORS: true,
+            });
+
+            const imageData = canvas.toDataURL('image/png');
+            chartImages.push({
+              title,
+              imageData,
+              width: canvas.width,
+              height: canvas.height,
+            });
+          } catch (error) {
+            console.warn(`Failed to capture chart ${i + 1}:`, error);
+          }
+        }
+      }
+
+      // If no charts found, try alternative method - find by ChartContainer
+      if (chartImages.length === 0) {
+        const chartContainers = document.querySelectorAll('[data-chart]');
+        for (let i = 0; i < chartContainers.length; i++) {
+          const container = chartContainers[i];
+          const parentCard = container.closest('[class*="Card"]');
+          
+          if (parentCard) {
+            try {
+              const titleElement = parentCard.querySelector('h3, [class*="CardTitle"]');
+              const title = titleElement?.textContent?.trim() || `Chart ${i + 1}`;
+
+              const canvas = await html2canvas(parentCard as HTMLElement, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                logging: false,
+                useCORS: true,
+              });
+
+              const imageData = canvas.toDataURL('image/png');
+              chartImages.push({
+                title,
+                imageData,
+                width: canvas.width,
+                height: canvas.height,
+              });
+            } catch (error) {
+              console.warn(`Failed to capture chart container ${i + 1}:`, error);
+            }
+          }
+        }
+      }
+
       toast.info("Generating report...", {
-        description: "Please wait while we compile your analytics report.",
+        description: `Including ${chartImages.length} charts in the report.`,
       });
 
       await generateAnalyticsReport({
@@ -81,10 +165,11 @@ export function DownloadReportButton({
         generatedAt: new Date(),
         stats,
         analytics,
+        chartImages: chartImages.length > 0 ? chartImages : undefined,
       });
 
       toast.success("Report downloaded successfully!", {
-        description: "Your analytics report has been saved to your downloads folder.",
+        description: `Your analytics report with ${chartImages.length} charts has been saved.`,
       });
     } catch (error) {
       console.error("Error generating report:", error);
