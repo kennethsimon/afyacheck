@@ -10,6 +10,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 import {
   Card,
@@ -69,23 +70,22 @@ export function BarChart({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 px-2">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
+          className="w-full h-[400px]"
         >
-          <RechartsBarChart
-            width={500}
-            height={350}
-            data={data}
-            layout="vertical"
-            margin={{
-              left: 80,
-              right: 20,
-              top: 10,
-              bottom: 10,
-            }}
-          >
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart
+              data={data}
+              layout="vertical"
+              margin={{
+                left: 100,
+                right: 30,
+                top: 20,
+                bottom: 20,
+              }}
+            >
             <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
             <XAxis 
               dataKey={yKey} 
@@ -134,13 +134,14 @@ export function BarChart({
               dataKey={yKey} 
               fill={color} 
               radius={[0, 8, 8, 0]}
+              barSize={50}
             >
               <LabelList
                 dataKey={yKey}
                 position="right"
-                offset={10}
-                className="fill-foreground font-medium"
-                fontSize={12}
+                offset={15}
+                className="fill-foreground font-semibold"
+                fontSize={13}
                 formatter={(value: number) => {
                   const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
                   return `${value.toLocaleString()} (${percentage}%)`;
@@ -148,6 +149,7 @@ export function BarChart({
               />
             </Bar>
           </RechartsBarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">

@@ -8,6 +8,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 import {
   Card,
@@ -95,22 +96,21 @@ export function LineChart({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 px-2">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[350px]"
+          className="w-full h-[400px]"
         >
-          <RechartsLineChart
-            width={500}
-            height={350}
-            data={data}
-            margin={{
-              left: 12,
-              right: 12,
-              top: 10,
-              bottom: 20,
-            }}
-          >
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsLineChart
+              data={data}
+              margin={{
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: 60,
+              }}
+            >
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey={xKey}
@@ -145,21 +145,25 @@ export function LineChart({
                 return null;
               }}
             />
-            <Legend />
+            <Legend 
+              wrapperStyle={{ paddingTop: '10px' }}
+              iconType="line"
+            />
             {yKeys.map((key, index) => (
               <Line
                 key={key}
                 type="monotone"
                 dataKey={key}
                 stroke={chartConfig[key].color}
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-                fillOpacity={0.1}
+                strokeWidth={3}
+                dot={{ r: 5, fill: chartConfig[key].color }}
+                activeDot={{ r: 8, fill: chartConfig[key].color }}
+                fillOpacity={0.15}
                 fill={chartConfig[key].color}
               />
             ))}
           </RechartsLineChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
