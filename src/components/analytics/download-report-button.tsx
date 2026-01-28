@@ -79,34 +79,34 @@ export function DownloadReportButton({
       // Capture all chart elements from the page
       const chartImages: Array<{ title: string; imageData: string; width: number; height: number }> = [];
       
-      // Find all chart cards
-      const chartCards = document.querySelectorAll('[data-chart]');
-      const chartContainers = document.querySelectorAll('.flex.flex-col');
+      // Find all chart cards - look for Card components containing charts
+      const allCards = Array.from(document.querySelectorAll('[class*="Card"]'));
       
-      // Try to find charts by their Card components
-      const allCharts = Array.from(document.querySelectorAll('div')).filter((el) => {
-        const card = el.closest('[class*="Card"]') || el.querySelector('[class*="Card"]');
-        const hasChart = el.querySelector('svg') || el.querySelector('canvas') || el.querySelector('[class*="recharts"]');
-        return card && hasChart;
-      });
-
-      // Capture each chart
-      for (let i = 0; i < allCharts.length; i++) {
-        const chartElement = allCharts[i];
-        const card = chartElement.closest('[class*="Card"]') || chartElement.querySelector('[class*="Card"]');
+      for (const card of allCards) {
+        // Check if this card contains a chart (has SVG or recharts elements)
+        const hasChart = card.querySelector('svg') || 
+                        card.querySelector('[class*="recharts"]') || 
+                        card.querySelector('[data-chart]') ||
+                        card.querySelector('canvas');
         
-        if (card) {
+        if (hasChart) {
           try {
-            // Get chart title
-            const titleElement = card.querySelector('h3, [class*="CardTitle"], [class*="title"]');
-            const title = titleElement?.textContent?.trim() || `Chart ${i + 1}`;
+            // Get chart title from CardTitle or h3
+            const titleElement = card.querySelector('[class*="CardTitle"], h3, h2');
+            const title = titleElement?.textContent?.trim() || 'Chart';
 
-            // Capture the chart as image
+            // Wait a bit for charts to render
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Capture the entire card as image
             const canvas = await html2canvas(card as HTMLElement, {
               backgroundColor: '#ffffff',
               scale: 2,
               logging: false,
               useCORS: true,
+              allowTaint: true,
+              windowWidth: card.scrollWidth,
+              windowHeight: card.scrollHeight,
             });
 
             const imageData = canvas.toDataURL('image/png');
@@ -117,40 +117,7 @@ export function DownloadReportButton({
               height: canvas.height,
             });
           } catch (error) {
-            console.warn(`Failed to capture chart ${i + 1}:`, error);
-          }
-        }
-      }
-
-      // If no charts found, try alternative method - find by ChartContainer
-      if (chartImages.length === 0) {
-        const chartContainers = document.querySelectorAll('[data-chart]');
-        for (let i = 0; i < chartContainers.length; i++) {
-          const container = chartContainers[i];
-          const parentCard = container.closest('[class*="Card"]');
-          
-          if (parentCard) {
-            try {
-              const titleElement = parentCard.querySelector('h3, [class*="CardTitle"]');
-              const title = titleElement?.textContent?.trim() || `Chart ${i + 1}`;
-
-              const canvas = await html2canvas(parentCard as HTMLElement, {
-                backgroundColor: '#ffffff',
-                scale: 2,
-                logging: false,
-                useCORS: true,
-              });
-
-              const imageData = canvas.toDataURL('image/png');
-              chartImages.push({
-                title,
-                imageData,
-                width: canvas.width,
-                height: canvas.height,
-              });
-            } catch (error) {
-              console.warn(`Failed to capture chart container ${i + 1}:`, error);
-            }
+            console.warn(`Failed to capture chart "${card.textContent?.substring(0, 30)}":`, error);
           }
         }
       }
