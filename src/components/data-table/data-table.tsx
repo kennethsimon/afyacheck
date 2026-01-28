@@ -32,6 +32,18 @@ export function DataTable<TData>({
   table,
   floatingBar = null,
 }: DataTableProps<TData>) {
+  // Debug: Log table rows
+  const rows = table.getRowModel().rows;
+  React.useEffect(() => {
+    console.log("🎯 DataTable - Rendering:", {
+      rowsLength: rows.length,
+      dataLength: table.options.data?.length || 0,
+      pageCount: table.getPageCount(),
+      pageIndex: table.getState().pagination.pageIndex,
+      firstRow: rows[0]?.original,
+    });
+  }, [rows, table]);
+
   return (
     <div className="w-full space-y-2.5 overflow-auto">
       <div className="rounded-md border">
@@ -55,8 +67,8 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            {rows?.length ? (
+              rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}

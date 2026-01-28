@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { toast } from "sonner";
 import projectApi from "../services/config";
+import { Activity } from "lucide-react";
 
 type AddProjectOrCampDialogProps = {
   type: "Project" | "Camp";
@@ -74,12 +75,20 @@ export function AddProjectOrCampDialog({
 
   return (
     <AwesomeDrawer
-      openTrigger={<Button onClick={() => setIsOpen(true)}>Add {type}</Button>}
-      title={`Add ${type}`}
+      openTrigger={
+        <Button 
+          onClick={() => setIsOpen(true)}
+          className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all"
+        >
+          <Activity className="w-4 h-4 mr-2" />
+          Create {type === "Project" ? "Health Program" : "Medical Camp"}
+        </Button>
+      }
+      title={`Create New ${type === "Project" ? "Health Program" : "Medical Camp"}`}
       isForm={true}
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
-      closeTrigger={<Button onClick={() => setIsOpen(false)}>Close</Button>}
+      closeTrigger={<Button onClick={() => setIsOpen(false)} variant="outline">Close</Button>}
     >
       <AddForm loading={loading} onSubmit={onSubmit} onClose={onClose} />
     </AwesomeDrawer>

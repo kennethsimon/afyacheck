@@ -16,9 +16,6 @@ import { TasksTableFloatingBar } from "./tasks-table-floating-bar";
 import { useTasksTable } from "./tasks-table-provider";
 import { TasksTableToolbarActions } from "./tasks-table-toolbar-actions";
 import { DataTableFilterField, Order } from "@/types/general";
-
-import { DateFilters } from "@/components/table-filters/date-filters";
-import { CustomFilters } from "@/components/table-filters/custom-filters";
 import { getPatients } from "../../services/projects";
 
 interface TasksTableProps {
@@ -29,10 +26,12 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
   // Feature flags for showcasing some additional features. Feel free to remove them.
   const { featureFlags } = useTasksTable();
 
-  const { data, pageCount } = React.use(patientPromise);
-
-  console.log("pageCount", pageCount);
-  // console.log(data);
+  // Use React.use() to unwrap the promise
+  // Note: React.use() throws a Suspense exception as part of its normal operation
+  // This exception is caught by React's Suspense boundary, not by try/catch
+  const result = React.use(patientPromise);
+  const data = result.data || [];
+  const pageCount = result.pageCount || 0;
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo(() => getColumns(), []);
@@ -82,32 +81,23 @@ export function TasksTable({ patientPromise }: TasksTableProps) {
     defaultSort: "dateCreated.desc",
   });
 
-  return (
-    <div className="w-full space-y-2.5 overflow-auto">
-      {/* {featureFlags.includes("advancedFilter") ? (
-        <DataTableAdvancedToolbar table={table} filterFields={filterFields}>
-          <TasksTableToolbarActions table={table} />
-        </DataTableAdvancedToolbar>
-      ) : (
-        <DataTableToolbar table={table} filterFields={filterFields}>
-          <TasksTableToolbarActions table={table} />
-        </DataTableToolbar>
-      )} */}
 
+  return (
+    <div className="w-full space-y-4">
       <DataTableToolbar table={table} filterFields={filterFields}>
         <TasksTableToolbarActions table={table} />
       </DataTableToolbar>
-      {/* <DateFilters /> */}
-      <CustomFilters />
-
-      <DataTable
-        table={table}
-        floatingBar={
-          featureFlags.includes("floatingBar") ? (
-            <TasksTableFloatingBar table={table} />
-          ) : null
-        }
-      />
+      
+      <div className="rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+        <DataTable
+          table={table}
+          floatingBar={
+            featureFlags.includes("floatingBar") ? (
+              <TasksTableFloatingBar table={table} />
+            ) : null
+          }
+        />
+      </div>
     </div>
   );
 }

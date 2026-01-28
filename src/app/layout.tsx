@@ -3,7 +3,7 @@ import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import Providers from "@/components/ProgressBarProvider";
+import { AppProviders } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: "Afya Check",
@@ -28,11 +28,11 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers>
+        <AppProviders>
           <div vaul-drawer-wrapper="" className="bg-background">
             {children}
           </div>
-        </Providers>
+        </AppProviders>
         <Toaster />
       </body>
     </html>

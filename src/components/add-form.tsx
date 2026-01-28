@@ -57,11 +57,17 @@ export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project name</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300">Program Name</FormLabel>
               <FormControl>
-                <Input placeholder="project name" {...field} />
+                <Input 
+                  placeholder="e.g., Community Health Initiative" 
+                  {...field}
+                  className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                />
               </FormControl>
-              <FormDescription>Insert project title.</FormDescription>
+              <FormDescription className="text-gray-500 dark:text-gray-400">
+                Enter a descriptive name for your health program
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -71,22 +77,36 @@ export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>description</FormLabel>
+              <FormLabel className="text-gray-700 dark:text-gray-300">Description</FormLabel>
               <FormControl>
-                <Input placeholder="description" {...field} />
+                <Input 
+                  placeholder="e.g., Comprehensive healthcare services for rural communities" 
+                  {...field}
+                  className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                />
               </FormControl>
-              <FormDescription>Insert projects description</FormDescription>
+              <FormDescription className="text-gray-500 dark:text-gray-400">
+                Provide details about the program's objectives and services
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex justify-between">
-          <Button className="flex justify-start" type="submit">
+        <div className="flex justify-between gap-4 pt-4">
+          <Button 
+            className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white" 
+            type="submit"
+          >
             {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            Submit
+            Create Program
           </Button>
-          <Button className="flex justify-end" type="button" onClick={onClose}>
-            Close
+          <Button 
+            className="flex-1" 
+            type="button" 
+            variant="outline"
+            onClick={onClose}
+          >
+            Cancel
           </Button>
         </div>
       </form>

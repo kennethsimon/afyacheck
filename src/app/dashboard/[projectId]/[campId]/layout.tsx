@@ -8,6 +8,8 @@ import { getProjects } from "@/services/projects";
 import { getCampsByProjectId } from "@/services/camps";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getPermissions } from "@/services/projects";
+import { redirect } from "next/navigation";
+import { getProjectConfig } from "@/services/projectConfig";
 
 export const metadata: Metadata = {
   title: "AfyaCheck",
@@ -26,6 +28,11 @@ export default async function Layout({
   console.log("projectId : ", projectId);
   console.log("campId : ", campId);
   const session: any = await getServerSession(authOptions);
+
+  // Redirect to login if session is null or invalid
+  if (!session || !session.user) {
+    redirect("/login");
+  }
 
   const permissions = await getPermissions();
 
@@ -61,22 +68,39 @@ export default async function Layout({
   //  add an option to select all camps
   let cleanedCampsAll = [{ _id: "all", name: "All" }, ...cleanedCamps];
   let cleanedProjectsAll = [{ _id: "all", name: "All" }, ...cleanedProjects];
+  
+  // Fetch project config to check which sections are enabled
+  let projectConfig: any = null;
+  try {
+    if (isUUID(projectId)) {
+      const configData = await getProjectConfig(projectId);
+      // Handle different response structures: configData.config or configData.data.config
+      projectConfig = configData?.config || configData?.data?.config || null;
+      console.log("Project config loaded:", projectConfig);
+    }
+  } catch (error) {
+    console.error("Error fetching project config:", error);
+  }
+  
   return (
-    <div className="grid min-h-screen w-full lg:grid-cols-[180px_1fr]">
+    <div className="flex min-h-screen w-full bg-gray-50 dark:bg-gray-950">
       <TooltipProvider>
         <DashboardSidebar
           session={session}
           permissions={{permissions: session?.user?.permissions, roles: session?.user?.roles}}
           sidestate={'hidden'}
+          projectConfig={projectConfig}
         />
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1 min-h-screen w-full lg:ml-0">
           <DashboardHeader
             projects={cleanedProjectsAll}
             camps={cleanedCampsAll}
             session={session}
             permissions={{permissions: session?.user?.permissions, roles: session?.user?.roles}}
           />
-          {children}
+          <div className="flex-1 overflow-y-auto">
+            {children}
+          </div>
         </div>
       </TooltipProvider>
     </div>

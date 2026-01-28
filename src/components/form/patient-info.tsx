@@ -6,15 +6,63 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
-import { useState } from "react";
-import { regionsData } from "@/data/data"; 
+import { useState, useEffect } from "react";
+import { regionsData } from "@/data/data";
+import { UserPlus, Phone, FileText, Calendar, MapPin, CreditCard } from "lucide-react";
+import { DynamicFormField } from "./dynamic-form-field";
+import { getFormFields } from "@/services/formFields";
 
 // Define your component
-export function PatientInfo({ form }: any) {
+export function PatientInfo({ form, projectConfig }: any) {
+  const [customFields, setCustomFields] = useState<any[]>([]);
+  const [loadingFields, setLoadingFields] = useState(false);
+
+  useEffect(() => {
+    const loadCustomFields = async () => {
+      if (!projectConfig?.formConfig?.fields || projectConfig.formConfig.fields.length === 0) {
+        setCustomFields([]);
+        return;
+      }
+
+      setLoadingFields(true);
+      try {
+        // Get project ID from config
+        const projectId = projectConfig?.project?._id || projectConfig?.project;
+        if (!projectId) {
+          setCustomFields([]);
+          setLoadingFields(false);
+          return;
+        }
+        
+        const result = await getFormFields(projectId);
+        const allFields = result.formFields || [];
+        
+        // Get field IDs from config (could be objects or IDs)
+        const configFieldIds = projectConfig.formConfig.fields.map((f: any) => 
+          typeof f === 'object' ? f._id?.toString() || f._id : f?.toString() || f
+        );
+        
+        // Filter fields that are in the config and belong to patientInfo section
+        const patientInfoFields = allFields.filter((f: any) => 
+          configFieldIds.includes(f._id?.toString() || f._id) && 
+          f.section === 'patientInfo'
+        );
+        
+        setCustomFields(patientInfoFields.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)));
+      } catch (error) {
+        console.error("Error loading custom fields:", error);
+      } finally {
+        setLoadingFields(false);
+      }
+    };
+
+    loadCustomFields();
+  }, [projectConfig]);
   const [districts, setDistricts] = useState<any[]>([]); // For storing the districts
   const [selectedRegion, setSelectedRegion] = useState<any>("");
 
@@ -29,10 +77,15 @@ export function PatientInfo({ form }: any) {
   };
 
   return (
-    <div className="space-y-8 py-8">
+    <div className="space-y-8">
       {/* Personal Information Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+            <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Personal Information</h2>
+        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {/* Patient Name */}
           <FormField
@@ -40,10 +93,20 @@ export function PatientInfo({ form }: any) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Patient Name:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <UserPlus className="w-4 h-4" />
+                  Patient Name
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input 
+                    {...field} 
+                    placeholder="Enter full name"
+                    className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                  />
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Full name of the patient
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -55,11 +118,13 @@ export function PatientInfo({ form }: any) {
             name="gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Gender:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300">Gender</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full">
-                      <span>{field.value || "Select gender"}</span>
+                    <SelectTrigger className="w-full border-gray-300 dark:border-gray-600 focus:border-blue-500">
+                      <span className={!field.value ? "text-gray-400" : ""}>
+                        {field.value || "Select gender"}
+                      </span>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="male">Male</SelectItem>
@@ -68,6 +133,9 @@ export function PatientInfo({ form }: any) {
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Patient's gender
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -79,10 +147,21 @@ export function PatientInfo({ form }: any) {
             name="dateOfBirth"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Date of Birth:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Date of Birth
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input 
+                    {...field} 
+                    type="date"
+                    placeholder="YYYY-MM-DD"
+                    className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                  />
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Patient's date of birth
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -91,8 +170,13 @@ export function PatientInfo({ form }: any) {
       </div>
 
       {/* Contact Information Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+            <Phone className="w-5 h-5 text-green-600 dark:text-green-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Contact Information</h2>
+        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {/* Phone Number */}
           <FormField
@@ -100,10 +184,21 @@ export function PatientInfo({ form }: any) {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Phone Number
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input 
+                    {...field} 
+                    type="tel"
+                    placeholder="+255 XXX XXX XXX"
+                    className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                  />
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Contact phone number
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -115,18 +210,23 @@ export function PatientInfo({ form }: any) {
             name="region"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Region:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Region
+                </FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={(value) => {
-                      setSelectedRegion(value); // Set the selected region
-                      field.onChange(value); // Update form state
-                      fetchDistricts(value); // Fetch districts for the selected region
+                      setSelectedRegion(value);
+                      field.onChange(value);
+                      fetchDistricts(value);
                     }}
                     value={field.value}
                   >
-                    <SelectTrigger className="w-full">
-                      <span>{field.value || "Select region"}</span>
+                    <SelectTrigger className="w-full border-gray-300 dark:border-gray-600 focus:border-blue-500">
+                      <span className={!field.value ? "text-gray-400" : ""}>
+                        {field.value || "Select region"}
+                      </span>
                     </SelectTrigger>
                     <SelectContent>
                       {regionsData.map((region: any) => (
@@ -137,6 +237,9 @@ export function PatientInfo({ form }: any) {
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Select patient's region
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -148,15 +251,18 @@ export function PatientInfo({ form }: any) {
             name="district"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>District:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  District
+                </FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
                     disabled={!selectedRegion || districts.length === 0}
                   >
-                    <SelectTrigger className="w-full">
-                      <span>
+                    <SelectTrigger className="w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 disabled:opacity-50">
+                      <span className={!field.value ? "text-gray-400" : ""}>
                         {field.value || 
                           (!selectedRegion
                             ? "Select a region first"
@@ -174,6 +280,9 @@ export function PatientInfo({ form }: any) {
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Select district (select region first)
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -182,8 +291,13 @@ export function PatientInfo({ form }: any) {
       </div>
 
       {/* Other Information Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Additional Information</h2>
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+            <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Additional Information</h2>
+        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {/* Insurance/Bima */}
           <FormField
@@ -191,10 +305,20 @@ export function PatientInfo({ form }: any) {
             name="insurance"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Insurance/Bima:</FormLabel>
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  Insurance/Bima
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input 
+                    {...field} 
+                    placeholder="Enter insurance number (optional)"
+                    className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                  />
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Insurance or Bima number (if applicable)
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -205,17 +329,48 @@ export function PatientInfo({ form }: any) {
             control={form.control}
             name="address"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address (Where the Patient is Coming From):</FormLabel>
+              <FormItem className="md:col-span-2 lg:col-span-3">
+                <FormLabel className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Address (Where the Patient is Coming From)
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input 
+                    {...field} 
+                    placeholder="Enter full address"
+                    className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                  />
                 </FormControl>
+                <FormDescription className="text-gray-500 dark:text-gray-400">
+                  Complete address where the patient is coming from
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
       </div>
+
+      {/* Custom Fields Section */}
+      {customFields.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+              <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Custom Fields</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {customFields.map((field) => (
+              <DynamicFormField
+                key={field._id || field.name}
+                field={field}
+                form={form}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

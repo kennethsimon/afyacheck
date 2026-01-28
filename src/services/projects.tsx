@@ -100,23 +100,33 @@ export const getDiagnosis = async (
 }> => {
   noStore();
 
-  console.log(queryParams);
+  console.log("getDiagnosis queryParams:", queryParams);
 
   let results = { data: [], pageCount: 0 };
-  await projectApi
-    .get("/patients/diagnosis", { params: queryParams })
-    .then(({ data }) => {
-      if (data.status) {
-        results.data = data.data.diagnoses || [];
-        results.pageCount = data.data.pageCount || 0;
-      }
-    })
-    .catch((error) => {
-      console.error(error);
+  
+  try {
+    const response = await projectApi.get("/patients/diagnosis", { 
+      params: queryParams,
+      timeout: 30000 // 30 second timeout
     });
-  console.log("get Diagnosis results pageCount : ", results.pageCount);
-  console.log("get Diagnosis results data : ", JSON.stringify(results.data));
-  // results = { data: [], pageCount: 0 };
+    
+    if (response.data?.status && response.data?.data) {
+      results.data = response.data.data.diagnoses || [];
+      results.pageCount = response.data.data.pageCount || 0;
+    } else {
+      console.warn("Unexpected response structure:", response.data);
+    }
+  } catch (error: any) {
+    console.error("Error fetching diagnosis:", error);
+    // Return empty results instead of throwing to prevent app freeze
+    if (error.response) {
+      console.error("Response error:", error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error("Request error:", error.request);
+    }
+  }
+  
+  console.log("getDiagnosis results - pageCount:", results.pageCount, "data count:", results.data.length);
   return results;
 };
 

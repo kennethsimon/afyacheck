@@ -10,6 +10,7 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours in seconds
   },
   providers: [
     CredentialsProvider({
@@ -65,6 +66,14 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     session: ({ session, token }) => {
+      // If token is expired, don't include user data
+      if ((token as any).expired) {
+        return {
+          ...session,
+          user: null,
+        } as any;
+      }
+      
       return {
         ...session,
         user: {
@@ -80,7 +89,17 @@ export const authOptions: NextAuthOptions = {
           ...token,
           ...u.user,
           token: u.token,
+          iat: Math.floor(Date.now() / 1000), // Issued at time
         };
+      }
+      // Check if token is expired
+      if (token.iat) {
+        const now = Math.floor(Date.now() / 1000);
+        const maxAge = 24 * 60 * 60; // 24 hours
+        if (now - (token.iat as number) > maxAge) {
+          // Return expired token - session callback will handle it
+          return { ...token, expired: true };
+        }
       }
       return token;
     },
