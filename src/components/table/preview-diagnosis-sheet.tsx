@@ -318,7 +318,7 @@ export function PreviewDiagnosisSheet({
                 <div className="space-y-3 text-sm">
                   {doctorComments.doctorsComment && (
             <div>
-                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Doctor's Comment</div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Doctor&apos;s Comment</div>
                       <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {formatValue(doctorComments.doctorsComment)}
                       </div>

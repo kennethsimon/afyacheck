@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { ArrowLeft, Save, Send, Eye } from 'lucide-react';
 import projectApi from '@/services/config';
 import { Button } from '@/components/ui/button';
@@ -52,11 +53,7 @@ export default function FormViewerPage({
   const [submitting, setSubmitting] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
-  useEffect(() => {
-    loadFormSchema();
-  }, [params.schemaId]);
-
-  const loadFormSchema = async () => {
+  const loadFormSchema = React.useCallback(async () => {
     try {
       const response = await projectApi.get(`/form-schemas/${params.schemaId}`);
       const data = response.data;
@@ -72,7 +69,11 @@ export default function FormViewerPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.schemaId, router]);
+
+  useEffect(() => {
+    loadFormSchema();
+  }, [loadFormSchema]);
 
   const handleFieldChange = (fieldName: string, value: any) => {
     const newResponses = new Map(responses);
@@ -110,10 +111,17 @@ export default function FormViewerPage({
     return true;
   };
 
+  const { data: session } = useSession();
+
   const handleSubmit = async (status: 'draft' | 'submitted' = 'submitted') => {
     if (!schema) return;
 
     if (status === 'submitted' && !validateForm()) {
+      return;
+    }
+
+    if (!session?.user) {
+      toast.error('You must be logged in to submit a form');
       return;
     }
 
@@ -122,12 +130,13 @@ export default function FormViewerPage({
       const submissionData = {
         project: params.projectId,
         formSchema: params.schemaId,
+        submittedBy: {
+          _id: (session.user as any).id || (session.user as any)._id || '',
+          name: session.user.name || 'Unknown User',
+          username: (session.user as any).username || session.user.email || '',
+        },
         responses: Object.fromEntries(responses),
         status,
-        metadata: {
-          ipAddress: '127.0.0.1', // Replace with actual IP
-          userAgent: navigator.userAgent,
-        },
       };
 
       const response = await projectApi.post('/form-submissions', submissionData);

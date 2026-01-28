@@ -3,19 +3,22 @@ import ProjectCard from "@/components/project-card";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { getProjects } from "../../../services/projects";
+import { getAllCamps } from "../../../services/camps";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 import { Activity, Heart, Stethoscope, Users, Brain, ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page(): Promise<React.JSX.Element> {
   const session: any = await getServerSession(authOptions);
-  const { items } = await getProjects();
+  const { items: projectsData } = await getProjects();
+  const { items: campsData } = await getAllCamps();
 
   if (!session) {
     redirect("/login");
   }
 
-  const projects = items?.data?.projects || [];
+  const projects = projectsData?.data?.projects || [];
+  const totalCamps = campsData?.camps?.length || 0;
 
   return (
     <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -143,7 +146,7 @@ export default async function Page(): Promise<React.JSX.Element> {
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Medical Camps</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">-</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalCamps}</p>
               </div>
             </div>
           </div>

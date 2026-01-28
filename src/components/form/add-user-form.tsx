@@ -161,7 +161,7 @@ export default function AddUserForm({ campId, permissions }: AddUserFormProps) {
               User Role
             </CardTitle>
             <CardDescription>
-              Select a role that defines the user's primary responsibilities
+              Select a role that defines the user&apos;s primary responsibilities
             </CardDescription>
           </CardHeader>
           <CardContent>

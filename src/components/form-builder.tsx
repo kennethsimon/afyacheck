@@ -60,12 +60,7 @@ export function FormBuilder({ projectId, formConfig, onSave, saving }: FormBuild
   const [editingField, setEditingField] = React.useState<FormField | null>(null);
   const [selectedSection, setSelectedSection] = React.useState("patientInfo");
 
-
-  React.useEffect(() => {
-    loadFields();
-  }, [formConfig]);
-
-  const loadFields = async () => {
+  const loadFields = React.useCallback(async () => {
     setLoading(true);
     try {
       // Fetch fields for this specific project
@@ -97,7 +92,11 @@ export function FormBuilder({ projectId, formConfig, onSave, saving }: FormBuild
     } finally {
       setLoading(false);
     }
-  };
+  }, [formConfig, projectId]);
+
+  React.useEffect(() => {
+    loadFields();
+  }, [loadFields]);
 
   const moveField = (index: number, direction: 'up' | 'down') => {
     setFields((items) => {
@@ -153,7 +152,7 @@ export function FormBuilder({ projectId, formConfig, onSave, saving }: FormBuild
 
       {fields.length === 0 && (
         <div className="text-center py-8 text-gray-500 border rounded-lg">
-          No form fields yet. Click "Add Field" to create one.
+          No form fields yet. Click &quot;Add Field&quot; to create one.
         </div>
       )}
 

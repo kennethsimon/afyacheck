@@ -7,6 +7,7 @@ import projectApi from '@/services/config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -51,11 +52,7 @@ export default function SubmissionsPage({ params }: { params: { projectId: strin
   });
   const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    loadSubmissions();
-  }, [filters]);
-
-  const loadSubmissions = async () => {
+  const loadSubmissions = React.useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
@@ -76,7 +73,11 @@ export default function SubmissionsPage({ params }: { params: { projectId: strin
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, params.projectId]);
+
+  useEffect(() => {
+    loadSubmissions();
+  }, [loadSubmissions]);
 
   const handleStatusUpdate = async (submissionId: string, status: string, notes?: string) => {
     try {

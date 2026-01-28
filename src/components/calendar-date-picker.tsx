@@ -123,6 +123,13 @@ export const CalendarDatePicker = React.forwardRef<
 
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+    // Calculate years array early so it can be used in useCallback dependencies
+    const currentYear = new Date().getFullYear();
+    const years = Array.from(
+      { length: yearsRange * 2 + 1 },
+      (_, i) => currentYear - yearsRange + i
+    );
+
     const handleClose = () => setIsPopoverOpen(false);
 
     const handleTogglePopover = () => setIsPopoverOpen((prev) => !prev);
@@ -160,7 +167,7 @@ export const CalendarDatePicker = React.forwardRef<
       setSelectedRange(null);
     };
 
-    const handleMonthChange = (newMonthIndex: number, part: string) => {
+    const handleMonthChange = React.useCallback((newMonthIndex: number, part: string) => {
       setSelectedRange(null);
       if (part === "from") {
         if (yearFrom !== undefined) {
@@ -206,9 +213,9 @@ export const CalendarDatePicker = React.forwardRef<
           }
         }
       }
-    };
+    }, [yearFrom, yearTo, numberOfMonths, date, onDateSelect, setMonthFrom, setMonthTo, setSelectedRange, timeZone, yearsRange]);
 
-    const handleYearChange = (newYear: number, part: string) => {
+    const handleYearChange = React.useCallback((newYear: number, part: string) => {
       setSelectedRange(null);
       if (part === "from") {
         if (years.includes(newYear)) {
@@ -256,14 +263,9 @@ export const CalendarDatePicker = React.forwardRef<
           }
         }
       }
-    };
+    }, [monthFrom, monthTo, numberOfMonths, date, onDateSelect, setMonthFrom, setMonthTo, setSelectedRange, timeZone, years]);
 
     const today = new Date();
-
-    const years = Array.from(
-      { length: yearsRange + 1 },
-      (_, i) => today.getFullYear() - yearsRange / 2 + i
-    );
 
     const dateRanges = [
       { label: "Today", start: today, end: today },
@@ -305,7 +307,7 @@ export const CalendarDatePicker = React.forwardRef<
       setHighlightedPart(null);
     };
 
-    const handleWheel = (event: React.WheelEvent, part: string) => {
+    const handleWheel = React.useCallback((event: React.WheelEvent, part: string) => {
       event.preventDefault();
       setSelectedRange(null);
       if (highlightedPart === "firstDay") {
@@ -344,7 +346,7 @@ export const CalendarDatePicker = React.forwardRef<
         const newYear = yearTo + (event.deltaY > 0 ? -1 : 1);
         handleYearChange(newYear, "to");
       }
-    };
+    }, [highlightedPart, date, numberOfMonths, monthFrom, yearFrom, monthTo, yearTo, onDateSelect, setMonthFrom, setMonthTo, setSelectedRange, handleMonthChange, handleYearChange]);
 
     React.useEffect(() => {
       const firstDayElement = document.getElementById(`firstDay-${id}`);
@@ -387,7 +389,7 @@ export const CalendarDatePicker = React.forwardRef<
           }
         });
       };
-    }, [highlightedPart, date]);
+    }, [highlightedPart, date, handleWheel, id]);
 
     const formatWithTz = (date: Date, fmt: string) =>
       formatInTimeZone(date, timeZone, fmt);

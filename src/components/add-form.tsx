@@ -86,7 +86,7 @@ export function AddForm({ onSubmit, onClose, loading }: AddFormProps) {
                 />
               </FormControl>
               <FormDescription className="text-gray-500 dark:text-gray-400">
-                Provide details about the program's objectives and services
+                Provide details about the program&apos;s objectives and services
               </FormDescription>
               <FormMessage />
             </FormItem>

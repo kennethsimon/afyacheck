@@ -86,7 +86,7 @@ export default function EditUserForm({ campId, permissions }: AddUserFormProps) 
     };
 
     fetchUser();
-  }, [userId]);
+  }, [userId, campId, form]);
 
   const onSubmit = async (data: z.infer<typeof AddUserFormSchema>) => {
     setLoading(true);

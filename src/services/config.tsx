@@ -16,7 +16,7 @@ projectApi.defaults.headers.common['Expires'] = '0';
 projectApi.interceptors.request.use(
   async (config) => {
     try {
-      const session = await getSession();
+      const session: any = await getSession();
       if (session?.user?.token) {
         config.headers.Authorization = `Bearer ${session.user.token}`;
       }

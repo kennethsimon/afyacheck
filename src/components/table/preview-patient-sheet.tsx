@@ -171,7 +171,7 @@ export function PreviewPatientSheet({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => copyToClipboard(patient.patientIdentifier)}
+                  onClick={() => copyToClipboard(patient.patientIdentifier || '')}
                   className="h-8"
                 >
                   {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

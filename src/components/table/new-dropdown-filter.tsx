@@ -39,7 +39,7 @@ export const DropdownFilter: React.FC<DropdownFilterProps> = ({
     if (initialSelectedOption) {
       setSelectedOption(initialSelectedOption);
     }
-  }, []);
+  }, [columnName, searchParams]);
 
   // Create query string
   const createQueryString = React.useCallback(

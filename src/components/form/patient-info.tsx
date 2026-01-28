@@ -134,7 +134,7 @@ export function PatientInfo({ form, projectConfig }: any) {
                   </Select>
                 </FormControl>
                 <FormDescription className="text-gray-500 dark:text-gray-400">
-                  Patient's gender
+                  Patient&apos;s gender
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -160,7 +160,7 @@ export function PatientInfo({ form, projectConfig }: any) {
                   />
                 </FormControl>
                 <FormDescription className="text-gray-500 dark:text-gray-400">
-                  Patient's date of birth
+                  Patient&apos;s date of birth
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -238,7 +238,7 @@ export function PatientInfo({ form, projectConfig }: any) {
                   </Select>
                 </FormControl>
                 <FormDescription className="text-gray-500 dark:text-gray-400">
-                  Select patient's region
+                  Select patient&apos;s region
                 </FormDescription>
                 <FormMessage />
               </FormItem>

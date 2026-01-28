@@ -37,7 +37,7 @@ export function ScreeningQuestions({ form }: any) {
       const bmi = weight / Math.pow(height / 100, 2);
       form.setValue("screening.bmi", bmi.toFixed(2));
     }
-  }, [form.watch("screening.weight"), form.watch("screening.height")]);
+  }, [form]);
 
   return (
     <div className="space-y-6 py-6">

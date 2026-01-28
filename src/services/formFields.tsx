@@ -1,13 +1,13 @@
 "use server";
 
-import projectApi from "./config";
+import backend from "@/app/api/auth/[...nextauth]/backend";
 import { unstable_noStore as noStore } from "next/cache";
 
 export const getFormFields = async (projectId?: string) => {
   noStore();
   let results: any = { formFields: [] };
   const url = projectId ? `/form-fields?project=${projectId}` : "/form-fields";
-  await projectApi
+  await backend
     .get(url)
     .then(({ data }) => {
       if (data.status) {
@@ -23,7 +23,7 @@ export const getFormFields = async (projectId?: string) => {
 export const getFormFieldsBySection = async (projectId: string, section: string) => {
   noStore();
   let results: any = { formFields: [] };
-  await projectApi
+  await backend
     .get(`/form-fields/section/${section}?project=${projectId}`)
     .then(({ data }) => {
       if (data.status) {
@@ -39,7 +39,7 @@ export const getFormFieldsBySection = async (projectId: string, section: string)
 export const createFormField = async (projectId: string, formField: any) => {
   noStore();
   let results: any = {};
-  await projectApi
+  await backend
     .post("/form-fields", { ...formField, project: projectId })
     .then(({ data }) => {
       if (data.status) {
@@ -55,7 +55,7 @@ export const createFormField = async (projectId: string, formField: any) => {
 export const updateFormField = async (id: string, formField: any) => {
   noStore();
   let results: any = {};
-  await projectApi
+  await backend
     .put(`/form-fields/${id}`, formField)
     .then(({ data }) => {
       if (data.status) {
@@ -71,7 +71,7 @@ export const updateFormField = async (id: string, formField: any) => {
 export const deleteFormField = async (id: string) => {
   noStore();
   let results: any = {};
-  await projectApi
+  await backend
     .delete(`/form-fields/${id}`)
     .then(({ data }) => {
       if (data.status) {

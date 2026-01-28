@@ -165,7 +165,7 @@ export default function ViewDataPage() {
               All Clients
             </CardTitle>
             <CardDescription>
-              Click "View Responses" to see detailed assessment data
+              Click &quot;View Responses&quot; to see detailed assessment data
             </CardDescription>
           </CardHeader>
           <CardContent>

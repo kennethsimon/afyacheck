@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
+import { DateRangePicker } from '@/components/table-filters/date-range-picker';
 import { toast } from 'sonner';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
@@ -67,31 +67,7 @@ export default function CustomProjectsAnalyticsPage({ params }: { params: { proj
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>();
 
-  useEffect(() => {
-    loadAnalytics();
-  }, [selectedPeriod, dateRange]);
-
-  const loadAnalytics = async () => {
-    try {
-      setLoading(true);
-      const response = await projectApi.get(`/form-analytics/dashboard/${params.projectId}`);
-      const data = response.data;
-
-      if (data.status && data.dashboard) {
-        setAnalytics(data.dashboard);
-      } else {
-        // If no analytics exist, generate them
-        await generateAnalytics();
-      }
-    } catch (error) {
-      console.error('Error loading analytics:', error);
-      toast.error('Failed to load analytics');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateAnalytics = async () => {
+  const generateAnalytics = React.useCallback(async () => {
     try {
       const period = getPeriodFromSelection(selectedPeriod);
       const response = await projectApi.post('/form-analytics/generate', {
@@ -103,15 +79,49 @@ export default function CustomProjectsAnalyticsPage({ params }: { params: { proj
       const data = response.data;
       if (data.status) {
         toast.success('Analytics generated successfully');
-        loadAnalytics(); // Reload analytics
+        return true;
       } else {
         toast.error('Failed to generate analytics');
+        return false;
       }
     } catch (error) {
       console.error('Error generating analytics:', error);
       toast.error('Failed to generate analytics');
+      return false;
     }
-  };
+  }, [params.projectId, selectedPeriod]);
+
+  const loadAnalytics = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await projectApi.get(`/form-analytics/dashboard/${params.projectId}`);
+      const data = response.data;
+
+      if (data.status && data.dashboard) {
+        setAnalytics(data.dashboard);
+      } else {
+        // If no analytics exist, generate them
+        const generated = await generateAnalytics();
+        if (generated) {
+          // Reload after generation
+          const reloadResponse = await projectApi.get(`/form-analytics/dashboard/${params.projectId}`);
+          const reloadData = reloadResponse.data;
+          if (reloadData.status && reloadData.dashboard) {
+            setAnalytics(reloadData.dashboard);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading analytics:', error);
+      toast.error('Failed to load analytics');
+    } finally {
+      setLoading(false);
+    }
+  }, [params.projectId, generateAnalytics]);
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   const getPeriodFromSelection = (selection: string) => {
     const now = new Date();
@@ -183,7 +193,7 @@ export default function CustomProjectsAnalyticsPage({ params }: { params: { proj
         );
 
       case 'pie':
-        const pieData = chartData.map((item, index) => ({
+        const pieData = chartData.map((item: any, index: number) => ({
           ...item,
           fill: chart.data.datasets[0]?.backgroundColor?.[index] || '#3b82f6',
         }));
@@ -200,7 +210,7 @@ export default function CustomProjectsAnalyticsPage({ params }: { params: { proj
                 fill="#8884d8"
                 dataKey="value"
               >
-                {pieData.map((entry, index) => (
+                {pieData.map((entry: any, index: number) => (
                   <Cell key={`cell-${index}`} fill={entry.fill} />
                 ))}
               </Pie>

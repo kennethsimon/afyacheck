@@ -100,14 +100,7 @@ export default function FormBuilderPage({ params }: { params: { projectId: strin
   const [loading, setLoading] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
 
-  useEffect(() => {
-    if (schemaId) {
-      loadSchema(schemaId);
-    }
-    loadAvailableFields();
-  }, [schemaId]);
-
-  const loadSchema = async (id: string) => {
+  const loadSchema = React.useCallback(async (id: string) => {
     try {
       const response = await projectApi.get(`/form-schemas/${id}`);
       const data = response.data;
@@ -118,9 +111,9 @@ export default function FormBuilderPage({ params }: { params: { projectId: strin
       console.error('Error loading schema:', error);
       toast.error('Failed to load form schema');
     }
-  };
+  }, []);
 
-  const loadAvailableFields = async () => {
+  const loadAvailableFields = React.useCallback(async () => {
     console.log('Loading fields for custom project:', params.projectId);
     try {
       const response = await projectApi.get(`/form-fields?customProject=${params.projectId}`);
@@ -132,7 +125,14 @@ export default function FormBuilderPage({ params }: { params: { projectId: strin
     } catch (error) {
       console.error('Error loading fields:', error);
     }
-  };
+  }, [params.projectId]);
+
+  useEffect(() => {
+    if (schemaId) {
+      loadSchema(schemaId);
+    }
+    loadAvailableFields();
+  }, [schemaId, loadSchema, loadAvailableFields]);
 
   const handleSaveSchema = async () => {
     console.log('handleSaveSchema called with schema:', schema);
@@ -148,11 +148,11 @@ export default function FormBuilderPage({ params }: { params: { projectId: strin
       const response = await (schema._id
         ? projectApi.put(endpoint, {
             ...schema,
-            customProject: params.projectId,
+            project: params.projectId,
           })
         : projectApi.post(endpoint, {
             ...schema,
-            customProject: params.projectId,
+            project: params.projectId,
           }));
 
       const data = response.data;
@@ -207,10 +207,12 @@ export default function FormBuilderPage({ params }: { params: { projectId: strin
       const response = await (selectedField._id
         ? projectApi.put(endpoint, {
             ...selectedField,
+            project: params.projectId,
             customProject: params.projectId,
           })
         : projectApi.post(endpoint, {
             ...selectedField,
+            project: params.projectId,
             customProject: params.projectId,
           }));
 

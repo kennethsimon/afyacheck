@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { getProjectAnalytics } from "@/services/projects";
+import { getPatientAnalyticsData } from "@/services/projects";
 import { Users, Activity, Heart, TrendingUp } from "lucide-react";
 
 interface AnalyticsDashboardProps {
@@ -15,21 +15,21 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
   const [analytics, setAnalytics] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    loadAnalytics();
-  }, [projectId, campId]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = React.useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getProjectAnalytics(projectId, { campId: campId || "all" });
-      setAnalytics(data);
+      const result = await getPatientAnalyticsData({ projectId, campId: campId || "all" });
+      setAnalytics(result?.items || null);
     } catch (error) {
       console.error("Failed to load analytics:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId, campId]);
+
+  React.useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   if (loading) {
     return (
