@@ -5,12 +5,15 @@ import {
   getPatientAnalyticsData,
   getPatients,
 } from "@/services/projects";
+import { getProjectById } from "@/services/projects";
+import { getCampById } from "@/services/camps";
+import { AnalyticsPageClient } from "@/components/analytics/analytics-page-client";
 
 export default async function AnalyticsPage({
   params,
   searchParams,
 }: {
-  params: { campId: string };
+  params: { campId: string; projectId: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   console.log({ searchParams });
@@ -22,6 +25,27 @@ export default async function AnalyticsPage({
   let userStats = null;
   let analyticsData = null;
   let analyticsError = null;
+  let projectName = null;
+  let campName = null;
+
+  // Fetch project and camp names
+  try {
+    if (params.projectId) {
+      const projectResult = await getProjectById(params.projectId);
+      projectName = projectResult?.items?.data?.project?.name || null;
+    }
+  } catch (error) {
+    console.error("Error loading project:", error);
+  }
+
+  try {
+    if (params.campId && params.campId !== "all") {
+      const campResult = await getCampById(params.campId);
+      campName = campResult?.items?.camp?.name || null;
+    }
+  } catch (error) {
+    console.error("Error loading camp:", error);
+  }
 
   try {
     const statsResult = await getCampStats(combinedParams);
@@ -49,10 +73,22 @@ export default async function AnalyticsPage({
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold">Camp Patients Insights</h2>
-          <p className="text-muted-foreground">
-            Filter and explore patient Insights.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Camp Patients Insights</h2>
+              <p className="text-muted-foreground">
+                Filter and explore patient Insights.
+              </p>
+            </div>
+            {userStats && analyticsData?.stats && (
+              <AnalyticsPageClient
+                projectName={projectName || undefined}
+                campName={campName || undefined}
+                stats={userStats.stats}
+                analytics={analyticsData.stats}
+              />
+            )}
+          </div>
         </div>
 
         {userStats && <PatientStats UserStats={userStats} />}
