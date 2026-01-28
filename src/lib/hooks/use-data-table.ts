@@ -355,19 +355,37 @@ export function useDataTable<TData, TValue>({
     JSON.stringify(filterableColumnFilters),
   ]);
 
+  // Ensure data is always an array
+  const safeData = React.useMemo(() => {
+    if (!Array.isArray(data)) {
+      console.warn("useDataTable: data is not an array, converting to empty array");
+      return [];
+    }
+    return data;
+  }, [data]);
+
+  // Ensure columns is always an array
+  const safeColumns = React.useMemo(() => {
+    if (!Array.isArray(columns) || columns.length === 0) {
+      console.warn("useDataTable: columns is not an array or is empty");
+      return [];
+    }
+    return columns;
+  }, [columns]);
+
   // Debug: Log data before creating table
   React.useEffect(() => {
     console.log("📋 useDataTable - Data received:", {
-      dataLength: data.length,
+      dataLength: safeData.length,
       pageCount,
-      firstItem: data[0],
-      columnsLength: columns.length,
+      firstItem: safeData[0],
+      columnsLength: safeColumns.length,
     });
-  }, [data, pageCount, columns]);
+  }, [safeData, pageCount, safeColumns]);
 
   const table = useReactTable({
-    data,
-    columns,
+    data: safeData,
+    columns: safeColumns,
     pageCount: pageCount ?? -1,
     state: {
       pagination,

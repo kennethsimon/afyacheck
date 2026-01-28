@@ -84,6 +84,10 @@ export function PreviewDiagnosisSheet({
   const screening = patient.screening || {};
   const clinical = patient.clinicalFindings || {};
   const doctorComments = patient.doctorComments || {};
+  
+  // Support both old and new field names
+  const region = patient.region || patient.location;
+  const district = patient.district;
 
   return (
     <Sheet {...props}>
@@ -119,12 +123,18 @@ export function PreviewDiagnosisSheet({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => copyToClipboard(patient.patientIdentifier)}
+                  onClick={() => copyToClipboard(patient.patientIdentifier || '')}
                   className="h-8"
                 >
                   {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
             </div>
+              {(region || district) && (
+                <div className="grid grid-cols-2 gap-2">
+                  {region && <InfoRow label="Region" value={region} />}
+                  {district && <InfoRow label="District" value={district} />}
+                </div>
+              )}
               <InfoRow 
                 label="Created Date" 
                 value={patient.createdAt ? format(new Date(patient.createdAt), "PPpp") : "N/A"}
@@ -311,9 +321,9 @@ export function PreviewDiagnosisSheet({
           </section>
 
           {/* Doctor Comments */}
-          {(doctorComments.doctorsComment || doctorComments.prescription) && (
+          {(doctorComments.doctorsComment || doctorComments.prescription || doctorComments.ecgReport || doctorComments.mse || doctorComments.physio || doctorComments.ot || doctorComments.dentalReport || doctorComments.ophthalmologyReport || doctorComments.referral) && (
           <section>
-              <SectionHeader title="Doctor's Comments" icon={FileText} />
+              <SectionHeader title="Doctor&apos;s Comments" icon={FileText} />
               <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-4">
                 <div className="space-y-3 text-sm">
                   {doctorComments.doctorsComment && (
@@ -321,6 +331,54 @@ export function PreviewDiagnosisSheet({
                       <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Doctor&apos;s Comment</div>
                       <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {formatValue(doctorComments.doctorsComment)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.ecgReport && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">ECG Report</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.ecgReport)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.mse && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">MSE</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.mse)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.physio && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Physiotherapy</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.physio)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.ot && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">OT</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.ot)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.dentalReport && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Dental Report</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.dentalReport)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.ophthalmologyReport && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Ophthalmology Report</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.ophthalmologyReport)}
                       </div>
             </div>
                   )}
@@ -332,6 +390,14 @@ export function PreviewDiagnosisSheet({
                       </div>
                       <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                         {formatValue(doctorComments.prescription)}
+                      </div>
+            </div>
+                  )}
+                  {doctorComments.referral && (
+            <div>
+                      <div className="font-medium text-blue-900 dark:text-blue-100 mb-1">Referral</div>
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {formatValue(doctorComments.referral)}
                       </div>
             </div>
                   )}

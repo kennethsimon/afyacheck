@@ -32,24 +32,66 @@ export function DataTable<TData>({
   table,
   floatingBar = null,
 }: DataTableProps<TData>) {
-  // Debug: Log table rows
-  const rows = table.getRowModel().rows;
+  // Safe access with null checks - all hooks must be called unconditionally
+  const rows = React.useMemo(() => {
+    if (!table) return [];
+    try {
+      return table.getRowModel()?.rows || [];
+    } catch (error) {
+      console.error("Error getting table rows:", error);
+      return [];
+    }
+  }, [table]);
+
+  const headerGroups = React.useMemo(() => {
+    if (!table) return [];
+    try {
+      return table.getHeaderGroups() || [];
+    } catch (error) {
+      console.error("Error getting header groups:", error);
+      return [];
+    }
+  }, [table]);
+
+  const allColumns = React.useMemo(() => {
+    if (!table) return [];
+    try {
+      return table.getAllColumns() || [];
+    } catch (error) {
+      console.error("Error getting columns:", error);
+      return [];
+    }
+  }, [table]);
+
   React.useEffect(() => {
-    console.log("🎯 DataTable - Rendering:", {
-      rowsLength: rows.length,
-      dataLength: table.options.data?.length || 0,
-      pageCount: table.getPageCount(),
-      pageIndex: table.getState().pagination.pageIndex,
-      firstRow: rows[0]?.original,
-    });
+    if (table && rows) {
+      console.log("🎯 DataTable - Rendering:", {
+        rowsLength: rows.length,
+        dataLength: table.options?.data?.length || 0,
+        pageCount: table.getPageCount(),
+        pageIndex: table.getState()?.pagination?.pageIndex || 0,
+        firstRow: rows[0]?.original,
+      });
+    }
   }, [rows, table]);
+
+  // Safety check after all hooks
+  if (!table) {
+    return (
+      <div className="w-full space-y-2.5 overflow-auto">
+        <div className="rounded-md border p-8 text-center text-gray-500">
+          Table data is not available
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-2.5 overflow-auto">
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -67,26 +109,34 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {rows?.length ? (
-              rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+            {rows && rows.length > 0 ? (
+              rows.map((row) => {
+                try {
+                  const visibleCells = row.getVisibleCells() || [];
+                  return (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {visibleCells.map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                } catch (error) {
+                  console.error("Error rendering table row:", error);
+                  return null;
+                }
+              })
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={table.getAllColumns().length}
+                  colSpan={allColumns.length || 1}
                   className="h-24 text-center"
                 >
                   No results.
@@ -98,7 +148,7 @@ export function DataTable<TData>({
       </div>
       <div className="flex flex-col gap-2.5">
         <DataTablePagination table={table} />
-        {table.getFilteredSelectedRowModel().rows.length > 0 && floatingBar}
+        {table.getFilteredSelectedRowModel()?.rows?.length > 0 && floatingBar}
       </div>
     </div>
   )

@@ -161,26 +161,36 @@ export const getCampStats = async (queryParams?: any) => {
 
 export const getPatientAnalyticsData = async (queryParams?: any) => {
   console.log("getPatientAnalyticsData Query params: ", queryParams);
-  let results: any = {};
+  let results: any = { items: null };
   const campId = queryParams?.campId;
 
   if (!campId) {
-    throw new Error("campId is required in queryParams");
+    console.warn("getPatientAnalyticsData: campId is missing, returning empty results");
+    return results;
   }
 
-  await projectApi
-    .get("camps/camp-stats/analytics", { params: queryParams })
-    .then(({ data }) => {
-      if (data.status) {
-        console.log("Analytics Data HERE server : ", data);
-        results.items = data.data;
-      }
-    })
-    .catch((error: any) => {
-      console.error(error);
-    });
-
-  // console.log("Stats results: ", results.items);
+  try {
+    await projectApi
+      .get("/camps/camp-stats/analytics", { params: queryParams })
+      .then(({ data }) => {
+        if (data?.status && data?.data) {
+          console.log("Analytics Data HERE server : ", data);
+          results.items = data.data;
+        } else {
+          console.warn("getPatientAnalyticsData: Invalid response structure", data);
+          results.items = null;
+        }
+      })
+      .catch((error: any) => {
+        console.error("getPatientAnalyticsData error:", error);
+        results.items = null;
+        results.error = error?.response?.data?.message || error?.message || "Failed to fetch analytics";
+      });
+  } catch (error: any) {
+    console.error("getPatientAnalyticsData unexpected error:", error);
+    results.items = null;
+    results.error = error?.message || "Unexpected error occurred";
+  }
 
   return results;
 };

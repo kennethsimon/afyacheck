@@ -246,8 +246,12 @@ export function PatientDetailsDialog({
                   Address
                 </h4>
                 <div className="space-y-2 text-sm">
-                  <InfoRow label="Region" value={patient.region} />
-                  <InfoRow label="District" value={patient.district} />
+                  {(patient.region || patient.location) && (
+                    <InfoRow label="Region" value={patient.region || patient.location} />
+                  )}
+                  {patient.district && (
+                    <InfoRow label="District" value={patient.district} />
+                  )}
                   <InfoRow label="Full Address" value={patient.address} />
                 </div>
               </div>

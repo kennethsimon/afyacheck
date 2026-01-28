@@ -26,44 +26,52 @@ export function AddProjectOrCampDialog({
     // Handle form submission here...
     // remember the type has be passed in the props as either "project" or "camp"
     setLoading(true);
-    if (type === "Camp") {
-      console.log({ ...data, project: projectId });
-      const res = await projectApi.post("/camps", {
-        ...data,
-        project: projectId,
+    try {
+      if (type === "Camp") {
+        if (!projectId) {
+          toast.error("Project ID is required to create a camp");
+          setLoading(false);
+          return;
+        }
+        console.log({ ...data, project: projectId });
+        const res = await projectApi.post("/camps", {
+          ...data,
+          project: projectId,
+        });
+        if (res?.data?.status) {
+          toast.success("Camp created successfully.", {
+            description: "The camp has been added to your project.",
+          });
+          setIsOpen(false);
+          // Use router refresh instead of window.location.reload()
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          throw new Error(res?.data?.message || "Failed to create camp");
+        }
+      } else {
+        const res = await projectApi.post("/projects", { ...data });
+        if (res?.data?.status) {
+          toast.success("Project created successfully.", {
+            description: "The project has been created.",
+          });
+          setIsOpen(false);
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          throw new Error(res?.data?.message || "Failed to create project");
+        }
+      }
+    } catch (error: any) {
+      console.error(`Error creating ${type}:`, error);
+      toast.error(`Failed to create ${type.toLowerCase()}`, {
+        description: error?.response?.data?.message || error?.message || "An unexpected error occurred",
       });
-      if (res) {
-        toast("Camp created successfully.", {
-          description: "",
-          action: {
-            label: "Open",
-            onClick: () => {
-              console.log("Opening item...");
-            },
-          },
-        });
-        setLoading(false);
-      }
-    } else {
-      const res = await projectApi.post("/projects", { ...data });
-      if (res) {
-        toast("Project created successfully.", {
-          description: "",
-          action: {
-            label: "Open",
-            onClick: () => {
-              console.log("Opening item...");
-            },
-          },
-        });
-        setLoading(false);
-      }
+    } finally {
+      setLoading(false);
     }
-
-    // Close the drawer
-    setIsOpen(false);
-    setLoading(false);
-    window.location.reload();
   };
 
   const onClose = () => {

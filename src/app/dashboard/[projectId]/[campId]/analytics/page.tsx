@@ -19,16 +19,31 @@ export default async function AnalyticsPage({
   // Combine foundSearchParams and params
   const combinedParams = { ...foundSearchParams, ...params };
 
-  const { items: userStats } = await getCampStats(combinedParams);
-  // const get analytics data
-  const { items: analyticsData } = await getPatientAnalyticsData(
-    combinedParams
-  );
+  let userStats = null;
+  let analyticsData = null;
+  let analyticsError = null;
+
+  try {
+    const statsResult = await getCampStats(combinedParams);
+    userStats = statsResult?.items || null;
+  } catch (error) {
+    console.error("Error loading camp stats:", error);
+  }
+
+  try {
+    const analyticsResult = await getPatientAnalyticsData(combinedParams);
+    analyticsData = analyticsResult?.items || null;
+    analyticsError = analyticsResult?.error || null;
+  } catch (error) {
+    console.error("Error loading analytics data:", error);
+    analyticsError = "Failed to load analytics data";
+  }
+
   console.log("ANALYTICS PAGE");
   console.log("params : ", params);
   console.log("User Stats in analytics page : ", userStats);
-
-  console.log("Analytics Data: ", JSON.stringify(analyticsData));
+  console.log("Analytics Data: ", analyticsData);
+  console.log("Analytics Error: ", analyticsError);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -41,10 +56,17 @@ export default async function AnalyticsPage({
         </div>
 
         {userStats && <PatientStats UserStats={userStats} />}
-        {analyticsData ? (
+        
+        {analyticsError ? (
+          <div className="p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-red-800 dark:text-red-200">Error loading analytics: {analyticsError}</p>
+          </div>
+        ) : analyticsData?.stats ? (
           <AnalyticCharts params={params} analyticsData={analyticsData.stats} />
         ) : (
-          <p>Charts Loading...</p>
+          <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-center">
+            <p className="text-gray-600 dark:text-gray-400">No analytics data available for this camp.</p>
+          </div>
         )}
       </main>
     </div>

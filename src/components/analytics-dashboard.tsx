@@ -49,6 +49,14 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
+  // Safe access to analytics properties
+  const totalPatients = Number(analytics?.totalPatients) || 0;
+  const screeningStats = Number(analytics?.screeningStats) || 0;
+  const clinicalStats = Number(analytics?.clinicalStats) || 0;
+  const customMetrics = Array.isArray(analytics?.customMetrics) ? analytics.customMetrics : [];
+  const genderStats = Array.isArray(analytics?.genderStats) ? analytics.genderStats : [];
+  const ageGroups = Array.isArray(analytics?.ageGroups) ? analytics.ageGroups : [];
+
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
@@ -59,7 +67,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.totalPatients || 0}</div>
+            <div className="text-2xl font-bold">{totalPatients}</div>
           </CardContent>
         </Card>
         <Card>
@@ -68,7 +76,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.screeningStats || 0}</div>
+            <div className="text-2xl font-bold">{screeningStats}</div>
           </CardContent>
         </Card>
         <Card>
@@ -77,7 +85,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.clinicalStats || 0}</div>
+            <div className="text-2xl font-bold">{clinicalStats}</div>
           </CardContent>
         </Card>
         <Card>
@@ -86,7 +94,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.customMetrics?.length || 0}</div>
+            <div className="text-2xl font-bold">{customMetrics.length}</div>
           </CardContent>
         </Card>
       </div>
@@ -94,7 +102,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Gender Distribution */}
-        {analytics.genderStats && analytics.genderStats.length > 0 && (
+        {genderStats.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Gender Distribution</CardTitle>
@@ -113,7 +121,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {analytics.genderStats.map((entry: any, index: number) => (
+                    {genderStats.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -125,7 +133,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
         )}
 
         {/* Age Groups */}
-        {analytics.ageGroups && analytics.ageGroups.length > 0 && (
+        {ageGroups.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Age Distribution</CardTitle>
@@ -133,7 +141,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={analytics.ageGroups}>
+                <BarChart data={ageGroups}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="_id" />
                   <YAxis />
@@ -148,7 +156,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
       </div>
 
       {/* Custom Metrics */}
-      {analytics.customMetrics && analytics.customMetrics.length > 0 && (
+      {customMetrics.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Custom Metrics</CardTitle>
@@ -156,7 +164,7 @@ export function AnalyticsDashboard({ projectId, campId }: AnalyticsDashboardProp
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {analytics.customMetrics.map((metric: any, index: number) => (
+              {customMetrics.map((metric: any, index: number) => (
                 <div key={index} className="p-4 border rounded-lg">
                   <div className="text-sm text-gray-500">{metric.name}</div>
                   <div className="text-2xl font-bold">{metric.value}</div>

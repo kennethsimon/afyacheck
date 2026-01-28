@@ -44,8 +44,12 @@ export function AddScreeningForm({ campId, session, patientId, projectId, projec
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    console.log(data)
+    console.log(data);
     try {
+      if (!campId) {
+        throw new Error("Camp ID is required");
+      }
+
       let updatedData = {};
 
       if (!patientId) {
@@ -57,12 +61,12 @@ export function AddScreeningForm({ campId, session, patientId, projectId, projec
         };
         const response = await projectApi.post("/patients/diagnosis", updatedData);
         console.log(response?.data);
-        // const newPatientId = response.data.patient._id;
-        // setPatientData(response.data.patient);
-        toast("Screening data added successfully.");
-        // router.push(
-        //   `/dashboard/${projectId}/${campId}/add-patient?patientId=${newPatientId}`
-        // );
+        if (response?.data?.status || response?.data?.patient) {
+          toast.success("Screening data added successfully.");
+          // Optionally reset form
+        } else {
+          throw new Error(response?.data?.message || "Failed to save screening data");
+        }
       } else {
         updatedData = {
           ...patientData,
@@ -73,14 +77,20 @@ export function AddScreeningForm({ campId, session, patientId, projectId, projec
           `/patients/${patientId}`,
           cleanData
         );
-        setPatientData(response.data.patient);
-        toast("Patient updated successfully.");
+        if (response?.data?.patient) {
+          setPatientData(response.data.patient);
+          toast.success("Patient updated successfully.");
+        } else {
+          throw new Error(response?.data?.message || "Failed to update patient");
+        }
       }
+    } catch (error: any) {
+      console.error("Error submitting screening form:", error);
+      toast.error("An error occurred", {
+        description: error?.response?.data?.message || error?.message || "Please check your data before submitting",
+      });
+    } finally {
       setLoading(false);
-    } catch (error) {
-      console.log("error : ", error);
-      setLoading(false);
-      toast("An error occurred. Please check your data before submitting");
     }
   };
 

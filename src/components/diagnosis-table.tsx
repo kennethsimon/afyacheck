@@ -103,29 +103,36 @@ export function DiagnosisTable({ diagnoses, pageCount }: DiagnosisTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {diagnoses.length > 0 ? (
+            {diagnoses && Array.isArray(diagnoses) && diagnoses.length > 0 ? (
               diagnoses.map((diagnosis) => {
-                const screening = diagnosis.screening || {};
-                const clinical = diagnosis.clinicalFindings || {};
-                const height = clinical.height || screening.height;
-                const weight = clinical.weight || screening.weight;
-                const bmi = clinical.bmi || screening.bmi;
-                const bp = clinical.bloodPressure || screening.bloodPressure;
-                const hb = clinical.hb || screening.hb;
-                const tbStatus = clinical.tbScreening?.status;
-                const hivResult = clinical.hivResult;
+                if (!diagnosis) return null;
+                
+                try {
+                  const screening = diagnosis.screening || {};
+                  const clinical = diagnosis.clinicalFindings || {};
+                  const height = clinical?.height || screening?.height;
+                  const weight = clinical?.weight || screening?.weight;
+                  const bmi = clinical?.bmi || screening?.bmi;
+                  const bp = clinical?.bloodPressure || screening?.bloodPressure;
+                  const hb = clinical?.hb || screening?.hb;
+                  const tbStatus = clinical?.tbScreening?.status;
+                  const hivResult = clinical?.hivResult;
+                  const hivTesting = clinical?.hivTesting;
+                  const cancerScreening = clinical?.cancerScreening;
+                  const preventiveMeasure = clinical?.preventiveMeasure;
+                  const bloodDonation = clinical?.bloodDonation;
 
-                const specialties = [];
-                if (clinical.physioStatus) specialties.push({ name: "Physio", status: clinical.physioStatus });
-                if (clinical.dentalStatus) specialties.push({ name: "Dental", status: clinical.dentalStatus });
-                if (clinical.ophthalmologyStatus) specialties.push({ name: "Eye", status: clinical.ophthalmologyStatus });
-                if (clinical.orthoStatus) specialties.push({ name: "Ortho", status: clinical.orthoStatus });
+                  const specialties = [];
+                  if (clinical?.physioStatus) specialties.push({ name: "Physio", status: clinical.physioStatus, diagnosis: clinical?.physioDiagnosis });
+                  if (clinical?.dentalStatus) specialties.push({ name: "Dental", status: clinical.dentalStatus, diagnosis: clinical?.dentalDiagnosis });
+                  if (clinical?.ophthalmologyStatus) specialties.push({ name: "Eye", status: clinical.ophthalmologyStatus, diagnosis: clinical?.ophthalmologyDiagnosis });
+                  if (clinical?.orthoStatus) specialties.push({ name: "Ortho", status: clinical.orthoStatus, diagnosis: clinical?.orthoDiagnosis });
 
-                const radiology = [];
-                if (clinical.echoStatus) radiology.push({ name: "Echo", status: clinical.echoStatus });
-                if (clinical.ecgStatus) radiology.push({ name: "ECG", status: clinical.ecgStatus });
-                if (clinical.xrayStatus) radiology.push({ name: "X-ray", status: clinical.xrayStatus });
-                if (clinical.ultrasoundStatus) radiology.push({ name: "US", status: clinical.ultrasoundStatus });
+                  const radiology = [];
+                  if (clinical?.echoStatus) radiology.push({ name: "Echo", status: clinical.echoStatus, diagnosis: clinical?.echoDiagnosis });
+                  if (clinical?.ecgStatus) radiology.push({ name: "ECG", status: clinical.ecgStatus, diagnosis: clinical?.ecgDiagnosis });
+                  if (clinical?.xrayStatus) radiology.push({ name: "X-ray", status: clinical.xrayStatus, diagnosis: clinical?.xrayDiagnosis });
+                  if (clinical?.ultrasoundStatus) radiology.push({ name: "US", status: clinical.ultrasoundStatus, diagnosis: clinical?.ultrasoundDiagnosis });
 
                 return (
                   <TableRow key={diagnosis._id || diagnosis.id}>
@@ -154,25 +161,50 @@ export function DiagnosisTable({ diagnoses, pageCount }: DiagnosisTableProps) {
                             <span className="text-gray-500">TB:</span> {getHealthStatusBadge(tbStatus, "positive")}
                           </div>
                         )}
+                        {hivTesting && (
+                          <div className="text-xs">
+                            <span className="text-gray-500">HIV Test:</span> {hivTesting === 'tested' ? <Badge variant="outline" className="text-xs">Tested</Badge> : <Badge variant="outline" className="text-xs">Not Tested</Badge>}
+                          </div>
+                        )}
                         {hivResult && (
                           <div className="text-xs">
                             <span className="text-gray-500">HIV:</span> {getHealthStatusBadge(hivResult, "positive")}
                           </div>
                         )}
-                        {!hb && !tbStatus && !hivResult && <span className="text-gray-400 text-xs">—</span>}
+                        {cancerScreening && (
+                          <div className="text-xs">
+                            <span className="text-gray-500">Cancer:</span> <Badge variant="outline" className="text-xs">{cancerScreening}</Badge>
+                          </div>
+                        )}
+                        {preventiveMeasure && preventiveMeasure !== 'no' && (
+                          <div className="text-xs">
+                            <span className="text-gray-500">Preventive:</span> <Badge variant="outline" className="text-xs">Yes</Badge>
+                          </div>
+                        )}
+                        {bloodDonation && bloodDonation === 'yes' && (
+                          <div className="text-xs">
+                            <span className="text-gray-500">Blood Donation:</span> <Badge variant="outline" className="text-xs">Yes</Badge>
+                          </div>
+                        )}
+                        {!hb && !tbStatus && !hivResult && !hivTesting && !cancerScreening && <span className="text-gray-400 text-xs">—</span>}
                       </div>
                     </TableCell>
                     <TableCell>
                       {specialties.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {specialties.slice(0, 2).map((spec, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              {spec.name}
-                            </Badge>
+                        <div className="flex flex-col gap-1">
+                          {specialties.slice(0, 3).map((spec, idx) => (
+                            <div key={idx} className="flex items-center gap-1">
+                              <Badge variant={spec.status === 'abnormal' ? 'destructive' : 'outline'} className="text-xs">
+                                {spec.name}: {spec.status}
+                              </Badge>
+                              {spec.diagnosis && (
+                                <span className="text-xs text-gray-500" title={spec.diagnosis}>💬</span>
+                              )}
+                            </div>
                           ))}
-                          {specialties.length > 2 && (
+                          {specialties.length > 3 && (
                             <Badge variant="outline" className="text-xs">
-                              +{specialties.length - 2}
+                              +{specialties.length - 3} more
                             </Badge>
                           )}
                         </div>
@@ -182,15 +214,20 @@ export function DiagnosisTable({ diagnoses, pageCount }: DiagnosisTableProps) {
                     </TableCell>
                     <TableCell>
                       {radiology.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {radiology.slice(0, 2).map((rad, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              {rad.name}
-                            </Badge>
+                        <div className="flex flex-col gap-1">
+                          {radiology.slice(0, 3).map((rad, idx) => (
+                            <div key={idx} className="flex items-center gap-1">
+                              <Badge variant={rad.status === 'abnormal' ? 'destructive' : 'outline'} className="text-xs">
+                                {rad.name}: {rad.status}
+                              </Badge>
+                              {rad.diagnosis && (
+                                <span className="text-xs text-gray-500" title={rad.diagnosis}>💬</span>
+                              )}
+                            </div>
                           ))}
-                          {radiology.length > 2 && (
+                          {radiology.length > 3 && (
                             <Badge variant="outline" className="text-xs">
-                              +{radiology.length - 2}
+                              +{radiology.length - 3} more
                             </Badge>
                           )}
                         </div>
@@ -230,7 +267,17 @@ export function DiagnosisTable({ diagnoses, pageCount }: DiagnosisTableProps) {
                     </TableCell>
                   </TableRow>
                 );
-              })
+                } catch (error) {
+                  console.error("Error rendering diagnosis row:", error, diagnosis);
+                  return (
+                    <TableRow key={diagnosis._id || diagnosis.id || Math.random()}>
+                      <TableCell colSpan={8} className="text-red-500 text-sm">
+                        Error displaying diagnosis data
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+              }).filter(Boolean)
             ) : (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">

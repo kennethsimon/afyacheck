@@ -30,12 +30,18 @@ export function AddClinicalForm({ campId, session, patientId, projectId, project
       const fetchPatientData = async () => {
         try {
           const response = await projectApi.get(`/patients/${patientId}`);
-          const patientInfo = response?.data?.data.patient;
-          setPatientData(patientInfo);
-          form.reset(patientInfo);
-        } catch (error) {
+          const patientInfo = response?.data?.data?.patient;
+          if (patientInfo) {
+            setPatientData(patientInfo);
+            form.reset(patientInfo);
+          } else {
+            throw new Error("Patient data not found");
+          }
+        } catch (error: any) {
           console.error("Error fetching patient data:", error);
-          toast("Failed to fetch patient data. Please try again.");
+          toast.error("Failed to fetch patient data", {
+            description: error?.response?.data?.message || error?.message || "Please try again.",
+          });
         }
       };
       fetchPatientData();
@@ -44,8 +50,12 @@ export function AddClinicalForm({ campId, session, patientId, projectId, project
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    console.log(data)
+    console.log(data);
     try {
+      if (!campId) {
+        throw new Error("Camp ID is required");
+      }
+
       let updatedData = {};
 
       if (!patientId) {
@@ -57,12 +67,13 @@ export function AddClinicalForm({ campId, session, patientId, projectId, project
         };
         const response = await projectApi.post("/patients/diagnosis", updatedData);
         console.log(response?.data);
-        // const newPatientId = response.data.patient._id;
-        // setPatientData(response.data.patient);
-        toast("Clinical Findings data added successfully.");
-        // router.push(
-        //   `/dashboard/${projectId}/${campId}/add-patient?patientId=${newPatientId}`
-        // );
+        if (response?.data?.status || response?.data?.patient) {
+          toast.success("Clinical Findings data added successfully.");
+          // Optionally reset form or redirect
+          form.reset();
+        } else {
+          throw new Error(response?.data?.message || "Failed to save clinical findings");
+        }
       } else {
         updatedData = {
           ...patientData,
@@ -73,14 +84,20 @@ export function AddClinicalForm({ campId, session, patientId, projectId, project
           `/patients/${patientId}`,
           cleanData
         );
-        setPatientData(response.data.patient);
-        toast("Patient updated successfully.");
+        if (response?.data?.patient) {
+          setPatientData(response.data.patient);
+          toast.success("Patient updated successfully.");
+        } else {
+          throw new Error(response?.data?.message || "Failed to update patient");
+        }
       }
+    } catch (error: any) {
+      console.error("Error submitting clinical form:", error);
+      toast.error("An error occurred", {
+        description: error?.response?.data?.message || error?.message || "Please check your data before submitting",
+      });
+    } finally {
       setLoading(false);
-    } catch (error) {
-      console.log("error : ", error);
-      setLoading(false);
-      toast("An error occurred. Please check your data before submitting");
     }
   };
 
