@@ -95,7 +95,7 @@ export default function HomeHeader() {
                       {session?.user?.name || "User"}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {session?.user?.email || session?.user?.username || "user@example.com"}
+                      {session?.user?.email || "user@example.com"}
                     </p>
                   </div>
                 </DropdownMenuLabel>
