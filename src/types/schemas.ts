@@ -13,7 +13,10 @@ export const PatientInfoSchema = z.object({
 
 export const ScreeningQuestionsSchema = z.object({
   screening: z.object({
-    patientIdentifier: z.string().min(1, "Patient Id is required").regex(/^AC00000000/, "Patient Id must start with AC00000000"),
+    patientIdentifier: z
+      .string()
+      .min(1, "Patient Id is required")
+      .regex(/^AC00000000\d+$/, "Patient Id must start with AC00000000 and include the remaining digits"),
     illness: z.enum(["yes", "no", "dont-know"]),
     medication: z.enum(["yes", "no", "stopped"]),
     alcoholOrSmokeUsage: z.enum(["yes", "no", "stopped"]),

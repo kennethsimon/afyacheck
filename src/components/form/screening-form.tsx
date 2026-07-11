@@ -19,10 +19,15 @@ export function AddScreeningForm({ campId, session, patientId, projectId, projec
   const [loading, setLoading] = useState(false);
   const [patientData, setPatientData] = useState<any>(null);
   const router = useRouter();
+  const screeningDefaultValues = {
+    screening: {
+      patientIdentifier: "AC00000000",
+    },
+  };
 
   const form = useForm({
     resolver: zodResolver(ScreeningQuestionsSchema),
-    defaultValues: patientData || {},
+    defaultValues: patientData || screeningDefaultValues,
   });
 
   // useEffect(() => {
