@@ -29,8 +29,6 @@ import {
 } from "lucide-react";
 
 export function ScreeningQuestions({ form }: any) {
-  const patientIdPrefix = "AC00000000";
-
   useEffect(() => {
     const weight = form.watch("screening.weight");
     const height = form.watch("screening.height");
@@ -40,16 +38,6 @@ export function ScreeningQuestions({ form }: any) {
       form.setValue("screening.bmi", bmi.toFixed(2));
     }
   }, [form]);
-
-  const handlePatientIdentifierChange = (value: string, onChange: (value: string) => void) => {
-    if (value.startsWith(patientIdPrefix)) {
-      onChange(value);
-      return;
-    }
-
-    const suffix = value.replace(/[^0-9]/g, "");
-    onChange(`${patientIdPrefix}${suffix}`);
-  };
 
   return (
     <div className="space-y-6 py-6">
@@ -87,9 +75,9 @@ export function ScreeningQuestions({ form }: any) {
                   <Input
                     {...field}
                     type="text"
-                    placeholder="AC00000000"
-                    value={field.value || patientIdPrefix}
-                    onChange={(e) => handlePatientIdentifierChange(e.target.value, field.onChange)}
+                    placeholder="AC123456789012"
+                    maxLength={14}
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                     className="border-gray-300 dark:border-gray-600 focus:border-blue-500 font-mono"
                   />
                 </FormControl>
