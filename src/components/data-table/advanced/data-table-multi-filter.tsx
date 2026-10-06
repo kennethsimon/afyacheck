@@ -157,11 +157,12 @@ export function MultiFilterRow<TData>({
   const [filterVariety, setFilterVariety] = React.useState(filterVarieties[0]);
 
   // Update filter variety
+  const selectedOptionOptionsLength = selectedOption?.options.length;
   React.useEffect(() => {
-    if (selectedOption?.options.length) {
+    if (selectedOptionOptionsLength) {
       setFilterVariety("is");
     }
-  }, [selectedOption?.options.length]);
+  }, [selectedOptionOptionsLength]);
 
   // Create query string
   const createQueryString = React.useCallback(
@@ -182,11 +183,12 @@ export function MultiFilterRow<TData>({
   );
 
   // Update query string
+  const selectedOptionValue = selectedOption?.value;
   React.useEffect(() => {
     if (debounceValue.length > 0) {
       router.push(
         `${pathname}?${createQueryString({
-          [selectedOption?.value ?? ""]: `${debounceValue}${
+          [selectedOptionValue ?? ""]: `${debounceValue}${
             debounceValue.length > 0 ? `.${filterVariety}` : ""
           }`,
         })}`,
@@ -199,7 +201,7 @@ export function MultiFilterRow<TData>({
     if (debounceValue.length === 0) {
       router.push(
         `${pathname}?${createQueryString({
-          [selectedOption?.value ?? ""]: null,
+          [selectedOptionValue ?? ""]: null,
         })}`,
         {
           scroll: false,
@@ -207,14 +209,15 @@ export function MultiFilterRow<TData>({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceValue, filterVariety, selectedOption?.value]);
+  }, [debounceValue, filterVariety, selectedOptionValue]);
 
   // Update operator query string
+  const operatorValue = operator?.value;
   React.useEffect(() => {
-    if (operator?.value) {
+    if (operatorValue) {
       router.push(
         `${pathname}?${createQueryString({
-          operator: operator.value,
+          operator: operatorValue,
         })}`,
         {
           scroll: false,
@@ -222,7 +225,7 @@ export function MultiFilterRow<TData>({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [operator?.value]);
+  }, [operatorValue]);
 
   return (
     <div className="flex items-center space-x-2">

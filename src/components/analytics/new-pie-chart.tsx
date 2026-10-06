@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { TrendingUp } from "lucide-react";
-import { Label, Pie, PieChart, Tooltip, Legend, LabelList } from "recharts";
+import { Label, Pie, PieChart, Tooltip, Legend, LabelList, ResponsiveContainer } from "recharts";
 
 import {
   Card,
@@ -53,27 +53,44 @@ export function NewPieChart({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 px-2">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="w-full h-[350px]"
         >
-          <PieChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
             <Tooltip content={<ChartTooltipContent hideLabel />} />
-            <Legend />
+            <Legend 
+              wrapperStyle={{ paddingTop: '20px' }}
+              iconType="circle"
+              formatter={(value, entry: any) => {
+                const total = chartData.reduce((sum, item) => sum + item.value, 0);
+                const percentage = total > 0 ? ((entry.payload.value / total) * 100).toFixed(1) : '0';
+                return `${value}: ${entry.payload.value.toLocaleString()} (${percentage}%)`;
+              }}
+            />
             <Pie
               data={chartData}
               dataKey="value"
               nameKey="name"
-              innerRadius={60}
-              strokeWidth={5}
+              cx="50%"
+              cy="45%"
+              innerRadius={70}
+              outerRadius={120}
+              strokeWidth={3}
+              paddingAngle={2}
             >
-              <LabelList dataKey="value" position="outside" />
-              {/* <Label
-                content={({ value, percent }) => {
-                  return `${value} (${(percent * 100).toFixed(0)}%)`;
+              <LabelList 
+                dataKey="value" 
+                position="outside" 
+                formatter={(value: number) => {
+                  const total = chartData.reduce((sum, item) => sum + item.value, 0);
+                  const percentage = total > 0 ? ((value / total) * 100).toFixed(0) : '0';
+                  return `${value} (${percentage}%)`;
                 }}
-              /> */}
+                className="fill-foreground text-sm font-medium"
+              />
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
@@ -87,14 +104,14 @@ export function NewPieChart({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          className="fill-foreground text-4xl font-bold"
                         >
                           {totalCount.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
+                          y={(viewBox.cy || 0) + 28}
+                          className="fill-muted-foreground text-sm"
                         >
                           {name}
                         </tspan>
@@ -105,6 +122,7 @@ export function NewPieChart({
               />
             </Pie>
           </PieChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">

@@ -13,8 +13,10 @@ export default function Layout({
   return (
     <>
       <HomeHeader />
-      <div className="grid bg-muted/40  p-8 min-h-screen w-full ">
-        {children}
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-blue-50/30 to-green-50/30 dark:from-gray-950 dark:via-blue-950/20 dark:to-green-950/20">
+        <div className="w-full">
+          {children}
+        </div>
       </div>
     </>
   );

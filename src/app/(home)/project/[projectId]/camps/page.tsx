@@ -10,8 +10,8 @@ import { AddCampForm } from "@/components/add-camp";
 import { AddProjectOrCampDialog } from "@/components/add-project-camp-dialog";
 import { getProjectById } from "@/services/projects";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const projectId = params.id;
+export default async function Page({ params }: { params: { projectId: string } }) {
+  const projectId = params.projectId;
   const session: any = await getServerSession(authOptions);
   if (!session) {
     redirect("/login");
@@ -26,9 +26,15 @@ export default async function Page({ params }: { params: { id: string } }) {
         Camps for project {projectName || projectId}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {items?.camps.map((camp: any) => (
-          <ProjectCard key={camp.name} {...camp} />
-        ))}
+        {items?.camps && items.camps.length > 0 ? (
+          items.camps.map((camp: any) => (
+            <ProjectCard key={camp._id || camp.name} {...camp} />
+          ))
+        ) : (
+          <div className="col-span-full text-center py-8 text-gray-500">
+            No camps found for this project.
+          </div>
+        )}
       </div>
       <div className="text-center item-center py-12">
         <Link href={"/project"} className="mr-6">

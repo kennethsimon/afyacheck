@@ -37,22 +37,32 @@ export function AddCampForm({ projectId }: any) {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-    const res = await projectApi.post("/camps", {
-      name: data?.title,
-      description: data?.description,
-      project: projectId,
-    });
-    console.log(res);
-    // toast("Item created successfully.", {
-    //   description: "You can now open the item.",
-    //   action: {
-    //     label: "Open",
-    //     onClick: () => {
-    //       console.log("Opening item...");
-    //     },
-    //   },
-    // });
+    try {
+      if (!projectId) {
+        toast.error("Project ID is required");
+        return;
+      }
+      console.log(data);
+      const res = await projectApi.post("/camps", {
+        name: data?.title,
+        description: data?.description,
+        project: projectId,
+      });
+      console.log(res);
+      if (res?.data?.status) {
+        toast.success("Camp created successfully.", {
+          description: "The camp has been added to your project.",
+        });
+        form.reset();
+      } else {
+        throw new Error(res?.data?.message || "Failed to create camp");
+      }
+    } catch (error: any) {
+      console.error("Error creating camp:", error);
+      toast.error("Failed to create camp", {
+        description: error?.response?.data?.message || error?.message || "An unexpected error occurred",
+      });
+    }
   }
 
   return (

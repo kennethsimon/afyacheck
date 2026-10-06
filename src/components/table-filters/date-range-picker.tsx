@@ -108,7 +108,7 @@ export function DateRangePicker({
     if (initialFrom && initialTo) {
       setDate({ from: new Date(initialFrom), to: new Date(initialTo) });
     }
-  }, []);
+  }, [fromField, toField, searchParams]);
 
   // Update query string
   React.useEffect(() => {

@@ -201,16 +201,37 @@ export function useDataTable<TData, TValue>({
     [pageIndex, pageSize]
   );
 
+  // Track if this is the initial mount
+  const isInitialMount = React.useRef(true);
+
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        per_page: pageSize,
-      })}`,
-      {
-        scroll: false,
+    // Skip URL update on initial mount if URL params already match state
+    if (isInitialMount.current) {
+      const currentPage = page;
+      const currentPerPage = perPage;
+      
+      if (currentPage === pageIndex + 1 && currentPerPage === pageSize) {
+        isInitialMount.current = false;
+        return;
       }
-    );
+      isInitialMount.current = false;
+    }
+
+    // Only update URL if values actually changed
+    const newPage = pageIndex + 1;
+    const newPerPage = pageSize;
+    
+    if (page !== newPage || perPage !== newPerPage) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page: newPage,
+          per_page: newPerPage,
+        })}`,
+        {
+          scroll: false,
+        }
+      );
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize]);
@@ -223,15 +244,36 @@ export function useDataTable<TData, TValue>({
     },
   ]);
 
+  const isSortInitialMount = React.useRef(true);
+
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page,
-        sort: sorting[0]?.id
-          ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
-          : null,
-      })}`
-    );
+    // Skip URL update on initial mount if URL sort already matches state
+    if (isSortInitialMount.current) {
+      const currentSort = sort;
+      const newSort = sorting[0]?.id
+        ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
+        : null;
+      
+      if (currentSort === newSort || (!currentSort && !newSort)) {
+        isSortInitialMount.current = false;
+        return;
+      }
+      isSortInitialMount.current = false;
+    }
+
+    // Only update URL if sort actually changed
+    const newSort = sorting[0]?.id
+      ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
+      : null;
+    
+    if (sort !== newSort) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page,
+          sort: newSort,
+        })}`
+      );
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
@@ -313,9 +355,37 @@ export function useDataTable<TData, TValue>({
     JSON.stringify(filterableColumnFilters),
   ]);
 
+  // Ensure data is always an array
+  const safeData = React.useMemo(() => {
+    if (!Array.isArray(data)) {
+      console.warn("useDataTable: data is not an array, converting to empty array");
+      return [];
+    }
+    return data;
+  }, [data]);
+
+  // Ensure columns is always an array
+  const safeColumns = React.useMemo(() => {
+    if (!Array.isArray(columns) || columns.length === 0) {
+      console.warn("useDataTable: columns is not an array or is empty");
+      return [];
+    }
+    return columns;
+  }, [columns]);
+
+  // Debug: Log data before creating table
+  React.useEffect(() => {
+    console.log("📋 useDataTable - Data received:", {
+      dataLength: safeData.length,
+      pageCount,
+      firstItem: safeData[0],
+      columnsLength: safeColumns.length,
+    });
+  }, [safeData, pageCount, safeColumns]);
+
   const table = useReactTable({
-    data,
-    columns,
+    data: safeData,
+    columns: safeColumns,
     pageCount: pageCount ?? -1,
     state: {
       pagination,
@@ -340,6 +410,15 @@ export function useDataTable<TData, TValue>({
     manualSorting: true,
     manualFiltering: true,
   });
+
+  // Debug: Log table after creation
+  React.useEffect(() => {
+    console.log("📊 useDataTable - Table created:", {
+      rowCount: table.getRowModel().rows.length,
+      pageCount: table.getPageCount(),
+      dataLength: data.length,
+    });
+  }, [table, data]);
 
   return { table };
 }

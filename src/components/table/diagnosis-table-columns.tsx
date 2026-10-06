@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { MoreHorizontal, Eye } from "lucide-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,136 +14,73 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { getGenderBackgroundColor } from "@/lib/utils";
-import Link from "next/link";
-import { Patient } from "@/types/general";
-import { differenceInYears, parseISO } from "date-fns";
-// import { getCampById } from "@/services/camps";
-// import { getUserById } from "@/services/users";
-import { PreviewPatientSheet } from "./preview-patient-sheet";
 import { PreviewDiagnosisSheet } from "./preview-diagnosis-sheet";
+import { format } from "date-fns";
 
 function formatValue(value: any) {
-  return value !== null && value !== undefined ? value : "N/A";
+  if (value === null || value === undefined || value === "") return "—";
+  return value;
 }
 
-// function CampNameCell({ campId }: { campId: string }) {
-//   const [campName, setCampName] = React.useState<string | null>(null);
+function getStatusBadge(status: string) {
+  if (!status) return null;
+  
+  const statusLower = status.toLowerCase();
+  if (statusLower === "completed") {
+    return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Completed</Badge>;
+  } else if (statusLower === "pending") {
+    return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Pending</Badge>;
+  }
+  return <Badge variant="outline">{status}</Badge>;
+}
 
-//   React.useEffect(() => {
-//     const fetchCampName = async () => {
-//       try {
-//         const { items: campDetails } = await getCampById(campId);
-//         setCampName(campDetails.camp.name);
-//       } catch (error) {
-//         console.error("Failed to fetch camp name:", error);
-//         setCampName("Error loading camp name");
-//       }
-//     };
-//     fetchCampName();
-//   }, [campId]);
-
-//   return <div>{campName || "Loading..."}</div>;
-// }
-
-// function CreatedByCell({ userId }: { userId: string }) {
-//   const [userName, setUserName] = React.useState<string | null>(null);
-
-//   React.useEffect(() => {
-//     const fetchUserName = async () => {
-//       try {
-//         const { items: userDetails } = await getUserById(userId);
-//         setUserName(userDetails.user.name);
-//       } catch (error) {
-//         console.error("Failed to fetch user name:", error);
-//         setUserName("Error loading user name");
-//       }
-//     };
-//     fetchUserName();
-//   }, [userId]);
-
-//   return <div>{userName || "Loading..."}</div>;
-// }
+function getHealthStatusBadge(value: any, type: "normal" | "abnormal" | "positive" | "negative" = "normal") {
+  if (!value || value === "N/A" || value === "—") return <span className="text-gray-400">—</span>;
+  
+  const valueLower = String(value).toLowerCase();
+  
+  if (type === "normal") {
+    if (valueLower.includes("normal")) {
+      return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">Normal</Badge>;
+    } else if (valueLower.includes("abnormal")) {
+      return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs">Abnormal</Badge>;
+    }
+  } else if (type === "positive") {
+    if (valueLower.includes("positive")) {
+      return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">Positive</Badge>;
+    } else if (valueLower.includes("negative")) {
+      return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">Negative</Badge>;
+    }
+  }
+  
+  return <span className="text-sm">{formatValue(value)}</span>;
+}
 
 export function getColumns(): ColumnDef<any>[] {
   return [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value: any) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-          aria-label="Select all"
-          className="translate-y-0.5"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="translate-y-0.5"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       id: "actions",
       cell: function Cell({ row }) {
-        const [showPreviewPatientSheet, setShowPreviewPatientSheet] =
-          React.useState(false);
-        const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-        const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
-        const handleMouseEnter = () => {
-          if (closeTimeoutRef.current) {
-            clearTimeout(closeTimeoutRef.current);
-            closeTimeoutRef.current = null;
-          }
-          if (!isDropdownOpen) {
-            setIsDropdownOpen(true);
-          }
-        };
-
-        const handleMouseLeave = () => {
-          closeTimeoutRef.current = setTimeout(() => {
-            setIsDropdownOpen(false);
-          }, 200); // Adjust the delay as needed
-        };
+        const [showPreviewSheet, setShowPreviewSheet] = React.useState(false);
 
         return (
           <>
             <PreviewDiagnosisSheet
-              open={showPreviewPatientSheet}
-              onOpenChange={setShowPreviewPatientSheet}
+              open={showPreviewSheet}
+              onOpenChange={setShowPreviewSheet}
               patient={row.original}
             />
-            <DropdownMenu
-              open={isDropdownOpen}
-              onOpenChange={setIsDropdownOpen}
-            >
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  aria-label="Open menu"
                   variant="ghost"
-                  className="flex size-8 p-0 data-[state=open]:bg-muted"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
+                  className="h-8 w-8 p-0"
+                  aria-label="Open menu"
                 >
-                  <DotsHorizontalIcon className="size-4" aria-hidden="true" />
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
+              <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() =>
@@ -156,25 +93,19 @@ export function getColumns(): ColumnDef<any>[] {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => setShowPreviewPatientSheet(true)}
+                  onSelect={() => setShowPreviewSheet(true)}
                 >
-                  Preview Diagnosis
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Full Details
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>
-                  <Link href={`/dashboard/patients/${row.original._id}`}>
-                    Open Patient
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href={`/dashboard/patients/edit/${row.original._id}`}>
-                    Edit Patient
-                  </Link>
-                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </>
         );
       },
+      enableSorting: false,
+      enableHiding: false,
+      size: 50,
     },
     {
       accessorKey: "patientIdentifier",
@@ -182,493 +113,180 @@ export function getColumns(): ColumnDef<any>[] {
         <DataTableColumnHeader column={column} title="Patient ID" />
       ),
       cell: ({ row }) => (
-        <div>{formatValue(row?.original?.patientIdentifier)}</div>
+        <div className="font-mono font-medium text-sm">
+          {formatValue(row?.original?.patientIdentifier)}
+        </div>
       ),
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
-    },
-    {
-      accessorKey: "screening.height",
-      header: "Height",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.screening?.height)}</div>
-      ),
-    },
-    {
-      accessorKey: "screening.weight",
-      header: "Weight",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.screening?.weight)}</div>
-      ),
-    },
-    {
-      accessorKey: "screening.bmi",
-      header: "BMI",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.screening?.bmi)}</div>
-      ),
-    },
-    {
-      accessorKey: "screening.bloodPressure",
-      header: "Blood Pressure",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.screening?.bloodPressure)}</div>
-      ),
-    },
-    {
-      accessorKey: "screening.hb",
-      header: "Hemoglobin (HB)",
-      cell: ({ row }) => <div>{formatValue(row?.original?.screening?.hb)}</div>,
-    },
-    {
-      accessorKey: "clinicalFindings.tbScreening.status",
-      header: "TB Screening Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.tbScreening?.status)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.tbScreening.medicationStatus",
-      header: "TB Medication Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(
-            row?.original?.clinicalFindings?.tbScreening?.medicationStatus
-          )}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.physioStatus",
-      header: "Physio Status",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.physioStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.physioDiagnosis",
-      header: "Physio Diagnosis",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.physioDiagnosis)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.physioReferral",
-      header: "Physio Referral",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.physioReferral)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.dentalStatus",
-      header: "Dental Status",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.dentalStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.dentalDiagnosis",
-      header: "Dental Diagnosis",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.dentalDiagnosis)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ophthalmologyStatus",
-      header: "Ophthalmology Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.ophthalmologyStatus)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ophthalmologyDiagnosis",
-      header: "Ophthalmology Diagnosis",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.ophthalmologyDiagnosis)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ophthalmologyReferral",
-      header: "Ophthalmology Referral",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.ophthalmologyReferral)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.orthoStatus",
-      header: "Ortho Status",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.orthoStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.orthoDiagnosis",
-      header: "Ortho Diagnosis",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.orthoDiagnosis)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.orthoReferral",
-      header: "Ortho Referral",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.orthoReferral)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.comments",
-      header: "Comments",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.comments)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.prescription",
-      header: "Prescription",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.prescription)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.referral",
-      header: "Referral",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.referral)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.hivTesting",
-      header: "HIV Testing",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.hivTesting)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.hivResult",
-      header: "HIV Result",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.hivResult)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.preventiveMeasure",
-      header: "Preventive Measure",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.preventiveMeasure)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.bloodDonation",
-      header: "Blood Donation",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.bloodDonation)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.cancerScreening",
-      header: "Cancer Screening",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.cancerScreening)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.breastCancerStatus",
-      header: "Breast Cancer Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.breastCancerStatus)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.cervicalCancerStatus",
-      header: "Cervical Cancer Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.cervicalCancerStatus)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.prostateCancerStatus",
-      header: "Prostate Cancer Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.prostateCancerStatus)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.echoStatus",
-      header: "Echo Status",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.echoStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ecgStatus",
-      header: "ECG Status",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.ecgStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.xrayStatus",
-      header: "X-ray Status",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.xrayStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ultrasoundStatus",
-      header: "Ultrasound Status",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.ultrasoundStatus)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.echoDiagnosis",
-      header: "Echo Diagnosis",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.echoDiagnosis)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ecgDiagnosis",
-      header: "ECG Diagnosis",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.ecgDiagnosis)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.xrayDiagnosis",
-      header: "X-ray Diagnosis",
-      cell: ({ row }) => (
-        <div>{formatValue(row?.original?.clinicalFindings?.xrayDiagnosis)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.ultrasoundDiagnosis",
-      header: "Ultrasound Diagnosis",
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row?.original?.clinicalFindings?.ultrasoundDiagnosis)}
-        </div>
-      ),
+      size: 140,
     },
     {
       accessorKey: "status",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Status" />
       ),
-      cell: ({ row }) => <div>{formatValue(row.original.status)}</div>,
+      cell: ({ row }) => getStatusBadge(row.original.status),
+      enableSorting: true,
+      size: 120,
     },
     {
-      accessorKey: "screening.illness",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Illness" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.screening?.illness)}</div>
-      ),
+      id: "vitals",
+      header: "Vitals",
+      cell: ({ row }) => {
+        const screening = row.original.screening || {};
+        const clinical = row.original.clinicalFindings || {};
+        const height = clinical.height || screening.height;
+        const weight = clinical.weight || screening.weight;
+        const bmi = clinical.bmi || screening.bmi;
+        const bp = clinical.bloodPressure || screening.bloodPressure;
+        
+        return (
+          <div className="flex flex-col gap-1 text-xs">
+            {height && <div><span className="text-gray-500">H:</span> {height}cm</div>}
+            {weight && <div><span className="text-gray-500">W:</span> {weight}kg</div>}
+            {bmi && <div><span className="text-gray-500">BMI:</span> {bmi}</div>}
+            {bp && <div><span className="text-gray-500">BP:</span> {formatValue(bp)}</div>}
+          </div>
+        );
+      },
+      size: 140,
     },
     {
-      accessorKey: "screening.medication",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Medication" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.screening?.medication)}</div>
-      ),
+      id: "screening",
+      header: "Screening",
+      cell: ({ row }) => {
+        const clinical = row.original.clinicalFindings || {};
+        const hb = clinical.hb || row.original.screening?.hb;
+        const tbStatus = clinical.tbScreening?.status;
+        const hivResult = clinical.hivResult;
+        
+        return (
+          <div className="flex flex-col gap-1">
+            {hb && (
+              <div className="text-xs">
+                <span className="text-gray-500">HB:</span> {getHealthStatusBadge(hb)}
+              </div>
+            )}
+            {tbStatus && (
+              <div className="text-xs">
+                <span className="text-gray-500">TB:</span> {getHealthStatusBadge(tbStatus, "positive")}
+              </div>
+            )}
+            {hivResult && (
+              <div className="text-xs">
+                <span className="text-gray-500">HIV:</span> {getHealthStatusBadge(hivResult, "positive")}
+              </div>
+            )}
+          </div>
+        );
+      },
+      size: 140,
     },
     {
-      accessorKey: "screening.alcoholOrSmokeUsage",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Alcohol/Smoke Usage" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.screening?.alcoholOrSmokeUsage)}</div>
-      ),
+      id: "specialties",
+      header: "Specialties",
+      cell: ({ row }) => {
+        const clinical = row.original.clinicalFindings || {};
+        const specialties = [];
+        
+        if (clinical.physioStatus) specialties.push({ name: "Physio", status: clinical.physioStatus });
+        if (clinical.dentalStatus) specialties.push({ name: "Dental", status: clinical.dentalStatus });
+        if (clinical.ophthalmologyStatus) specialties.push({ name: "Eye", status: clinical.ophthalmologyStatus });
+        if (clinical.orthoStatus) specialties.push({ name: "Ortho", status: clinical.orthoStatus });
+        
+        if (specialties.length === 0) return <span className="text-gray-400 text-xs">—</span>;
+        
+        return (
+          <div className="flex flex-wrap gap-1">
+            {specialties.slice(0, 2).map((spec, idx) => (
+              <Badge 
+                key={idx} 
+                variant="outline" 
+                className="text-xs"
+              >
+                {spec.name}
+              </Badge>
+            ))}
+            {specialties.length > 2 && (
+              <Badge variant="outline" className="text-xs">
+                +{specialties.length - 2}
+              </Badge>
+            )}
+          </div>
+        );
+      },
+      size: 150,
     },
     {
-      accessorKey: "screening.chronicDiseases",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Chronic Diseases" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.screening?.chronicDiseases)}</div>
-      ),
-    },
-    {
-      accessorKey: "screening.vaccinationHistory",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Vaccination History" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.screening?.vaccinationHistory)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.height",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Height" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.height)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.weight",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Weight" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.weight)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.bloodPressure",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Blood Pressure" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.bloodPressure)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.bmi",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="BMI" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.bmi)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.tbScreening.status",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="TB Screening Status" />
-      ),
-      cell: ({ row }) => (
-        <div>
-          {formatValue(row.original.clinicalFindings?.tbScreening?.status)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.tbScreening.medicationStatus",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="TB Medication Status" />
-      ),
-      cell: ({ row }) => (
-        <div>
-          {formatValue(
-            row.original.clinicalFindings?.tbScreening?.medicationStatus
+      id: "radiology",
+      header: "Radiology",
+      cell: ({ row }) => {
+        const clinical = row.original.clinicalFindings || {};
+        const radiology = [];
+        
+        if (clinical.echoStatus) radiology.push({ name: "Echo", status: clinical.echoStatus });
+        if (clinical.ecgStatus) radiology.push({ name: "ECG", status: clinical.ecgStatus });
+        if (clinical.xrayStatus) radiology.push({ name: "X-ray", status: clinical.xrayStatus });
+        if (clinical.ultrasoundStatus) radiology.push({ name: "US", status: clinical.ultrasoundStatus });
+        
+        if (radiology.length === 0) return <span className="text-gray-400 text-xs">—</span>;
+        
+        return (
+          <div className="flex flex-wrap gap-1">
+            {radiology.slice(0, 2).map((rad, idx) => (
+              <Badge 
+                key={idx} 
+                variant="outline" 
+                className="text-xs"
+              >
+                {rad.name}
+              </Badge>
+            ))}
+            {radiology.length > 2 && (
+              <Badge variant="outline" className="text-xs">
+                +{radiology.length - 2}
+              </Badge>
           )}
         </div>
-      ),
+        );
+      },
+      size: 140,
     },
     {
-      accessorKey: "clinicalFindings.physioStatus",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Physio Status" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.physioStatus)}</div>
-      ),
+      id: "cancer",
+      header: "Cancer Screening",
+      cell: ({ row }) => {
+        const clinical = row.original.clinicalFindings || {};
+        const cancer = clinical.cancerScreening;
+        
+        if (!cancer) return <span className="text-gray-400 text-xs">—</span>;
+        
+        const cancerType = cancer.replace("-cancer", "").replace("Cancer", "");
+        return (
+          <Badge variant="outline" className="text-xs capitalize">
+            {cancerType}
+          </Badge>
+        );
+      },
+      size: 130,
     },
-    {
-      accessorKey: "clinicalFindings.physioDiagnosis",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Physio Diagnosis" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.physioDiagnosis)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.physioReferral",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Physio Referall" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.physioReferral)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.dentalStatus",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Dental Status" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.dentalStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "clinicalFindings.dentalStatus",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Dental Status" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.clinicalFindings?.dentalStatus)}</div>
-      ),
-    },
-    {
-      accessorKey: "doctorComments.doctorsComment",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Doctor comment" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.doctorComments?.doctorsComment)}</div>
-      ),
-    },
-    {
-      accessorKey: "doctorComments.prescription",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Doctor prescription" />
-      ),
-      cell: ({ row }) => (
-        <div>{formatValue(row.original.doctorComments?.prescription)}</div>
-      ),
-    },
-    // Add all other clinical findings similarly
     {
       accessorKey: "createdAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created At" />
+        <DataTableColumnHeader column={column} title="Date" />
       ),
-      cell: ({ row }) => (
-        <div>{new Date(row.original.createdAt).toLocaleString()}</div>
-      ),
+      cell: ({ row }) => {
+        const date = row.original.createdAt;
+        if (!date) return <span className="text-gray-400">—</span>;
+        return (
+          <div className="text-xs text-gray-600 dark:text-gray-400">
+            {format(new Date(date), "MMM dd, yyyy")}
+          </div>
+        );
+      },
+      enableSorting: true,
+      size: 120,
     },
-    // {
-    //   accessorKey: "camp",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Camp" />
-    //   ),
-    //   cell: ({ row }) => <CampNameCell campId={row.original.camp} />,
-    // },
   ];
 }

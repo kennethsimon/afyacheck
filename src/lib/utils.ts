@@ -141,7 +141,11 @@ export const calculateAge = (dateOfBirth: string): number => {
 
 // Utility function to check if the user is an admin
 export function isAdmin(session: any): boolean {
-  // console.log("Checking if user is an admin", session);
+  // Check if session exists and has required properties
+  if (!session || !session.user || !session.user.roles || !Array.isArray(session.user.roles)) {
+    return false;
+  }
+  
   return session.user.roles.some(
     (role: { name: string; active: boolean }) =>
       role.name === "Admin" && role.active

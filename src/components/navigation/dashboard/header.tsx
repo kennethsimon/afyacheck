@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import {
   BellIcon,
   CircleUser,
-  HomeIcon,
-  Package2Icon,
   SearchIcon,
+  Stethoscope,
+  Activity,
+  Menu,
+  ArrowLeft,
+  LayoutGrid,
 } from "lucide-react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react"; // Import useState for managing drawer state
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +25,8 @@ import {
 import { signOut } from "next-auth/react";
 import { Switcher } from "@/components/navigation/dashboard/account-switcher";
 import DashboardSidebar from "@/components/navigation/dashboard/sidebar"; // Import the Sidebar component
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface DashboardHeaderProps {
   projects: { name: string; icon?: React.ReactNode; _id: string }[];
@@ -39,21 +44,40 @@ export default function DashboardHeader(props: DashboardHeaderProps) {
 
   return (
     <>
-      <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-muted/40 px-6">
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-white/95 dark:bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60 shadow-sm px-4 sm:px-6">
+        {/* Mobile Menu Button */}
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden" // Only show on mobile
-          onClick={() => setDrawerOpen(true)} // Open the drawer on click
+          className="lg:hidden"
+          onClick={() => setDrawerOpen(true)}
         >
-          <Package2Icon className="h-6 w-6" />
-          <span className="sr-only">Menu</span>
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle menu</span>
         </Button>
 
-        <div className="w-full flex gap-4">
+        {/* Back to Projects Button */}
+        <Link href="/project">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 border border-gray-200 dark:border-gray-800"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline text-sm font-medium">Back to Projects</span>
+            <span className="sm:hidden text-sm font-medium">Projects</span>
+          </Button>
+        </Link>
+
+        {/* Project and Camp Switchers */}
+        <div className="flex-1 flex items-center gap-3">
           {projects && projects.length > 0 && (
             <>
-              <div className="flex flex-col gap-2">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900">
+                <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Program</span>
+              </div>
+              <div className="flex flex-col gap-1 min-w-[150px]">
                 <Switcher
                   isCollapsed={false}
                   items={projects.map((project) => ({
@@ -65,67 +89,109 @@ export default function DashboardHeader(props: DashboardHeaderProps) {
                 />
               </div>
               {projectId !== "all" && camps && camps.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <Switcher
-                    isCollapsed={false}
-                    items={camps.map((camp) => ({
-                      name: camp.name,
-                      icon: camp.icon,
-                      _id: camp._id,
-                    }))}
-                    queryName="campId"
-                  />
-                </div>
+                <>
+                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-950 border border-green-100 dark:border-green-900">
+                    <Stethoscope className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <span className="text-xs font-medium text-green-700 dark:text-green-300">Camp</span>
+                  </div>
+                  <div className="flex flex-col gap-1 min-w-[150px]">
+                    <Switcher
+                      isCollapsed={false}
+                      items={camps.map((camp) => ({
+                        name: camp.name,
+                        icon: camp.icon,
+                        _id: camp._id,
+                      }))}
+                      queryName="campId"
+                    />
+                  </div>
+                </>
               )}
             </>
           )}
 
-          <div className="flex-grow flex-col gap-2 max-w-[400px]">
-            <form>
+          {/* Search */}
+          <div className="hidden lg:flex flex-grow max-w-[400px] ml-4">
+            <form className="w-full">
               <div className="relative">
-                <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="search"
-                  placeholder="Search patients..."
-                  className="w-full bg-background shadow-none appearance-none pl-8"
+                  placeholder="Search patients, records..."
+                  className="w-full bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 pl-10 focus:bg-white dark:focus:bg-gray-950"
                 />
               </div>
             </form>
           </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full border w-8 h-8"
-            >
-              <CircleUser className="h-5 w-5" />
-              <span className="sr-only">Toggle user menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                signOut({
-                  callbackUrl: "https://afya-check.smarcrib.site/login",
-                  redirect: true,
-                })
-              }
-            >
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
-          <BellIcon className="h-4 w-4" />
-          <span className="sr-only">Toggle notifications</span>
-        </Button>
+
+        {/* Right Side Actions */}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative h-9 w-9 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <BellIcon className="h-4 w-4" />
+            <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            <span className="sr-only">Notifications</span>
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="relative h-9 w-9 rounded-full"
+              >
+                <Avatar className="h-9 w-9 border-2 border-blue-200 dark:border-blue-800">
+                  <AvatarImage src={session?.user?.image} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-500 text-white">
+                    {session?.user?.name?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{session?.user?.name || "User"}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {session?.user?.email || "user@example.com"}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <CircleUser className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Stethoscope className="mr-2 h-4 w-4" />
+                Medical Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <Link href="/project">
+                <DropdownMenuItem>
+                  <LayoutGrid className="mr-2 h-4 w-4" />
+                  Back to Projects
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() =>
+                  signOut({
+                    callbackUrl: "/login",
+                    redirect: true,
+                  })
+                }
+                className="text-red-600 dark:text-red-400"
+              >
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </header>
 
       {/* Sidebar Drawer */}

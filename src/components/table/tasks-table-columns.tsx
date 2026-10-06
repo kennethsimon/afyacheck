@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { MoreHorizontal, Eye, Copy, User } from "lucide-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,237 +14,251 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { getGenderBackgroundColor } from "@/lib/utils";
-
-import Link from "next/link";
-import { Patient } from "@/types/general";
-import { differenceInYears, parseISO } from "date-fns";
-// import { getCampById } from "@/services/camps";
 import { PreviewPatientSheet } from "./preview-patient-sheet";
+import { differenceInYears, parseISO, format } from "date-fns";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-// function CampNameCell({ campId }: { campId: string }) {
-//   const [campName, setCampName] = React.useState<string | null>(null);
+function formatValue(value: any) {
+  if (value === null || value === undefined || value === "") return "—";
+  return value;
+}
 
-//   React.useEffect(() => {
-//     const fetchCampName = async () => {
-//       try {
-//         const { items: campDetails } = await getCampById(campId);
-//         setCampName(campDetails.camp.name);
-//       } catch (error) {
-//         console.error("Failed to fetch camp name:", error);
-//         setCampName("Error loading camp name");
-//       }
-//     };
-//     fetchCampName();
-//   }, [campId]);
+function getGenderBadge(gender: string) {
+  if (!gender) return <span className="text-gray-400">—</span>;
+  
+  const genderLower = gender.toLowerCase();
+  if (genderLower === "male") {
+    return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">Male</Badge>;
+  } else if (genderLower === "female") {
+    return <Badge className="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 text-xs">Female</Badge>;
+  } else {
+    return <Badge variant="outline" className="text-xs">{gender}</Badge>;
+  }
+}
 
-//   return <div>{campName || "Loading..."}</div>;
-// }
-
-function CreatedByCell({ userId }: { userId: string }) {
-  const [userName, setUserName] = React.useState<string | null>(null);
-
-  // React.useEffect(() => {
-  //   const fetchUserName = async () => {
-  //     try {
-  //       const { items: userDetails } = await getUserById(userId);
-  //       setUserName(userDetails.user.name);
-  //     } catch (error) {
-  //       console.error("Failed to fetch user name:", error);
-  //       setUserName("Error loading user name");
-  //     }
-  //   };
-  //   fetchUserName();
-  // }, [userId]);
-
-  return <div>{userName || "Loading..."}</div>;
+function calculateAge(dateOfBirth?: string) {
+  if (!dateOfBirth) return null;
+  try {
+    const dob = parseISO(dateOfBirth);
+    return differenceInYears(new Date(), dob);
+  } catch {
+    return null;
+  }
 }
 
 export function getColumns(): ColumnDef<any>[] {
   return [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value: any) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-          aria-label="Select all"
-          className="translate-y-0.5"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="translate-y-0.5"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       id: "actions",
       cell: function Cell({ row }) {
-        const [showPreviewPatientSheet, setShowPreviewPatientSheet] =
-          React.useState(false);
-        const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-        const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+        const [showPreviewSheet, setShowPreviewSheet] = React.useState(false);
+        const [copied, setCopied] = React.useState(false);
+        const [mounted, setMounted] = React.useState(false);
 
-        const handleMouseEnter = () => {
-          if (closeTimeoutRef.current) {
-            clearTimeout(closeTimeoutRef.current);
-            closeTimeoutRef.current = null;
-          }
-          if (!isDropdownOpen) {
-            setIsDropdownOpen(true);
-          }
-        };
+        // Ensure component only renders interactive elements after mount to prevent hydration issues
+        React.useEffect(() => {
+          setMounted(true);
+        }, []);
 
-        const handleMouseLeave = () => {
-          closeTimeoutRef.current = setTimeout(() => {
-            setIsDropdownOpen(false);
-          }, 200); // Adjust the delay as needed
-        };
+        const copyToClipboard = React.useCallback((text: string) => {
+          navigator.clipboard.writeText(text);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }, []);
+
+        const handleOpenChange = React.useCallback((open: boolean) => {
+          setShowPreviewSheet(open);
+        }, []);
+
+        const handleViewDetails = React.useCallback(() => {
+          setShowPreviewSheet(true);
+        }, []);
+
+        const handleCopy = React.useCallback(() => {
+          copyToClipboard(row.original.patientIdentifier);
+        }, [row.original.patientIdentifier, copyToClipboard]);
+
+        // Render a placeholder during SSR to prevent hydration mismatch
+        if (!mounted) {
+          return (
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              aria-label="Open menu"
+              disabled
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          );
+        }
 
         return (
           <>
             <PreviewPatientSheet
-              open={showPreviewPatientSheet}
-              onOpenChange={setShowPreviewPatientSheet}
+              key={row.original.patientIdentifier}
+              open={showPreviewSheet}
+              onOpenChange={handleOpenChange}
               patient={row.original}
             />
-            <DropdownMenu
-              open={isDropdownOpen}
-              onOpenChange={setIsDropdownOpen}
-            >
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  aria-label="Open menu"
                   variant="ghost"
-                  className="flex size-8 p-0 data-[state=open]:bg-muted"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
+                  className="h-8 w-8 p-0"
+                  aria-label="Open menu"
                 >
-                  <DotsHorizontalIcon className="size-4" aria-hidden="true" />
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
+              <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      row.original.patientIdentifier
-                    )
-                  }
+                  onClick={handleCopy}
                 >
-                  Copy Patient ID
+                  <Copy className="mr-2 h-4 w-4" />
+                  {copied ? "Copied!" : "Copy Patient ID"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => setShowPreviewPatientSheet(true)}
+                  onSelect={handleViewDetails}
                 >
-                  Preview Patient
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>
-                  <Link href={`/dashboard/patients/${row.original._id}`}>
-                    Open Patient
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href={`/dashboard/patients/edit/${row.original._id}`}>
-                    Edit Patient
-                  </Link>
-                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </>
         );
       },
-    },
-    {
-      accessorKey: "name",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
-      ),
-      cell: ({ row }) => <div>{row.original.name}</div>,
+      enableSorting: false,
+      enableHiding: false,
+      size: 50,
     },
     {
       accessorKey: "patientIdentifier",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Patient ID" />
       ),
-      cell: ({ row }) => <div>{row.original.patientIdentifier}</div>,
+      cell: ({ row }) => (
+        <div className="font-mono font-semibold text-sm text-blue-600 dark:text-blue-400">
+          {formatValue(row?.original?.patientIdentifier)}
+        </div>
+      ),
+      enableSorting: true,
+      enableHiding: false,
+      size: 140,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Patient Name" />
+      ),
+      cell: ({ row }) => {
+        const name = row.original.name;
+        const initials = name
+          ?.split(" ")
+          .map((n: string) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2) || "??";
+        
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8 border border-gray-200 dark:border-gray-700">
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-500 text-white text-xs">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="font-medium text-gray-900 dark:text-gray-100">
+              {formatValue(name)}
+            </div>
+          </div>
+        );
+      },
+      enableSorting: true,
+      size: 200,
     },
     {
       accessorKey: "gender",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Gender" />
       ),
+      cell: ({ row }) => getGenderBadge(row.original.gender),
+      enableSorting: true,
+      size: 100,
+    },
+    {
+      accessorKey: "dateOfBirth",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Age" />
+      ),
       cell: ({ row }) => {
-        const gender = row?.original?.gender || "";
-        const bgColor = getGenderBackgroundColor(gender);
+        const age = calculateAge(row.original.dateOfBirth);
+        if (age === null) return <span className="text-gray-400">—</span>;
         return (
-          <div className={`p-1 text-center font-[500] ${bgColor} rounded`}>
-            {gender}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">{age}</span>
+            <span className="text-xs text-gray-500">years</span>
           </div>
         );
       },
       enableSorting: true,
-      enableHiding: true,
-    },
-    {
-      accessorKey: "dateOfBirth",
-      header: "Age",
-      cell: ({ row }) => {
-        const dateOfBirth = row?.original?.dateOfBirth
-          ? parseISO(row?.original?.dateOfBirth)
-          : "";
-        const age = differenceInYears(new Date(), dateOfBirth);
-        return age;
-      },
-      enableSorting: true,
-      enableHiding: true,
+      size: 90,
     },
     {
       accessorKey: "phoneNumber",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Phone Number" />
-      ),
-      cell: ({ row }) => <div>{row.original.phoneNumber}</div>,
-      enableSorting: true,
-      enableHiding: true,
-    },
-    {
-      accessorKey: "location",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Location" />
+        <DataTableColumnHeader column={column} title="Phone" />
       ),
       cell: ({ row }) => (
-        <div>
-          {row?.original?.region}, {row?.original?.district}
+        <div className="text-sm text-gray-700 dark:text-gray-300">
+          {formatValue(row.original.phoneNumber)}
         </div>
       ),
       enableSorting: true,
-      enableHiding: true,
+      size: 130,
     },
-    // {
-    //   accessorKey: "createdBy",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Created By" />
-    //   ),
-    //   cell: ({ row }) => <CreatedByCell userId={row.original.createdBy} />,
-    //   enableSorting: true,
-    //   enableHiding: true,
-    // },
+    {
+      id: "location",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Location" />
+      ),
+      cell: ({ row }) => {
+        const region = row.original.region;
+        const district = row.original.district;
+        
+        if (!region && !district) return <span className="text-gray-400">—</span>;
+        
+        return (
+          <div className="text-sm">
+            {district && (
+              <div className="font-medium text-gray-900 dark:text-gray-100">{district}</div>
+            )}
+            {region && (
+              <div className="text-xs text-gray-500 dark:text-gray-400">{region}</div>
+            )}
+          </div>
+        );
+      },
+      enableSorting: false,
+      size: 180,
+    },
+    {
+      accessorKey: "createdAt",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Registered" />
+      ),
+      cell: ({ row }) => {
+        const date = row.original.createdAt;
+        if (!date) return <span className="text-gray-400">—</span>;
+        return (
+          <div className="text-xs text-gray-600 dark:text-gray-400">
+            {format(new Date(date), "MMM dd, yyyy")}
+          </div>
+        );
+      },
+      enableSorting: true,
+      size: 120,
+    },
   ];
 }
