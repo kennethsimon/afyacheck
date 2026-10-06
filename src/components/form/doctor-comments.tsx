@@ -13,6 +13,10 @@ import {
 import { FileText, Pill, User, ClipboardList } from "lucide-react";
 
 export function DoctorComments({ form }: any) {
+  const handlePatientIdentifierChange = (value: string, onChange: (value: string) => void) => {
+    onChange(value.toUpperCase());
+  };
+
   return (
     <div className="space-y-6 py-6">
       {/* Header */}
@@ -51,7 +55,9 @@ export function DoctorComments({ form }: any) {
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Enter patient ID"
+                    placeholder="AC123456789012"
+                    maxLength={14}
+                    onChange={(e) => handlePatientIdentifierChange(e.target.value, field.onChange)}
                     className="border-gray-300 dark:border-gray-600 focus:border-blue-500 font-mono"
                   />
                 </FormControl>

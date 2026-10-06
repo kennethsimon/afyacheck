@@ -29,6 +29,10 @@ import {
 } from "lucide-react";
 
 export function ClinicalFindings({ form }: any) {
+  const handlePatientIdentifierChange = (value: string, onChange: (value: string) => void) => {
+    onChange(value.toUpperCase());
+  };
+
   const [tbScreening, setTbScreening] = useState<any>(null);
   const [hivTesting, setHivTesting] = useState<string | null>(null);
   const [preventiveMeasure, setPreventiveMeasure] = useState<string | null>(null);
@@ -78,7 +82,9 @@ export function ClinicalFindings({ form }: any) {
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Enter patient identifier"
+                    placeholder="AC123456789012"
+                    maxLength={14}
+                    onChange={(e) => handlePatientIdentifierChange(e.target.value, field.onChange)}
                     className="border-gray-300 dark:border-gray-600 focus:border-blue-500"
                   />
                 </FormControl>

@@ -75,7 +75,9 @@ export function ScreeningQuestions({ form }: any) {
                   <Input
                     {...field}
                     type="text"
-                    placeholder="Enter patient identifier"
+                    placeholder="AC123456789012"
+                    maxLength={14}
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                     className="border-gray-300 dark:border-gray-600 focus:border-blue-500 font-mono"
                   />
                 </FormControl>
