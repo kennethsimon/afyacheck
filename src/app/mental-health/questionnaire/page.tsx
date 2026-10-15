@@ -115,12 +115,6 @@ const QuestionnairePage = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-500 py-16 px-4">
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
-        <div className="flex justify-center mb-8">
-          <Image src="/logo.png" alt="Logo" width={600} height={200} />
-=======
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-green-50/30 dark:from-gray-950 dark:via-blue-950/20 dark:to-green-950/20">
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -144,7 +138,6 @@ const QuestionnairePage = () => {
               </p>
             </div>
           </div>
->>>>>>> 954cbd8027b12e8c78fa0cb3c0511a89cff4c5e3
         </div>
 
         {!formSubmitted ? (

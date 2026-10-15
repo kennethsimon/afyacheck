@@ -8,22 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const MentalHealthPage = () => {
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-500 py-16 px-4">
-      <div className="min-h-[83vh] max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 sm:p-12 flex flex-col justify-between">
-        <div className="text-center">
-          <img
-            src="/logo.png"
-            alt="AfyaCheck Logo"
-            className="mx-auto h-24 sm:h-30 mb-6"
-          />
-          <h1 className="mt-8 text-4xl font-extrabold text-green-600 leading-tight">
-            Mental Health Assessment
-          </h1>
-          <p className="mt-12 text-black-600 text-2xl">
-            Assess your mental well-being through a series of simple, guided questions designed to help you understand yourself better.
-          </p>
-=======
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-green-50/30 dark:from-gray-950 dark:via-blue-950/20 dark:to-green-950/20">
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}
@@ -41,7 +25,6 @@ const MentalHealthPage = () => {
               </p>
             </div>
           </div>
->>>>>>> 954cbd8027b12e8c78fa0cb3c0511a89cff4c5e3
         </div>
 
         {/* Action Cards */}

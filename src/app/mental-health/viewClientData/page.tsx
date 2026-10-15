@@ -71,47 +71,6 @@ export default function ViewDataPage() {
   };
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-500 py-16 px-4">
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-8">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <Image src="/logo.png" alt="Logo" width={600} height={200} className="img-fluid" />
-        </div>
-
-        <h2 className="text-center text-3xl font-bold text-emerald-500 mb-6 flex items-center justify-center">
-          <FaUserMd className="mr-2 animate-bounce" /> ALL CLIENTS
-        </h2>
-
-        {/* Search Form */}
-        <form onSubmit={handleSearch} className="mb-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <input
-              type="text"
-              name="name"
-              className="flex-grow p-2 border border-gray-600 rounded"
-              placeholder="Search by Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              type="date"
-              name="date"
-              className="p-2 border border-gray-600 rounded"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              <FaSearch className="mr-2" /> Search
-            </button>
-            <Link href="/specialist-login" className="flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-auto">
-              <FaSignOutAlt className="mr-2" />
-              Logout
-            </Link>
-=======
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-green-50/30 dark:from-gray-950 dark:via-blue-950/20 dark:to-green-950/20">
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
@@ -138,7 +97,6 @@ export default function ViewDataPage() {
                 </div>
               </div>
             </div>
->>>>>>> 954cbd8027b12e8c78fa0cb3c0511a89cff4c5e3
           </div>
         </div>
 
