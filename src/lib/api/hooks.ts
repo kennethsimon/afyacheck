@@ -447,3 +447,18 @@ export function useDeleteUser() {
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// Structured Reports
+// ---------------------------------------------------------------------------
+
+export function useStructuredReport(
+  params: api.StructuredReportQueryParams,
+  enabled = true
+) {
+  return useQuery({
+    queryKey: queryKeys.reports.structured(params as unknown as Record<string, unknown>),
+    queryFn: ({ signal }) => api.generateStructuredReport(params, signal),
+    enabled,
+  });
+}

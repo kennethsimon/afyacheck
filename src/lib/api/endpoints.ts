@@ -749,3 +749,54 @@ export async function listRolesAndPermissions(
     permissions: res?.data?.permissions ?? [],
   };
 }
+
+// ---------------------------------------------------------------------------
+// Institutional Structured Reporting (Backend Source of Truth)
+// ---------------------------------------------------------------------------
+
+import type {
+  PatientClinicalReportPayload,
+  ReportTypeId,
+  StructuredReportPayload,
+} from "@/lib/reports/types";
+
+export interface StructuredReportQueryParams {
+  type: ReportTypeId;
+  projectId?: string;
+  campId?: string;
+  schemaId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  gender?: string;
+  insurance?: string;
+  location?: string;
+}
+
+export async function generateStructuredReport(
+  params: StructuredReportQueryParams,
+  signal?: AbortSignal
+): Promise<StructuredReportPayload> {
+  const res = await apiRequest<any>("/reports/generate", {
+    params: {
+      type: params.type,
+      projectId: params.projectId && params.projectId !== "all" ? params.projectId : undefined,
+      campId: params.campId && params.campId !== "all" ? params.campId : undefined,
+      schemaId: params.schemaId && params.schemaId !== "all" ? params.schemaId : undefined,
+      dateFrom: params.dateFrom || undefined,
+      dateTo: params.dateTo || undefined,
+      gender: params.gender && params.gender !== "all" ? params.gender : undefined,
+      insurance: params.insurance && params.insurance !== "all" ? params.insurance : undefined,
+      location: params.location || undefined,
+    },
+    signal,
+  });
+  return res?.data as StructuredReportPayload;
+}
+
+export async function generatePatientClinicalReport(
+  patientId: string,
+  signal?: AbortSignal
+): Promise<PatientClinicalReportPayload> {
+  const res = await apiRequest<any>(`/reports/patient/${patientId}`, { signal });
+  return res?.data as PatientClinicalReportPayload;
+}

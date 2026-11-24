@@ -49,4 +49,9 @@ export const queryKeys = {
     detail: (userId: string) => ["users", "detail", userId] as const,
     roles: () => ["users", "roles"] as const,
   },
+  reports: {
+    all: ["reports"] as const,
+    structured: (params: Record<string, unknown>) => ["reports", "structured", params] as const,
+    patient: (patientId: string) => ["reports", "patient", patientId] as const,
+  },
 };

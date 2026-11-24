@@ -46,6 +46,8 @@ import {
   useUpdatePatient,
 } from "@/lib/api/hooks";
 import { getErrorMessage } from "@/lib/api/client";
+import { generatePatientClinicalReport } from "@/lib/api/endpoints";
+import { downloadPatientClinicalReportPdf } from "@/lib/reports/pdf-renderer";
 import { canAccessClinical, canRegisterPatient } from "@/lib/permissions";
 import { calculateAge } from "@/lib/utils";
 import type { DiagnosisRecord } from "@/lib/api/types";
@@ -71,6 +73,22 @@ function statusToneForFinding(val?: string | null) {
 export function PatientProfileView({ patientId }: { patientId: string }) {
   const { data: session } = useSession();
   const [editing, setEditing] = useState(false);
+  const [exportingClinicalPdf, setExportingClinicalPdf] = useState(false);
+
+  const handleExportClinicalReport = async () => {
+    setExportingClinicalPdf(true);
+    try {
+      const payload = await generatePatientClinicalReport(patientId);
+      await downloadPatientClinicalReportPdf(payload);
+      toast.success("Authorized patient clinical summary downloaded");
+    } catch (err) {
+      toast.error(
+        getErrorMessage(err, "Unable to export authorized clinical report")
+      );
+    } finally {
+      setExportingClinicalPdf(false);
+    }
+  };
 
   const patientQuery = usePatient(patientId);
   const updatePatient = useUpdatePatient(patientId);
@@ -231,6 +249,22 @@ export function PatientProfileView({ patientId }: { patientId: string }) {
                 >
                   <Edit3 className="h-3.5 w-3.5" />
                   Edit Demographics
+                </Button>
+              )}
+              {canScreen && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportClinicalReport}
+                  disabled={exportingClinicalPdf}
+                  className="h-8 gap-1.5 text-xs"
+                >
+                  {exportingClinicalPdf ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <FileText className="h-3.5 w-3.5" />
+                  )}
+                  Clinical Report PDF
                 </Button>
               )}
               {canScreen && patient.patientIdentifier && (

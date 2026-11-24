@@ -15,6 +15,8 @@ const ALLOWED_ROOT_SEGMENTS = new Set([
   "questions",
   "responses",
   "documents",
+  "reports",
+  "audit-logs",
 ]);
 
 function stripSensitiveFields(payload: unknown): unknown {
