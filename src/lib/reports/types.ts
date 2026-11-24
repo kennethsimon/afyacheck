@@ -137,8 +137,50 @@ export const DEFAULT_SECTIONS_BY_TYPE: Record<ReportTypeId, ReportSectionKey[]> 
 
 export interface DemographicBucket {
   label: string;
-  count: number;
+  count: number | null;
   percentage: number | null;
+  suppressed?: boolean;
+  complementarySuppressed?: boolean;
+  displayCount?: string;
+  displayPercentage?: string;
+}
+
+export interface PrivacyPolicySummary {
+  smallGroupSuppressionEnabled: boolean;
+  minCellSize: number;
+  complementarySuppressionApplied: boolean;
+  suppressedCellCount: number;
+  policyNote: string;
+}
+
+export type ReportJobStatus =
+  | "queued"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "expired";
+
+export interface ReportJobRecord {
+  _id: string;
+  ownerId: string;
+  ownerUsername?: string;
+  idempotencyKey?: string;
+  reportType: ReportTypeId | string;
+  format: "json" | "csv";
+  params: Record<string, unknown>;
+  status: ReportJobStatus;
+  progress: number;
+  reportRef?: string;
+  payloadSizeBytes?: number;
+  attempts: number;
+  maxAttempts?: number;
+  errorCode?: string;
+  errorMessage?: string;
+  startedAt?: string;
+  completedAt?: string;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ReportKpi {
@@ -202,6 +244,8 @@ export interface CustomFormFieldAnalytics {
   isMultipleResponse?: boolean;
   denominatorLabel?: string;
   distribution?: Record<string, number>;
+  suppressedDistribution?: Record<string, string | number>;
+  suppressedCategories?: string[];
   numericSummary?: {
     min: number;
     max: number;
@@ -335,6 +379,7 @@ export interface StructuredReportPayload {
     dataSource: string;
     reportingPeriod: string;
     appliedFiltersSummary: string;
+    privacyPolicy?: PrivacyPolicySummary;
     metricDefinitions: Array<{ term: string; definition: string }>;
     missingDataHandling: string;
     limitations: string[];

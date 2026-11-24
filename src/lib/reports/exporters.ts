@@ -45,17 +45,21 @@ export function buildReportCsvContent(report: StructuredReportPayload): string {
 
   if (report.demographics) {
     const total = report.demographics.totalRegistered;
+    const fmtCount = (b: { count: number | null; suppressed?: boolean; displayCount?: string }) =>
+      b.suppressed || b.count === null ? b.displayCount || "Suppressed" : b.count;
+    const fmtRate = (b: { percentage: number | null; suppressed?: boolean; displayPercentage?: string }) =>
+      b.suppressed ? b.displayPercentage || "Suppressed" : formatRateOrNA(b.percentage);
     for (const b of report.demographics.gender) {
-      rows.push(["Demographics", "Gender", b.label, b.count, total, formatRateOrNA(b.percentage)]);
+      rows.push(["Demographics", "Gender", b.label, fmtCount(b), total, fmtRate(b)]);
     }
     for (const b of report.demographics.ageGroups) {
-      rows.push(["Demographics", "Age Group", b.label, b.count, total, formatRateOrNA(b.percentage)]);
+      rows.push(["Demographics", "Age Group", b.label, fmtCount(b), total, fmtRate(b)]);
     }
     for (const b of report.demographics.insurance) {
-      rows.push(["Demographics", "Insurance", b.label, b.count, total, formatRateOrNA(b.percentage)]);
+      rows.push(["Demographics", "Insurance", b.label, fmtCount(b), total, fmtRate(b)]);
     }
     for (const b of report.demographics.regions) {
-      rows.push(["Demographics", "Geographic Region", b.label, b.count, total, formatRateOrNA(b.percentage)]);
+      rows.push(["Demographics", "Geographic Region", b.label, fmtCount(b), total, fmtRate(b)]);
     }
   }
 
@@ -270,14 +274,21 @@ export async function buildReportXlsxBuffer(
     ];
     groups.forEach(([dim, buckets]) => {
       buckets.forEach((b) => {
+        const isSuppressed = Boolean(b.suppressed || b.count === null);
         const r = demoWs.addRow([
           sanitizeSpreadsheetValue(dim),
           sanitizeSpreadsheetValue(b.label),
-          b.count,
-          b.percentage !== null ? Number((b.percentage / 100).toFixed(4)) : "N/A",
+          isSuppressed ? b.displayCount || "Suppressed" : b.count,
+          isSuppressed
+            ? b.displayPercentage || "Suppressed"
+            : b.percentage !== null
+            ? Number((b.percentage / 100).toFixed(4))
+            : "N/A",
         ]);
-        r.getCell(3).numFmt = "#,##0";
-        if (b.percentage !== null) r.getCell(4).numFmt = "0.0%";
+        if (!isSuppressed) {
+          r.getCell(3).numFmt = "#,##0";
+          if (b.percentage !== null) r.getCell(4).numFmt = "0.0%";
+        }
         r.eachCell((c: any) => {
           c.border = bodyBorder;
         });

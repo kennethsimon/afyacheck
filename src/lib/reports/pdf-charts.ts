@@ -60,7 +60,13 @@ export function drawHorizontalBarChart(
     width: number;
     title: string;
     subtitle?: string;
-    items: Array<{ label: string; count: number; percentage: number | null }>;
+    items: Array<{
+      label: string;
+      count: number | null;
+      percentage: number | null;
+      suppressed?: boolean;
+      displayCount?: string;
+    }>;
     barColor?: RgbTuple;
   }
 ): number {
@@ -72,7 +78,8 @@ export function drawHorizontalBarChart(
 
   const startY = drawChartFrame(doc, x, y, width, height, title, subtitle);
 
-  if (rows.length === 0 || rows.every((r) => r.count === 0)) {
+  const hasAny = rows.some((r) => r.suppressed || (r.count !== null && r.count > 0));
+  if (rows.length === 0 || !hasAny) {
     doc.setFont("helvetica", "italic");
     doc.setFontSize(8);
     doc.setTextColor(...REPORT_RGB.mutedText);
@@ -84,10 +91,14 @@ export function drawHorizontalBarChart(
   const valueColW = 30;
   const barX = x + 5 + labelColW + 2;
   const barMaxW = Math.max(20, width - labelColW - valueColW - 14);
-  const maxVal = Math.max(...rows.map((r) => r.count), 1);
+  const maxVal = Math.max(
+    ...rows.map((r) => (r.suppressed || r.count === null ? 0 : r.count)),
+    1
+  );
 
   rows.forEach((item, idx) => {
     const ry = startY + idx * rowHeight;
+    const isSuppressed = Boolean(item.suppressed || item.count === null);
     const isUnrecorded = item.label.toLowerCase().includes("unrecorded");
     const fillRgb: RgbTuple = isUnrecorded
       ? [148, 163, 184]
@@ -95,17 +106,18 @@ export function drawHorizontalBarChart(
         REPORT_CHART_SERIES_RGB[idx % Math.min(3, REPORT_CHART_SERIES_RGB.length)];
 
     // Category label
-    doc.setFont("helvetica", isUnrecorded ? "italic" : "normal");
+    doc.setFont("helvetica", isUnrecorded || isSuppressed ? "italic" : "normal");
     doc.setFontSize(7.8);
-    doc.setTextColor(...(isUnrecorded ? REPORT_RGB.mutedText : REPORT_RGB.bodySlate));
+    doc.setTextColor(...(isUnrecorded || isSuppressed ? REPORT_RGB.mutedText : REPORT_RGB.bodySlate));
     doc.text(truncateLabel(item.label, 28), x + 5, ry + 4);
 
     // Track background
     doc.setFillColor(...REPORT_RGB.lightNeutral);
     doc.roundedRect(barX, ry + 0.7, barMaxW, 4.4, 0.8, 0.8, "F");
 
-    // Value bar
-    const barW = item.count > 0 ? Math.max(1.2, (item.count / maxVal) * barMaxW) : 0;
+    // Value bar (only for non-suppressed cells)
+    const numericVal = isSuppressed ? 0 : item.count ?? 0;
+    const barW = numericVal > 0 ? Math.max(1.2, (numericVal / maxVal) * barMaxW) : 0;
     if (barW > 0) {
       doc.setFillColor(...fillRgb);
       doc.roundedRect(barX, ry + 0.7, barW, 4.4, 0.8, 0.8, "F");
@@ -116,7 +128,9 @@ export function drawHorizontalBarChart(
     doc.setFontSize(7.6);
     doc.setTextColor(...REPORT_RGB.darkNavy);
     doc.text(
-      `${item.count.toLocaleString()} (${formatRateOrNA(item.percentage)})`,
+      isSuppressed
+        ? item.displayCount || "Suppressed"
+        : `${numericVal.toLocaleString()} (${formatRateOrNA(item.percentage)})`,
       x + width - 5,
       ry + 4,
       { align: "right" }
@@ -140,15 +154,25 @@ export function drawDonutChart(
     title: string;
     subtitle?: string;
     centerLabel?: string;
-    items: Array<{ label: string; count: number; percentage: number | null }>;
+    items: Array<{
+      label: string;
+      count: number | null;
+      percentage: number | null;
+      suppressed?: boolean;
+      displayCount?: string;
+    }>;
   }
 ): number {
   const { x, y, width, title, subtitle, items, centerLabel = "Total" } = opts;
   const height = opts.height ?? 56;
   const startY = drawChartFrame(doc, x, y, width, height, title, subtitle);
 
-  const total = items.reduce((s, i) => s + i.count, 0);
-  if (total === 0) {
+  const total = items.reduce(
+    (s, i) => s + (i.suppressed || i.count === null ? 0 : i.count),
+    0
+  );
+  const hasSuppressed = items.some((i) => i.suppressed || i.count === null);
+  if (total === 0 && !hasSuppressed) {
     doc.setFont("helvetica", "italic");
     doc.setFontSize(8);
     doc.setTextColor(...REPORT_RGB.mutedText);
@@ -163,7 +187,7 @@ export function drawDonutChart(
 
   let startAngle = -Math.PI / 2;
   items.forEach((item, idx) => {
-    if (item.count <= 0) return;
+    if (item.suppressed || item.count === null || item.count <= 0 || total <= 0) return;
     const sweep = (item.count / total) * Math.PI * 2;
     const endAngle = startAngle + sweep;
     const rgb = item.label.toLowerCase().includes("unrecorded")
@@ -203,11 +227,11 @@ export function drawDonutChart(
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9.5);
   doc.setTextColor(...REPORT_RGB.darkNavy);
-  doc.text(total.toLocaleString(), cx, cy + 0.8, { align: "center" });
+  doc.text(total > 0 ? total.toLocaleString() : "—", cx, cy + 0.8, { align: "center" });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.2);
   doc.setTextColor(...REPORT_RGB.mutedText);
-  doc.text(centerLabel, cx, cy + 4.3, { align: "center" });
+  doc.text(hasSuppressed ? "Visible" : centerLabel, cx, cy + 4.3, { align: "center" });
 
   // Legend on right side
   const legendX = cx + radius + 7;
@@ -216,7 +240,10 @@ export function drawDonutChart(
 
   items.slice(0, 6).forEach((item, idx) => {
     const ly = legendStartY + idx * legendRowH;
-    const rgb = item.label.toLowerCase().includes("unrecorded")
+    const isSuppressed = Boolean(item.suppressed || item.count === null);
+    const rgb = isSuppressed
+      ? ([226, 232, 240] as RgbTuple)
+      : item.label.toLowerCase().includes("unrecorded")
       ? ([203, 213, 225] as RgbTuple)
       : REPORT_CHART_SERIES_RGB[idx % REPORT_CHART_SERIES_RGB.length];
 
@@ -232,7 +259,9 @@ export function drawDonutChart(
     doc.setFontSize(7.2);
     doc.setTextColor(...REPORT_RGB.darkNavy);
     doc.text(
-      `${item.count.toLocaleString()} (${formatRateOrNA(item.percentage)})`,
+      isSuppressed
+        ? item.displayCount || "Suppressed"
+        : `${(item.count ?? 0).toLocaleString()} (${formatRateOrNA(item.percentage)})`,
       x + width - 4.5,
       ly,
       { align: "right" }

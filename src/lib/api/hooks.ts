@@ -462,3 +462,39 @@ export function useStructuredReport(
     enabled,
   });
 }
+
+export function useReportJobs(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.reports.jobs(),
+    queryFn: ({ signal }) => api.listReportJobs(signal),
+    enabled,
+    refetchInterval: (query) => {
+      const jobs = query.state.data;
+      if (!Array.isArray(jobs)) return false;
+      const hasActive = jobs.some(
+        (j) => j.status === "queued" || j.status === "processing"
+      );
+      return hasActive ? 2000 : false;
+    },
+  });
+}
+
+export function useCreateReportJob() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.createReportJob,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.reports.jobs() });
+    },
+  });
+}
+
+export function useRetryReportJob() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.retryReportJob,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.reports.jobs() });
+    },
+  });
+}

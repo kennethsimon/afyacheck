@@ -846,8 +846,12 @@ export async function renderStructuredReportPdf(
         rows: [
           ...demo.regions.map((r) => [
             r.label,
-            r.count.toLocaleString(),
-            formatRateOrNA(r.percentage),
+            r.suppressed || r.count === null
+              ? r.displayCount || "Suppressed"
+              : r.count.toLocaleString(),
+            r.suppressed || r.count === null
+              ? r.displayPercentage || "Suppressed"
+              : formatRateOrNA(r.percentage),
           ]),
           ["Total", demo.totalRegistered.toLocaleString(), demo.totalRegistered > 0 ? "100.0%" : "N/A"],
         ],

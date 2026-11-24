@@ -20,10 +20,23 @@ export function ReportHorizontalBarSvg({
 }: {
   title: string;
   subtitle?: string;
-  items: Array<{ label: string; count: number; percentage: number | null }>;
+  items: Array<{
+    label: string;
+    count: number | null;
+    percentage: number | null;
+    suppressed?: boolean;
+    displayCount?: string;
+    displayPercentage?: string;
+  }>;
 }) {
   const rows = items.slice(0, 10);
-  const maxVal = Math.max(...rows.map((r) => r.count), 1);
+  const numericCounts = rows
+    .map((r) => (r.suppressed || r.count === null ? 0 : r.count))
+    .filter((v) => v > 0);
+  const maxVal = Math.max(...numericCounts, 1);
+  const hasAnyContent = rows.some(
+    (r) => r.suppressed || (r.count !== null && r.count > 0)
+  );
 
   return (
     <div className="rounded-md border border-[#E2E8F0] bg-white p-4">
@@ -31,26 +44,28 @@ export function ReportHorizontalBarSvg({
       {subtitle && (
         <div className="mt-0.5 text-[10px] text-[#667085]">{subtitle}</div>
       )}
-      {rows.length === 0 || rows.every((r) => r.count === 0) ? (
+      {rows.length === 0 || !hasAnyContent ? (
         <div className="mt-4 py-3 text-[11px] italic text-[#667085]">
           No recorded observations for this reporting scope.
         </div>
       ) : (
         <div className="mt-3 space-y-2">
           {rows.map((item, idx) => {
+            const isSuppressed = Boolean(item.suppressed || item.count === null);
             const isUnrecorded = item.label.toLowerCase().includes("unrecorded");
             const color = isUnrecorded
               ? "#94A3B8"
               : REPORT_CHART_SERIES_HEX[idx % 3];
-            const widthPct = item.count > 0 ? Math.max(2, (item.count / maxVal) * 100) : 0;
+            const numericVal = isSuppressed ? 0 : item.count ?? 0;
+            const widthPct = numericVal > 0 ? Math.max(2, (numericVal / maxVal) * 100) : 0;
             return (
               <div
                 key={`${item.label}-${idx}`}
-                className="grid grid-cols-[140px_1fr_92px] items-center gap-2.5 text-[10.5px]"
+                className="grid grid-cols-[140px_1fr_104px] items-center gap-2.5 text-[10.5px]"
               >
                 <span
                   className={
-                    isUnrecorded
+                    isUnrecorded || isSuppressed
                       ? "truncate italic text-[#667085]"
                       : "truncate text-[#344054]"
                   }
@@ -59,13 +74,21 @@ export function ReportHorizontalBarSvg({
                   {item.label}
                 </span>
                 <div className="h-3 w-full overflow-hidden rounded-[3px] bg-[#F5F7F9]">
-                  <div
-                    className="h-full rounded-[3px]"
-                    style={{ width: `${widthPct}%`, backgroundColor: color }}
-                  />
+                  {isSuppressed ? (
+                    <div className="flex h-full items-center px-1.5 text-[8.5px] font-medium text-[#667085]">
+                      Suppressed for privacy
+                    </div>
+                  ) : (
+                    <div
+                      className="h-full rounded-[3px]"
+                      style={{ width: `${widthPct}%`, backgroundColor: color }}
+                    />
+                  )}
                 </div>
                 <span className="text-right font-semibold tabular-nums text-[#101828]">
-                  {item.count.toLocaleString()} ({formatRateOrNA(item.percentage)})
+                  {isSuppressed
+                    ? item.displayCount || "Suppressed"
+                    : `${numericVal.toLocaleString()} (${formatRateOrNA(item.percentage)})`}
                 </span>
               </div>
             );
@@ -85,18 +108,30 @@ export function ReportDonutSvg({
   title: string;
   subtitle?: string;
   centerLabel?: string;
-  items: Array<{ label: string; count: number; percentage: number | null }>;
+  items: Array<{
+    label: string;
+    count: number | null;
+    percentage: number | null;
+    suppressed?: boolean;
+    displayCount?: string;
+    displayPercentage?: string;
+  }>;
 }) {
-  const total = items.reduce((s, i) => s + i.count, 0);
+  const totalVisible = items.reduce(
+    (s, i) => s + (i.suppressed || i.count === null ? 0 : i.count),
+    0
+  );
+  const hasSuppressed = items.some((i) => i.suppressed || i.count === null);
   const radius = 38;
   const strokeWidth = 14;
   const circumference = 2 * Math.PI * radius;
 
   let cumulative = 0;
   const segments = items
-    .filter((i) => i.count > 0)
+    .filter((i) => !i.suppressed && i.count !== null && i.count > 0)
     .map((item, idx) => {
-      const fraction = total > 0 ? item.count / total : 0;
+      const count = item.count ?? 0;
+      const fraction = totalVisible > 0 ? count / totalVisible : 0;
       const dash = fraction * circumference;
       const offset = -cumulative * circumference;
       cumulative += fraction;
@@ -112,7 +147,7 @@ export function ReportDonutSvg({
       {subtitle && (
         <div className="mt-0.5 text-[10px] text-[#667085]">{subtitle}</div>
       )}
-      {total === 0 ? (
+      {totalVisible === 0 && !hasSuppressed ? (
         <div className="mt-4 py-3 text-[11px] italic text-[#667085]">
           No recorded observations for this reporting scope.
         </div>
@@ -154,7 +189,7 @@ export function ReportDonutSvg({
               textAnchor="middle"
               className="fill-[#101828] text-[13px] font-bold"
             >
-              {total.toLocaleString()}
+              {totalVisible > 0 ? totalVisible.toLocaleString() : "—"}
             </text>
             <text
               x="52"
@@ -162,12 +197,15 @@ export function ReportDonutSvg({
               textAnchor="middle"
               className="fill-[#667085] text-[8.5px]"
             >
-              {centerLabel}
+              {hasSuppressed ? "Visible" : centerLabel}
             </text>
           </svg>
           <div className="min-w-0 flex-1 space-y-1.5">
             {items.slice(0, 6).map((item, idx) => {
-              const color = item.label.toLowerCase().includes("unrecorded")
+              const isSuppressed = Boolean(item.suppressed || item.count === null);
+              const color = isSuppressed
+                ? "#E2E8F0"
+                : item.label.toLowerCase().includes("unrecorded")
                 ? "#CBD5E1"
                 : REPORT_CHART_SERIES_HEX[idx % REPORT_CHART_SERIES_HEX.length];
               return (
@@ -183,7 +221,9 @@ export function ReportDonutSvg({
                     <span className="truncate text-[#344054]">{item.label}</span>
                   </div>
                   <span className="shrink-0 font-semibold tabular-nums text-[#101828]">
-                    {item.count.toLocaleString()} ({formatRateOrNA(item.percentage)})
+                    {isSuppressed
+                      ? item.displayCount || "Suppressed"
+                      : `${(item.count ?? 0).toLocaleString()} (${formatRateOrNA(item.percentage)})`}
                   </span>
                 </div>
               );

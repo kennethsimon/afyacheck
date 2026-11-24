@@ -463,8 +463,12 @@ export function ReportDocumentPreview({
                 rows={[
                   ...demo.regions.map((r) => [
                     r.label,
-                    r.count.toLocaleString(),
-                    formatRateOrNA(r.percentage),
+                    r.suppressed || r.count === null
+                      ? r.displayCount || "Suppressed"
+                      : r.count.toLocaleString(),
+                    r.suppressed || r.count === null
+                      ? r.displayPercentage || "Suppressed"
+                      : formatRateOrNA(r.percentage),
                   ]),
                   [
                     "Total",
@@ -877,6 +881,15 @@ export function ReportDocumentPreview({
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {report.methodology.privacyPolicy && (
+            <div className="rounded border border-[#E2E8F0] bg-[#F5F7F9] px-4 py-3 text-[11px] text-[#344054]">
+              <div className="font-semibold text-[#101828]">
+                Small-Group Privacy Suppression Policy
+              </div>
+              <p className="mt-0.5">{report.methodology.privacyPolicy.policyNote}</p>
             </div>
           )}
 

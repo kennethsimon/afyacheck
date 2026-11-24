@@ -756,6 +756,7 @@ export async function listRolesAndPermissions(
 
 import type {
   PatientClinicalReportPayload,
+  ReportJobRecord,
   ReportTypeId,
   StructuredReportPayload,
 } from "@/lib/reports/types";
@@ -765,6 +766,7 @@ export interface StructuredReportQueryParams {
   projectId?: string;
   campId?: string;
   schemaId?: string;
+  formVersion?: number;
   dateFrom?: string;
   dateTo?: string;
   gender?: string;
@@ -782,6 +784,7 @@ export async function generateStructuredReport(
       projectId: params.projectId && params.projectId !== "all" ? params.projectId : undefined,
       campId: params.campId && params.campId !== "all" ? params.campId : undefined,
       schemaId: params.schemaId && params.schemaId !== "all" ? params.schemaId : undefined,
+      formVersion: params.formVersion,
       dateFrom: params.dateFrom || undefined,
       dateTo: params.dateTo || undefined,
       gender: params.gender && params.gender !== "all" ? params.gender : undefined,
@@ -799,4 +802,106 @@ export async function generatePatientClinicalReport(
 ): Promise<PatientClinicalReportPayload> {
   const res = await apiRequest<any>(`/reports/patient/${patientId}`, { signal });
   return res?.data as PatientClinicalReportPayload;
+}
+
+export interface CreateReportJobInput {
+  type: ReportTypeId;
+  format: "json" | "csv";
+  projectId?: string;
+  campId?: string;
+  schemaId?: string;
+  formVersion?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  gender?: string;
+  insurance?: string;
+  location?: string;
+  idempotencyKey?: string;
+}
+
+export async function listReportJobs(signal?: AbortSignal): Promise<ReportJobRecord[]> {
+  const res = await apiRequest<any>("/reports/jobs", { signal });
+  return (res?.data?.jobs ?? []) as ReportJobRecord[];
+}
+
+export async function getReportJob(
+  jobId: string,
+  signal?: AbortSignal
+): Promise<ReportJobRecord | null> {
+  const res = await apiRequest<any>(`/reports/jobs/${jobId}`, { signal });
+  return (res?.data?.job ?? null) as ReportJobRecord | null;
+}
+
+export async function createReportJob(
+  payload: CreateReportJobInput
+): Promise<{ job: ReportJobRecord; deduplicated: boolean }> {
+  const res = await apiRequest<any>("/reports/jobs", {
+    method: "POST",
+    body: {
+      type: payload.type,
+      format: payload.format,
+      projectId: payload.projectId && payload.projectId !== "all" ? payload.projectId : undefined,
+      campId: payload.campId && payload.campId !== "all" ? payload.campId : undefined,
+      schemaId: payload.schemaId && payload.schemaId !== "all" ? payload.schemaId : undefined,
+      formVersion: payload.formVersion,
+      dateFrom: payload.dateFrom || undefined,
+      dateTo: payload.dateTo || undefined,
+      gender: payload.gender && payload.gender !== "all" ? payload.gender : undefined,
+      insurance: payload.insurance && payload.insurance !== "all" ? payload.insurance : undefined,
+      location: payload.location || undefined,
+      idempotencyKey: payload.idempotencyKey,
+    },
+  });
+  return {
+    job: res?.data?.job as ReportJobRecord,
+    deduplicated: Boolean(res?.data?.deduplicated),
+  };
+}
+
+export async function retryReportJob(jobId: string): Promise<ReportJobRecord> {
+  const res = await apiRequest<any>(`/reports/jobs/${jobId}/retry`, {
+    method: "POST",
+    body: {},
+  });
+  return res?.data?.job as ReportJobRecord;
+}
+
+export async function downloadReportJob(job: ReportJobRecord): Promise<void> {
+  const response = await fetch(`/api/backend/reports/jobs/${encodeURIComponent(job._id)}/download`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    let errMsg = `Failed to download report (${response.status})`;
+    try {
+      const errJson = await response.json();
+      if (errJson?.message) errMsg = errJson.message;
+    } catch {
+      // Ignore non-JSON error body
+    }
+    throw new Error(errMsg);
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  const disposition = response.headers.get("content-disposition") || "";
+  const match = /filename="([^"]+)"/.exec(disposition);
+  const ext = job.format === "csv" ? "csv" : "json";
+  const filename =
+    match?.[1] || `afyacheck-${job.reportType}-${job.reportRef || job._id}.${ext}`;
+
+  const blob = contentType.includes("application/json")
+    ? new Blob([JSON.stringify(await response.json(), null, 2)], {
+        type: "application/json;charset=utf-8",
+      })
+    : await response.blob();
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }

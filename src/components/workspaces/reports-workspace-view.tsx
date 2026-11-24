@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { format, subDays, startOfYear } from "date-fns";
 import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Clock,
   Download,
   FileSpreadsheet,
   FileText,
@@ -48,9 +50,11 @@ import {
 import { ReportDocumentPreview } from "@/components/reports/report-document-preview";
 import {
   useCamps,
+  useCreateReportJob,
   useCustomProjects,
   useFormSchemas,
   useProjects,
+  useReportJobs,
   useStructuredReport,
 } from "@/lib/api/hooks";
 import { fetchAllMatchingPatients } from "@/lib/api/endpoints";
@@ -126,6 +130,7 @@ export function ReportsWorkspaceView({
     scopedCampId ?? workspace.campId ?? "all"
   );
   const [selectedSchemaId, setSelectedSchemaId] = useState<string>("all");
+  const [selectedFormVersion, setSelectedFormVersion] = useState<string>("latest");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [genderFilter, setGenderFilter] = useState("all");
@@ -195,6 +200,10 @@ export function ReportsWorkspaceView({
       projectId: effectiveProjectId,
       campId: effectiveCampId,
       schemaId: reportType === "custom-project" ? selectedSchemaId : undefined,
+      formVersion:
+        reportType === "custom-project" && selectedFormVersion !== "latest"
+          ? Number(selectedFormVersion)
+          : undefined,
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
       gender: genderFilter !== "all" ? genderFilter : undefined,
@@ -206,6 +215,7 @@ export function ReportsWorkspaceView({
       effectiveProjectId,
       effectiveCampId,
       selectedSchemaId,
+      selectedFormVersion,
       dateFrom,
       dateTo,
       genderFilter,
@@ -216,6 +226,39 @@ export function ReportsWorkspaceView({
 
   const reportQuery = useStructuredReport(queryParams);
   const report = reportQuery.data;
+  const reportJobsQuery = useReportJobs(!embedded);
+  const createReportJobMutation = useCreateReportJob();
+  const activeBackgroundJobs = (reportJobsQuery.data ?? []).filter(
+    (j) => j.status === "queued" || j.status === "processing"
+  ).length;
+
+  const handleQueueBackgroundJob = async (formatType: "csv" | "json") => {
+    try {
+      const { job, deduplicated } = await createReportJobMutation.mutateAsync({
+        type: reportType,
+        format: formatType,
+        projectId: effectiveProjectId,
+        campId: effectiveCampId,
+        schemaId: reportType === "custom-project" ? selectedSchemaId : undefined,
+        formVersion:
+          reportType === "custom-project" && selectedFormVersion !== "latest"
+            ? Number(selectedFormVersion)
+            : undefined,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+        gender: genderFilter !== "all" ? genderFilter : undefined,
+        insurance: insuranceFilter !== "all" ? insuranceFilter : undefined,
+        location: locationFilter.trim() || undefined,
+      });
+      toast.success(
+        deduplicated
+          ? `Existing background ${formatType.toUpperCase()} job found (${job.status})`
+          : `Background ${formatType.toUpperCase()} report queued — open Background Jobs to download when ready`
+      );
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to queue background report job"));
+    }
+  };
 
   const applicableSectionOptions = useMemo(
     () =>
@@ -359,6 +402,18 @@ export function ReportsWorkspaceView({
           }
           actions={
             <>
+              <Button variant="outline" size="sm" asChild className="h-8 gap-1.5 text-xs">
+                <Link href="/reports/jobs">
+                  <Clock className="h-3.5 w-3.5" />
+                  Background Jobs
+                  {activeBackgroundJobs > 0 && (
+                    <span className="ml-0.5 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                      {activeBackgroundJobs}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -416,6 +471,36 @@ export function ReportsWorkspaceView({
                       <span className="font-medium">Export Summary CSV</span>
                       <span className="text-[10px] text-muted-foreground">
                         Machine-readable validated indicators
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-[11px] text-muted-foreground">
+                    Async Background Jobs
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    onClick={() => handleQueueBackgroundJob("csv")}
+                    disabled={createReportJobMutation.isPending}
+                    className="gap-2 text-xs"
+                  >
+                    <Clock className="h-3.5 w-3.5 text-primary" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">Queue Background CSV</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        Durable server job · Revalidated download
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleQueueBackgroundJob("json")}
+                    disabled={createReportJobMutation.isPending}
+                    className="gap-2 text-xs"
+                  >
+                    <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">Queue Background JSON</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        Full structured payload artifact
                       </span>
                     </div>
                   </DropdownMenuItem>
@@ -492,6 +577,7 @@ export function ReportsWorkspaceView({
                       setSelectedProjectId(val);
                       setSelectedCampId("all");
                       setSelectedSchemaId("all");
+                      setSelectedFormVersion("latest");
                     }}
                   >
                     <SelectTrigger className="h-8 bg-background text-xs">
@@ -533,25 +619,65 @@ export function ReportsWorkspaceView({
               )}
 
               {reportType === "custom-project" && (
-                <div className="space-y-1">
-                  <Label className="text-[11px] text-muted-foreground">
-                    Form Schema (Versioned)
-                  </Label>
-                  <Select value={selectedSchemaId} onValueChange={setSelectedSchemaId}>
-                    <SelectTrigger className="h-8 bg-background text-xs">
-                      <SelectValue placeholder="Latest active schema" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all" className="text-xs">
-                        Latest Active Schema
-                      </SelectItem>
-                      {(schemasQuery.data ?? []).map((s) => (
-                        <SelectItem key={s._id} value={s._id} className="text-xs">
-                          {s.name} (v{s.version || 1})
+                <div className="space-y-2.5">
+                  <div className="space-y-1">
+                    <Label className="text-[11px] text-muted-foreground">
+                      Form Schema (Versioned)
+                    </Label>
+                    <Select
+                      value={selectedSchemaId}
+                      onValueChange={(v) => {
+                        setSelectedSchemaId(v);
+                        setSelectedFormVersion("latest");
+                      }}
+                    >
+                      <SelectTrigger className="h-8 bg-background text-xs">
+                        <SelectValue placeholder="Latest active schema" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="text-xs">
+                          Latest Active Schema
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        {(schemasQuery.data ?? []).map((s) => (
+                          <SelectItem key={s._id} value={s._id} className="text-xs">
+                            {s.name} (v{s.version || 1})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {report?.customProject?.versionBreakdown &&
+                    Object.keys(report.customProject.versionBreakdown).length > 1 && (
+                      <div className="space-y-1">
+                        <Label className="text-[11px] text-muted-foreground">
+                          Strict Schema Version
+                        </Label>
+                        <Select
+                          value={selectedFormVersion}
+                          onValueChange={setSelectedFormVersion}
+                        >
+                          <SelectTrigger className="h-8 bg-background text-xs">
+                            <SelectValue placeholder="Latest version" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="latest" className="text-xs">
+                              Latest Published Version
+                            </SelectItem>
+                            {Object.entries(report.customProject.versionBreakdown).map(
+                              ([verKey, count]) => {
+                                const verNum = verKey.replace(/^v/i, "");
+                                return (
+                                  <SelectItem key={verKey} value={verNum} className="text-xs">
+                                    {verKey} ({count.toLocaleString()} submissions)
+                                  </SelectItem>
+                                );
+                              }
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                 </div>
               )}
             </div>
