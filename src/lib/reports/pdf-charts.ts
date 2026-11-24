@@ -1,5 +1,6 @@
 import type jsPDF from "jspdf";
 import {
+  formatRateOrNA,
   REPORT_CHART_SERIES_RGB,
   REPORT_RGB,
   type RgbTuple,
@@ -59,7 +60,7 @@ export function drawHorizontalBarChart(
     width: number;
     title: string;
     subtitle?: string;
-    items: Array<{ label: string; count: number; percentage: number }>;
+    items: Array<{ label: string; count: number; percentage: number | null }>;
     barColor?: RgbTuple;
   }
 ): number {
@@ -115,7 +116,7 @@ export function drawHorizontalBarChart(
     doc.setFontSize(7.6);
     doc.setTextColor(...REPORT_RGB.darkNavy);
     doc.text(
-      `${item.count.toLocaleString()} (${item.percentage.toFixed(1)}%)`,
+      `${item.count.toLocaleString()} (${formatRateOrNA(item.percentage)})`,
       x + width - 5,
       ry + 4,
       { align: "right" }
@@ -139,7 +140,7 @@ export function drawDonutChart(
     title: string;
     subtitle?: string;
     centerLabel?: string;
-    items: Array<{ label: string; count: number; percentage: number }>;
+    items: Array<{ label: string; count: number; percentage: number | null }>;
   }
 ): number {
   const { x, y, width, title, subtitle, items, centerLabel = "Total" } = opts;
@@ -231,7 +232,7 @@ export function drawDonutChart(
     doc.setFontSize(7.2);
     doc.setTextColor(...REPORT_RGB.darkNavy);
     doc.text(
-      `${item.count.toLocaleString()} (${item.percentage.toFixed(1)}%)`,
+      `${item.count.toLocaleString()} (${formatRateOrNA(item.percentage)})`,
       x + width - 4.5,
       ly,
       { align: "right" }

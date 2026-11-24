@@ -9,6 +9,7 @@ import {
   ReportStackedBarSvg,
 } from "./report-svg-charts";
 import {
+  formatRateOrNA,
   formatReportDate,
   formatReportDateTime,
   REPORT_COLORS,
@@ -463,12 +464,12 @@ export function ReportDocumentPreview({
                   ...demo.regions.map((r) => [
                     r.label,
                     r.count.toLocaleString(),
-                    `${r.percentage.toFixed(1)}%`,
+                    formatRateOrNA(r.percentage),
                   ]),
                   [
                     "Total",
                     demo.totalRegistered.toLocaleString(),
-                    demo.totalRegistered > 0 ? "100.0%" : "0.0%",
+                    demo.totalRegistered > 0 ? "100.0%" : "N/A",
                   ],
                 ]}
               />
@@ -532,7 +533,7 @@ export function ReportDocumentPreview({
                   d.notPerformedCount.toLocaleString(),
                   d.normalOrNegativeCount.toLocaleString(),
                   d.abnormalOrReactiveCount.toLocaleString(),
-                  `${d.findingRate.toFixed(1)}%`,
+                  formatRateOrNA(d.findingRate),
                   d.referralCount > 0 ? d.referralCount.toLocaleString() : "—",
                 ])}
               />
@@ -561,7 +562,7 @@ export function ReportDocumentPreview({
                   v.unit,
                   v.recordedCount.toLocaleString(),
                   v.missingCount.toLocaleString(),
-                  `${v.completenessRate.toFixed(1)}%`,
+                  formatRateOrNA(v.completenessRate),
                   v.meanValue !== undefined && v.meanValue !== null
                     ? `${v.meanValue} ${v.unit}`
                     : "—",
@@ -621,7 +622,7 @@ export function ReportDocumentPreview({
                   c.registered.toLocaleString(),
                   c.encounters.toLocaleString(),
                   c.completed.toLocaleString(),
-                  `${c.completionRate.toFixed(1)}%`,
+                  formatRateOrNA(c.completionRate),
                   c.referrals.toLocaleString(),
                 ]),
                 [
@@ -697,7 +698,7 @@ export function ReportDocumentPreview({
                 b.band,
                 b.range,
                 b.count.toLocaleString(),
-                `${b.percentage.toFixed(1)}%`,
+                formatRateOrNA(b.percentage),
                 b.interpretationNote,
               ])}
             />
@@ -794,7 +795,7 @@ export function ReportDocumentPreview({
                   f.required ? "Yes" : "No",
                   f.totalResponses.toLocaleString(),
                   f.missingCount.toLocaleString(),
-                  `${f.completionRate.toFixed(1)}%`,
+                  formatRateOrNA(f.completionRate),
                   f.redactedFreeText
                     ? "Withheld (free-text)"
                     : f.numericSummary

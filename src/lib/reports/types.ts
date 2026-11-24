@@ -138,16 +138,18 @@ export const DEFAULT_SECTIONS_BY_TYPE: Record<ReportTypeId, ReportSectionKey[]> 
 export interface DemographicBucket {
   label: string;
   count: number;
-  percentage: number;
+  percentage: number | null;
 }
 
 export interface ReportKpi {
   id: string;
+  metricId?: string;
   label: string;
-  value: number;
+  value: number | null;
   formattedValue: string;
   sublabel?: string;
   denominator?: string;
+  unit?: string;
   definition: string;
 }
 
@@ -160,7 +162,8 @@ export interface ClinicalDomainRow {
   abnormalOrReactiveCount: number;
   referralCount: number;
   denominator: number;
-  findingRate: number;
+  findingRate: number | null;
+  findingRateDisplay?: string;
   findingLabel: string;
 }
 
@@ -169,7 +172,7 @@ export interface VitalsCompletenessRow {
   unit: string;
   recordedCount: number;
   missingCount: number;
-  completenessRate: number;
+  completenessRate: number | null;
   meanValue?: number | null;
 }
 
@@ -182,8 +185,8 @@ export interface CampComparisonRow {
   encounters: number;
   completed: number;
   pending: number;
-  completionRate: number;
-  insuredRate: number;
+  completionRate: number | null;
+  insuredRate: number | null;
   referrals: number;
 }
 
@@ -195,7 +198,7 @@ export interface CustomFormFieldAnalytics {
   section?: string;
   totalResponses: number;
   missingCount: number;
-  completionRate: number;
+  completionRate: number | null;
   isMultipleResponse?: boolean;
   denominatorLabel?: string;
   distribution?: Record<string, number>;
@@ -264,10 +267,10 @@ export interface StructuredReportPayload {
     encountersTotal: number;
     encountersCompleted: number;
     encountersPending: number;
-    screeningCoverageRate: number;
-    completionRate: number;
+    screeningCoverageRate: number | null;
+    completionRate: number | null;
     totalRecordedReferrals: number;
-    dataCompletenessRate: number;
+    dataCompletenessRate: number | null;
     vitalsCompleteness: VitalsCompletenessRow[];
     domains: ClinicalDomainRow[];
     allDomainsEvaluated: number;
@@ -275,24 +278,24 @@ export interface StructuredReportPayload {
       label: string;
       count: number;
       denominator: number;
-      rate: number;
+      rate: number | null;
     }>;
   };
   campComparisons?: CampComparisonRow[];
   wellness?: {
     totalAssessments: number;
     questionCount: number;
-    avgScore: number;
-    medianScore: number;
-    minScore: number;
-    maxScore: number;
+    avgScore: number | null;
+    medianScore: number | null;
+    minScore: number | null;
+    maxScore: number | null;
     elevatedReviewCount: number;
-    completionRate: number;
+    completionRate: number | null;
     scoreBands: Array<{
       band: string;
       range: string;
       count: number;
-      percentage: number;
+      percentage: number | null;
       interpretationNote: string;
     }>;
     demographics: {
@@ -308,6 +311,8 @@ export interface StructuredReportPayload {
     schemaName: string;
     schemaVersion: number;
     versionNote: string;
+    versionBreakdown?: Record<string, number>;
+    excludedOtherVersionCount?: number;
     availableSchemas: Array<{
       _id: string;
       name: string;
@@ -321,7 +326,7 @@ export interface StructuredReportPayload {
       approved: number;
       rejected: number;
     };
-    overallCompletenessRate: number;
+    overallCompletenessRate: number | null;
     submissionTrend: Array<{ date: string; count: number }>;
     campBreakdown: Array<{ campName: string; total: number; approved: number }>;
     fields: CustomFormFieldAnalytics[];

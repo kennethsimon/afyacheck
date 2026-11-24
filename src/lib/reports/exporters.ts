@@ -1,4 +1,5 @@
 import {
+  formatRateOrNA,
   formatReportDateTime,
   REPORT_COLORS,
   safeFilenameSlug,
@@ -36,7 +37,7 @@ export function buildReportCsvContent(report: StructuredReportPayload): string {
       "Executive KPI",
       report.meta.reportType,
       kpi.label,
-      kpi.value,
+      kpi.value ?? "N/A",
       kpi.denominator || "",
       kpi.sublabel || "",
     ]);
@@ -45,16 +46,16 @@ export function buildReportCsvContent(report: StructuredReportPayload): string {
   if (report.demographics) {
     const total = report.demographics.totalRegistered;
     for (const b of report.demographics.gender) {
-      rows.push(["Demographics", "Gender", b.label, b.count, total, `${b.percentage}%`]);
+      rows.push(["Demographics", "Gender", b.label, b.count, total, formatRateOrNA(b.percentage)]);
     }
     for (const b of report.demographics.ageGroups) {
-      rows.push(["Demographics", "Age Group", b.label, b.count, total, `${b.percentage}%`]);
+      rows.push(["Demographics", "Age Group", b.label, b.count, total, formatRateOrNA(b.percentage)]);
     }
     for (const b of report.demographics.insurance) {
-      rows.push(["Demographics", "Insurance", b.label, b.count, total, `${b.percentage}%`]);
+      rows.push(["Demographics", "Insurance", b.label, b.count, total, formatRateOrNA(b.percentage)]);
     }
     for (const b of report.demographics.regions) {
-      rows.push(["Demographics", "Geographic Region", b.label, b.count, total, `${b.percentage}%`]);
+      rows.push(["Demographics", "Geographic Region", b.label, b.count, total, formatRateOrNA(b.percentage)]);
     }
   }
 
@@ -273,10 +274,10 @@ export async function buildReportXlsxBuffer(
           sanitizeSpreadsheetValue(dim),
           sanitizeSpreadsheetValue(b.label),
           b.count,
-          Number((b.percentage / 100).toFixed(4)),
+          b.percentage !== null ? Number((b.percentage / 100).toFixed(4)) : "N/A",
         ]);
         r.getCell(3).numFmt = "#,##0";
-        r.getCell(4).numFmt = "0.0%";
+        if (b.percentage !== null) r.getCell(4).numFmt = "0.0%";
         r.eachCell((c: any) => {
           c.border = bodyBorder;
         });
@@ -317,13 +318,13 @@ export async function buildReportXlsxBuffer(
         d.notPerformedCount,
         d.normalOrNegativeCount,
         d.abnormalOrReactiveCount,
-        Number((d.findingRate / 100).toFixed(4)),
+        d.findingRate !== null ? Number((d.findingRate / 100).toFixed(4)) : "N/A",
         d.referralCount,
       ]);
       [3, 4, 5, 6, 8].forEach((idx) => {
         r.getCell(idx).numFmt = "#,##0";
       });
-      r.getCell(7).numFmt = "0.0%";
+      if (d.findingRate !== null) r.getCell(7).numFmt = "0.0%";
       r.eachCell((c: any) => {
         c.border = bodyBorder;
       });
@@ -363,13 +364,13 @@ export async function buildReportXlsxBuffer(
         c.registered,
         c.encounters,
         c.completed,
-        Number((c.completionRate / 100).toFixed(4)),
+        c.completionRate !== null ? Number((c.completionRate / 100).toFixed(4)) : "N/A",
         c.referrals,
       ]);
       [4, 5, 6, 8].forEach((idx) => {
         r.getCell(idx).numFmt = "#,##0";
       });
-      r.getCell(7).numFmt = "0.0%";
+      if (c.completionRate !== null) r.getCell(7).numFmt = "0.0%";
       r.eachCell((cell: any) => {
         cell.border = bodyBorder;
       });
@@ -393,11 +394,11 @@ export async function buildReportXlsxBuffer(
         sanitizeSpreadsheetValue(b.band),
         sanitizeSpreadsheetValue(b.range),
         b.count,
-        Number((b.percentage / 100).toFixed(4)),
+        b.percentage !== null ? Number((b.percentage / 100).toFixed(4)) : "N/A",
         sanitizeSpreadsheetValue(b.interpretationNote),
       ]);
       r.getCell(3).numFmt = "#,##0";
-      r.getCell(4).numFmt = "0.0%";
+      if (b.percentage !== null) r.getCell(4).numFmt = "0.0%";
       r.eachCell((cell: any) => {
         cell.border = bodyBorder;
       });
@@ -441,12 +442,12 @@ export async function buildReportXlsxBuffer(
         sanitizeSpreadsheetValue(f.type),
         f.totalResponses,
         f.missingCount,
-        Number((f.completionRate / 100).toFixed(4)),
+        f.completionRate !== null ? Number((f.completionRate / 100).toFixed(4)) : "N/A",
         sanitizeSpreadsheetValue(summaryText),
       ]);
       r.getCell(3).numFmt = "#,##0";
       r.getCell(4).numFmt = "#,##0";
-      r.getCell(5).numFmt = "0.0%";
+      if (f.completionRate !== null) r.getCell(5).numFmt = "0.0%";
       r.eachCell((cell: any) => {
         cell.border = bodyBorder;
       });

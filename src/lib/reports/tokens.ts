@@ -84,8 +84,13 @@ export const REPORT_PAGE = {
 } as const;
 
 export function formatPct(part: number, total: number): string {
-  if (!total || total <= 0) return "0.0%";
+  if (!total || total <= 0) return "N/A";
   return `${((part / total) * 100).toFixed(1)}%`;
+}
+
+export function formatRateOrNA(rate: number | null | undefined): string {
+  if (rate === null || rate === undefined || Number.isNaN(rate)) return "N/A";
+  return `${rate.toFixed(1)}%`;
 }
 
 export function formatCount(value: number | null | undefined): string {

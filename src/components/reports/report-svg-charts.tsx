@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { REPORT_CHART_SERIES_HEX, REPORT_COLORS } from "@/lib/reports/tokens";
+import {
+  formatRateOrNA,
+  REPORT_CHART_SERIES_HEX,
+  REPORT_COLORS,
+} from "@/lib/reports/tokens";
 
 /**
  * Pure SVG print-matched charts for the AfyaCheck WYSIWYG Report Preview.
@@ -16,7 +20,7 @@ export function ReportHorizontalBarSvg({
 }: {
   title: string;
   subtitle?: string;
-  items: Array<{ label: string; count: number; percentage: number }>;
+  items: Array<{ label: string; count: number; percentage: number | null }>;
 }) {
   const rows = items.slice(0, 10);
   const maxVal = Math.max(...rows.map((r) => r.count), 1);
@@ -61,7 +65,7 @@ export function ReportHorizontalBarSvg({
                   />
                 </div>
                 <span className="text-right font-semibold tabular-nums text-[#101828]">
-                  {item.count.toLocaleString()} ({item.percentage.toFixed(1)}%)
+                  {item.count.toLocaleString()} ({formatRateOrNA(item.percentage)})
                 </span>
               </div>
             );
@@ -81,7 +85,7 @@ export function ReportDonutSvg({
   title: string;
   subtitle?: string;
   centerLabel?: string;
-  items: Array<{ label: string; count: number; percentage: number }>;
+  items: Array<{ label: string; count: number; percentage: number | null }>;
 }) {
   const total = items.reduce((s, i) => s + i.count, 0);
   const radius = 38;
@@ -179,7 +183,7 @@ export function ReportDonutSvg({
                     <span className="truncate text-[#344054]">{item.label}</span>
                   </div>
                   <span className="shrink-0 font-semibold tabular-nums text-[#101828]">
-                    {item.count.toLocaleString()} ({item.percentage.toFixed(1)}%)
+                    {item.count.toLocaleString()} ({formatRateOrNA(item.percentage)})
                   </span>
                 </div>
               );

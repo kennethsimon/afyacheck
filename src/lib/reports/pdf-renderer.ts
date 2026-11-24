@@ -9,6 +9,7 @@ import {
 } from "./pdf-charts";
 import {
   formatCount,
+  formatRateOrNA,
   formatReportDate,
   formatReportDateTime,
   REPORT_PAGE,
@@ -846,9 +847,9 @@ export async function renderStructuredReportPdf(
           ...demo.regions.map((r) => [
             r.label,
             r.count.toLocaleString(),
-            `${r.percentage.toFixed(1)}%`,
+            formatRateOrNA(r.percentage),
           ]),
-          ["Total", demo.totalRegistered.toLocaleString(), demo.totalRegistered > 0 ? "100.0%" : "0.0%"],
+          ["Total", demo.totalRegistered.toLocaleString(), demo.totalRegistered > 0 ? "100.0%" : "N/A"],
         ],
       });
     }
@@ -900,7 +901,7 @@ export async function renderStructuredReportPdf(
           d.notPerformedCount.toLocaleString(),
           d.normalOrNegativeCount.toLocaleString(),
           d.abnormalOrReactiveCount.toLocaleString(),
-          `${d.findingRate.toFixed(1)}%`,
+          `${formatRateOrNA(d.findingRate)}`,
           d.referralCount > 0 ? d.referralCount.toLocaleString() : "—",
         ]),
       });
@@ -923,7 +924,7 @@ export async function renderStructuredReportPdf(
           v.unit,
           v.recordedCount.toLocaleString(),
           v.missingCount.toLocaleString(),
-          `${v.completenessRate.toFixed(1)}%`,
+          formatRateOrNA(v.completenessRate),
           v.meanValue !== undefined && v.meanValue !== null ? `${v.meanValue} ${v.unit}` : "—",
         ]),
       });
@@ -979,7 +980,7 @@ export async function renderStructuredReportPdf(
           c.registered.toLocaleString(),
           c.encounters.toLocaleString(),
           c.completed.toLocaleString(),
-          `${c.completionRate.toFixed(1)}%`,
+          formatRateOrNA(c.completionRate),
           c.referrals.toLocaleString(),
         ]),
         [
@@ -1033,7 +1034,7 @@ export async function renderStructuredReportPdf(
         b.band,
         b.range,
         b.count.toLocaleString(),
-        `${b.percentage.toFixed(1)}%`,
+        formatRateOrNA(b.percentage),
         b.interpretationNote,
       ]),
     });
@@ -1145,7 +1146,7 @@ export async function renderStructuredReportPdf(
           f.required ? "Yes" : "No",
           f.totalResponses.toLocaleString(),
           f.missingCount.toLocaleString(),
-          `${f.completionRate.toFixed(1)}%`,
+          formatRateOrNA(f.completionRate),
           f.redactedFreeText
             ? "Withheld (free-text)"
             : f.numericSummary
