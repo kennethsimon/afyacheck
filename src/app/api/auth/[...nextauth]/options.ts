@@ -1,8 +1,37 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import backend from "./backend";
+import { getBackendApiOrigin } from "@/lib/api/origin";
 
-const backendAPI = process.env.NEXT_PUBLIC_BACKEND_API;
+const SESSION_MAX_AGE_SECONDS = 24 * 60 * 60; // 24 hours
+
+export interface SessionRole {
+  _id: string;
+  name: string;
+  active: boolean;
+}
+
+export interface SessionPermission {
+  _id: string;
+  name: string;
+  active: boolean;
+}
+
+export interface SessionCampRef {
+  _id: string;
+  name?: string;
+  project?: string;
+}
+
+export interface SessionUser {
+  _id: string;
+  id?: string;
+  name: string;
+  username: string;
+  active: boolean;
+  roles: SessionRole[];
+  permissions: SessionPermission[];
+  camp: SessionCampRef | string | null;
+}
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -10,98 +39,110 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours in seconds
+    maxAge: SESSION_MAX_AGE_SECONDS,
   },
   providers: [
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
       name: "Credentials",
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        // You need to provide your own logic here that takes the credentials
-        // submitted and returns either a object representing a user or value
-        // that is false/null if the credentials are invalid.
-        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-        // You can also use the `req` object to obtain additional parameters
-        // (i.e., the request IP address)
+      async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
           return null;
         }
-        try {
-          // const resp = await backend.post("/auth/login", { email: credentials.email, password: credentials.password })
 
-          console.log(credentials);
-          const response = await fetch(backendAPI + "/auth/login", {
+        try {
+          const origin = getBackendApiOrigin();
+          const response = await fetch(`${origin}/auth/login`, {
             method: "POST",
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username: credentials.username,
+              username: credentials.username.trim(),
               password: credentials.password,
             }),
+            cache: "no-store",
           });
-          const resp = await response.json();
 
-          console.log(resp);
-          // If no error and we have user data, return it
-          if (resp.data && resp.status) {
-            return resp.data;
+          if (!response.ok) {
+            return null;
           }
-          // Return null if user data could not be retrieved
+
+          const resp = await response.json();
+          if (resp?.data?.user && (resp.status === 1 || resp.status === true)) {
+            return {
+              id: resp.data.user._id,
+              user: resp.data.user,
+              backendToken: resp.data.token,
+            } as any;
+          }
+
           return null;
-        } catch (error: any) {
+        } catch {
           return null;
         }
       },
     }),
   ],
   callbacks: {
+    jwt: ({ token, user }) => {
+      if (user) {
+        const u = user as any;
+        const userRecord = u.user || {};
+        return {
+          ...token,
+          _id: userRecord._id,
+          name: userRecord.name,
+          username: userRecord.username,
+          active: Boolean(userRecord.active),
+          roles: Array.isArray(userRecord.roles) ? userRecord.roles : [],
+          permissions: Array.isArray(userRecord.permissions)
+            ? userRecord.permissions
+            : [],
+          camp: userRecord.camp ?? null,
+          backendToken: u.backendToken || null,
+          issuedAt: Math.floor(Date.now() / 1000),
+          expired: false,
+        };
+      }
+
+      if (typeof token.issuedAt === "number") {
+        const now = Math.floor(Date.now() / 1000);
+        if (now - token.issuedAt > SESSION_MAX_AGE_SECONDS) {
+          return { ...token, expired: true, backendToken: null };
+        }
+      }
+
+      return token;
+    },
     session: ({ session, token }) => {
-      // If token is expired, don't include user data
-      if ((token as any).expired) {
+      if ((token as any).expired || !token._id) {
         return {
           ...session,
           user: null,
         } as any;
       }
-      
+
+      // Intentionally omit raw `backendToken` from the browser-visible session.
+      // Authenticated browser requests traverse `/api/backend/*`, which reads
+      // `backendToken` server-side from the encrypted HttpOnly JWT cookie.
       return {
         ...session,
         user: {
-          ...session.user,
-          ...token,
-        },
-      };
-    },
-    jwt: ({ token, user }) => {
-      if (user) {
-        const u = user as unknown as any;
-        return {
-          ...token,
-          ...u.user,
-          token: u.token,
-          iat: Math.floor(Date.now() / 1000), // Issued at time
-        };
-      }
-      // Check if token is expired
-      if (token.iat) {
-        const now = Math.floor(Date.now() / 1000);
-        const maxAge = 24 * 60 * 60; // 24 hours
-        if (now - (token.iat as number) > maxAge) {
-          // Return expired token - session callback will handle it
-          return { ...token, expired: true };
-        }
-      }
-      return token;
+          _id: String(token._id),
+          id: String(token._id),
+          name: String(token.name || ""),
+          username: String(token.username || ""),
+          active: Boolean(token.active),
+          roles: (token.roles as SessionRole[]) || [],
+          permissions: (token.permissions as SessionPermission[]) || [],
+          camp: (token.camp as SessionCampRef | string | null) ?? null,
+        } satisfies SessionUser,
+      } as any;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

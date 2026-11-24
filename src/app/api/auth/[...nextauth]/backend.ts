@@ -1,42 +1,62 @@
-import axios, { AxiosInstance } from "axios";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./options";
+import axios from "axios";
+import { cookies } from "next/headers";
+import { decode } from "next-auth/jwt";
+import { getBackendApiOrigin } from "@/lib/api/origin";
 
-// Set config defaults when creating the instance
+async function getServerBackendToken(): Promise<string | null> {
+  try {
+    const cookieStore = cookies();
+    const rawCookie =
+      cookieStore.get("__Secure-next-auth.session-token")?.value ||
+      cookieStore.get("next-auth.session-token")?.value;
+
+    if (!rawCookie || !process.env.NEXTAUTH_SECRET) {
+      return null;
+    }
+
+    const decoded = await decode({
+      token: rawCookie,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (!decoded || (decoded as any).expired) {
+      return null;
+    }
+
+    return typeof (decoded as any).backendToken === "string"
+      ? ((decoded as any).backendToken as string)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 const backend = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_API,
+  timeout: 30000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 });
 
-backend.defaults.headers.common["Content-Type"] = "application/json";
-backend.defaults.headers.common["Accept"] = "application/json";
-
-// Add request interceptor to include JWT token from NextAuth session (server-side)
 backend.interceptors.request.use(
   async (config) => {
-    try {
-      const session: any = await getServerSession(authOptions);
-      if (session?.user?.token) {
-        config.headers.Authorization = `Bearer ${session.user.token}`;
-      }
-    } catch (error) {
-      console.error('Error getting server session for API request:', error);
+    if (!config.baseURL) {
+      config.baseURL = getBackendApiOrigin();
+    }
+    const token = await getServerBackendToken();
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Add response interceptor to handle authentication errors
 backend.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.error('Authentication error:', error.response.data);
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default backend;

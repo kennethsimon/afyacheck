@@ -6,8 +6,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { AppProviders } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "Afya Check",
-  description: "Afya Check is a health care application",
+  title: {
+    default: "AfyaCheck — Enterprise Clinical Operations",
+    template: "%s | AfyaCheck",
+  },
+  description:
+    "Enterprise healthcare operations platform for health projects, medical camps, patient registration, clinical screening, wellness assessments, and reporting.",
 };
 
 const fontSans = FontSans({
@@ -21,19 +25,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background font-sans text-foreground antialiased",
           fontSans.variable
         )}
       >
         <AppProviders>
-          <div vaul-drawer-wrapper="" className="bg-background">
+          <div vaul-drawer-wrapper="" className="min-h-screen bg-background">
             {children}
           </div>
         </AppProviders>
-        <Toaster />
+        <Toaster richColors closeButton position="top-right" />
       </body>
     </html>
   );

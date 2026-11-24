@@ -1,13 +1,11 @@
-import PatientDetails from "@/components/patient-details";
+"use client";
 
-export default function PatientPage({
+import { PatientProfileView } from "@/components/workspaces/patient-profile-view";
+
+export default function LegacyDashboardPatientDetailPage({
   params,
 }: {
   params: { patientId: string };
 }) {
-  return (
-    <div>
-      <PatientDetails id={params.patientId} />
-    </div>
-  );
+  return <PatientProfileView patientId={params.patientId} />;
 }

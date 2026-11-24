@@ -78,11 +78,13 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
   const contentWidth = pageWidth - 2 * margin;
   let yPosition = margin;
 
-  // Colors (as tuples for TypeScript)
-  const primaryColor: [number, number, number] = [59, 130, 246]; // Blue
-  const secondaryColor: [number, number, number] = [16, 185, 129]; // Green
-  const textColor: [number, number, number] = [31, 41, 55]; // Gray-800
-  const lightGray: [number, number, number] = [243, 244, 246]; // Gray-100
+  // Colors (as tuples for TypeScript) — AfyaCheck Clinical Teal palette
+  const primaryColor: [number, number, number] = [14, 116, 122];
+  const secondaryColor: [number, number, number] = [16, 185, 129];
+  const textColor: [number, number, number] = [15, 23, 42];
+  const lightGray: [number, number, number] = [248, 250, 252];
+  const safePct = (n: number, d: number) =>
+    d > 0 ? `${((n / d) * 100).toFixed(1)}%` : "0.0%";
 
   // Helper function to add a new page if needed
   const checkNewPage = (requiredHeight: number) => {
@@ -219,10 +221,10 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
 
   // Gender Distribution Table
   const genderData = [
-    ['Male', data.stats.male.toLocaleString(), `${((data.stats.male / data.stats.attended) * 100).toFixed(1)}%`],
-    ['Female', data.stats.female.toLocaleString(), `${((data.stats.female / data.stats.attended) * 100).toFixed(1)}%`],
-    ['Others', (data.stats.others || 0).toLocaleString(), `${(((data.stats.others || 0) / data.stats.attended) * 100).toFixed(1)}%`],
-    ['Total', data.stats.attended.toLocaleString(), '100%'],
+    ['Male', data.stats.male.toLocaleString(), safePct(data.stats.male, data.stats.attended)],
+    ['Female', data.stats.female.toLocaleString(), safePct(data.stats.female, data.stats.attended)],
+    ['Others', (data.stats.others || 0).toLocaleString(), safePct(data.stats.others || 0, data.stats.attended)],
+    ['Total', data.stats.attended.toLocaleString(), data.stats.attended > 0 ? '100%' : '0.0%'],
   ];
   addTable(['Gender', 'Count', 'Percentage'], genderData, 'Gender Distribution');
 
@@ -251,10 +253,10 @@ export async function generateAnalyticsReport(data: ReportData): Promise<void> {
 
   // Age Distribution Table
   const ageData = [
-    ['Children (0-12)', data.stats.children.toLocaleString(), `${((data.stats.children / data.stats.attended) * 100).toFixed(1)}%`],
-    ['Teenagers (13-19)', data.stats.teenagers.toLocaleString(), `${((data.stats.teenagers / data.stats.attended) * 100).toFixed(1)}%`],
-    ['Adults (20-60)', data.stats.adults.toLocaleString(), `${((data.stats.adults / data.stats.attended) * 100).toFixed(1)}%`],
-    ['Seniors (60+)', data.stats.seniors.toLocaleString(), `${((data.stats.seniors / data.stats.attended) * 100).toFixed(1)}%`],
+    ['Children (0-12)', data.stats.children.toLocaleString(), safePct(data.stats.children, data.stats.attended)],
+    ['Teenagers (13-19)', data.stats.teenagers.toLocaleString(), safePct(data.stats.teenagers, data.stats.attended)],
+    ['Adults (20-60)', data.stats.adults.toLocaleString(), safePct(data.stats.adults, data.stats.attended)],
+    ['Seniors (60+)', data.stats.seniors.toLocaleString(), safePct(data.stats.seniors, data.stats.attended)],
   ];
   addTable(['Age Group', 'Count', 'Percentage'], ageData, 'Age Distribution');
 

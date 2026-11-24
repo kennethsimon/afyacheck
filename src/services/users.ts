@@ -1,21 +1,15 @@
 import projectApi from "./config";
 
-// get user details by userId
-export const getUserById = async (userId: any) => {
-  console.log("getUserById User ID: ", userId);
-  let results: any = {};
-
-  await projectApi
-    .get(`/auth/admin/${userId}`)
-    .then(({ data }) => {
-      if (data.status) {
-        // console.log(data);
-        results.items = data.data;
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-
+export const getUserById = async (userId: string | string[]) => {
+  const id = Array.isArray(userId) ? userId[0] : userId;
+  const results: any = {};
+  try {
+    const { data } = await projectApi.get(`/auth/admin/${id}`);
+    if (data?.status) {
+      results.items = data.data;
+    }
+  } catch {
+    // Handled gracefully
+  }
   return results;
 };
